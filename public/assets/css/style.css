@@ -40,3 +40,43 @@ footer {
         font-size: 1.5rem;
     }
 }
+/***/
+.navbar-header {
+    background-color: transparent; /* Transparente sobre el fondo degradado */
+    padding: 15px 40px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 20;
+}
+.navbar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+}
+.nav-links a {
+    color: #e0e0e0;
+    text-decoration: none;
+    margin-left: 20px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.btn-admin {
+    background-color: var(--color-accent);
+    color: var(--color-primary) !important;
+    padding: 8px 15px !important;
+    font-weight: 600;
+}
+

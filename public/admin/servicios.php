@@ -1,7 +1,28 @@
 <?php
 require_once '../../app/config/db.php';
 require_once '../../app/models/Servicio.php';
-$servicios = Servicio::getAll($pdo);
+
+// Obtener la conexión expuesta por db.php ($conn para mysqli, $pdo para PDO)
+global $conn, $pdo;
+$db = $conn ?? $pdo ?? null;
+
+if ($db === null) {
+    error_log('servicios.php: No hay conexión a la base de datos disponible');
+    $servicios = [];
+} else {
+    // Instanciar el modelo (constructor del modelo espera la conexión)
+    $servicioModel = new Servicio($db);
+
+    // Preferir el método que exista en tu modelo: probar obtenerActivos([]) o obtenerTodos()
+    if (method_exists($servicioModel, 'obtenerActivos')) {
+        $servicios = $servicioModel->obtenerActivos([]); // lista pública/activas
+    } elseif (method_exists($servicioModel, 'obtenerTodos')) {
+        $servicios = $servicioModel->obtenerTodos(); // lista completa (admin)
+    } else {
+        error_log('servicios.php: El modelo Servicio no tiene obtenerActivos ni obtenerTodos');
+        $servicios = [];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -47,3 +68,4 @@ $servicios = Servicio::getAll($pdo);
     </div>
 </body>
 </html>
+
