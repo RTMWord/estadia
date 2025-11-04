@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '/../app/config/db.php';
+require_once __DIR__ . '/../app/helpers/auth.php';
+$user = null;
+if (isLogged()) {
+    $stmt = $pdo->prepare('SELECT Nombre, ApellidoP FROM Usuario WHERE idUsuario = ? LIMIT 1');
+    $stmt->execute([getUserId()]);
+    $user = $stmt->fetch();
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,7 +18,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <header class="bg-primary text-white text-center py-5">
+    <header class="bg-primary text-white text-center py-5 position-relative">
+        <div class="position-absolute top-0 end-0 p-3">
+            <?php if (!$user): ?>
+                <a href="login.php?next=<?= urlencode('/Estadia/public/index.php') ?>" class="btn btn-light">Iniciar sesión</a>
+            <?php else: ?>
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Hola, <?= htmlspecialchars($user['Nombre']) ?></span>
+                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'administrador'): ?>
+                        <a href="admin/index.php" class="btn btn-outline-light btn-sm me-2">Panel</a>
+                    <?php endif; ?>
+                    <a href="logout.php" class="btn btn-outline-light btn-sm">Salir</a>
+                </div>
+            <?php endif; ?>
+        </div>
         <h1>MetaHogar</h1>
         <p class="lead">Diseñamos hogares para que tus adultos mayores vivan una longevidad segura e independiente en el hogar que atesoran.</p>
         <p>Tecnología que transforma tu hogar, seguridad que transforma tu vida.</p>

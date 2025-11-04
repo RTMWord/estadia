@@ -1,6 +1,8 @@
 <?php
 require_once '../../app/config/db.php';
 require_once '../../app/models/Servicio.php';
+require_once '../../app/helpers/auth.php';
+requireRole($pdo, 'administrador');
 $servicios = Servicio::getAll($pdo);
 ?>
 <!DOCTYPE html>
@@ -38,7 +40,7 @@ $servicios = Servicio::getAll($pdo);
                     <td><?= $s['Activo'] ? 'Sí' : 'No' ?></td>
                     <td>
                         <a href="servicio_editar.php?id=<?= $s['idServicio'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="servicios.php?eliminar=<?= $s['idServicio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar servicio?')">Eliminar</a>
+                        <a href="../../app/controllers/ServicioController.php?eliminar=<?= $s['idServicio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar servicio?')">Eliminar</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
