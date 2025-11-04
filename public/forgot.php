@@ -12,7 +12,7 @@
             <div class="col-md-5">
                 <div class="card p-4">
                     <h2 class="text-center text-primary mb-4">Recuperar Contraseña</h2>
-                    <form method="POST" action="app/controllers/AuthController.php">
+                    <form method="POST" action="../app/controllers/AuthController.php">
                         <div class="mb-3">
                             <label for="email" class="form-label">Correo electrónico</label>
                             <input type="email" class="form-control" id="email" name="email" required>

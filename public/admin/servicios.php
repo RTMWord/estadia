@@ -1,28 +1,9 @@
 <?php
 require_once '../../app/config/db.php';
 require_once '../../app/models/Servicio.php';
-
-// Obtener la conexión expuesta por db.php ($conn para mysqli, $pdo para PDO)
-global $conn, $pdo;
-$db = $conn ?? $pdo ?? null;
-
-if ($db === null) {
-    error_log('servicios.php: No hay conexión a la base de datos disponible');
-    $servicios = [];
-} else {
-    // Instanciar el modelo (constructor del modelo espera la conexión)
-    $servicioModel = new Servicio($db);
-
-    // Preferir el método que exista en tu modelo: probar obtenerActivos([]) o obtenerTodos()
-    if (method_exists($servicioModel, 'obtenerActivos')) {
-        $servicios = $servicioModel->obtenerActivos([]); // lista pública/activas
-    } elseif (method_exists($servicioModel, 'obtenerTodos')) {
-        $servicios = $servicioModel->obtenerTodos(); // lista completa (admin)
-    } else {
-        error_log('servicios.php: El modelo Servicio no tiene obtenerActivos ni obtenerTodos');
-        $servicios = [];
-    }
-}
+require_once '../../app/helpers/auth.php';
+requireRole($pdo, 'administrador');
+$servicios = Servicio::getAll($pdo);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -59,7 +40,7 @@ if ($db === null) {
                     <td><?= $s['Activo'] ? 'Sí' : 'No' ?></td>
                     <td>
                         <a href="servicio_editar.php?id=<?= $s['idServicio'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="servicios.php?eliminar=<?= $s['idServicio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar servicio?')">Eliminar</a>
+                        <a href="../../app/controllers/ServicioController.php?eliminar=<?= $s['idServicio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar servicio?')">Eliminar</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
