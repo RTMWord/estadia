@@ -1,7 +1,15 @@
 <?php
 require_once '../app/config/db.php';
 require_once '../app/models/Servicio.php';
-$servicios = Servicio::getAll($pdo);
+$q = trim($_GET['q'] ?? '');
+if ($q !== '') {
+    $stmt = $pdo->prepare("SELECT s.*, a.Nombre AS Agencia FROM Servicio s LEFT JOIN Agencia a ON s.Agencia_idAgencia = a.idAgencia WHERE s.Activo=1 AND (s.Nombre LIKE ? OR s.Descripcion LIKE ?) ORDER BY s.Nombre");
+    $like = "%" . $q . "%";
+    $stmt->execute([$like, $like]);
+    $servicios = $stmt->fetchAll();
+} else {
+    $servicios = Servicio::getAll($pdo);
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

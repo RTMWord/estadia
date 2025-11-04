@@ -24,7 +24,9 @@ if (isset($_SESSION['user_id'])) {
                     <?php elseif (isset($_GET['error']) && $_GET['error'] == 2): ?>
                         <div class="alert alert-warning">Tu cuenta está bloqueada temporalmente por intentos fallidos. Intenta más tarde.</div>
                     <?php endif; ?>
-                    <form method="POST" action="app/controllers/AuthController.php">
+                    <?php $next = isset($_GET['next']) ? htmlspecialchars($_GET['next']) : ''; ?>
+                    <form method="POST" action="../app/controllers/AuthController.php">
+                        <input type="hidden" name="next" value="<?= $next ?>">
                         <div class="mb-3">
                             <label for="email" class="form-label">Correo electrónico</label>
                             <input type="email" class="form-control" id="email" name="email" required>

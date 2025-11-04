@@ -1,6 +1,8 @@
 <?php
 require_once '../../app/config/db.php';
 require_once '../../app/models/Usuario.php';
+require_once '../../app/helpers/auth.php';
+requireRole($pdo, 'administrador');
 $usuarios = Usuario::getAll($pdo);
 ?>
 <!DOCTYPE html>
