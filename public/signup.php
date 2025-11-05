@@ -83,7 +83,7 @@
                                 <select id="tipo_usuario" name="tipo_usuario" class="form-select" required>
                                     <option value="">Selecciona el tipo de usuario</option>
                                     <option value="cliente">Cliente</option>
-                                    <!-- <option value="administrador">Administrador</option> -->
+                                    <option value="administrador">Administrador</option>
                                 </select>
                             </div>
 
