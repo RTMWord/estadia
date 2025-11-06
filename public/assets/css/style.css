@@ -80,3 +80,313 @@ footer {
     font-weight: 600;
 }
 
+/*****************************/
+:root{
+  --red: #e60000;
+  --purple: #7b2ad1; /* morado principal */
+  --yellow: #fff176; /* usar para texto del título (amarillo claro) */
+  --title-yellow: #ffe56b; /* amarillo más cálido */
+  --nav-height: 110px;
+  --font-sans: "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: var(--font-sans); background: #fff; }
+
+/* franja roja delgada superior */
+.top-strip {
+  height: 24px;
+  background: var(--red);
+}
+
+/* header principal morado */
+.main-header {
+  position: relative;
+  background: var(--purple);
+  color: white;
+  padding: 8px 16px 0 16px;
+  min-height: var(--nav-height);
+}
+
+/* caja del contador en la esquina superior derecha */
+.visits-box {
+  position: absolute;
+  top: 6px;
+  right: 130px; /* espacio para logo */
+  background: #fff18b; /* amarillo */
+  color: #222;
+  padding: 6px 10px;
+  font-weight: 700;
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.1);
+}
+
+/* logo a la derecha */
+.logo {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  height: 100%;
+  display:flex;
+  align-items:center;
+  padding-left: 8px;
+}
+.logo img {
+  height: 90px;
+  width: auto;
+  display:block;
+}
+
+/* titulo centrado */
+.page-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--title-yellow);
+  letter-spacing: 6px; /* spacing para que se vea como en la imagen */
+  padding-top: 10px;
+  padding-bottom: 6px;
+  text-transform: none;
+}
+
+/* navbar principal */
+.navbar {
+  margin-top: 6px;
+  background: transparent;
+}
+
+.nav-items {
+  list-style: none;
+  margin: 0;
+  padding: 0 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* items de nav a la izquierda */
+.nav-item {
+  position: relative;
+}
+
+.nav-item a {
+  display: inline-block;
+  padding: 8px 12px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 3px;
+}
+
+/* estilo de botón "Inicio" activo en rojo */
+.nav-item.active a {
+  background: var(--red);
+  color: #fff;
+  box-shadow: 0 2px 0 rgba(0,0,0,.15);
+}
+
+/* dropdowns */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 160px;
+  background: #fff;
+  color: #222;
+  border-radius: 3px;
+  display: none;
+  list-style: none;
+  padding: 6px 0;
+  margin: 8px 0 0 0;
+  box-shadow: 0 6px 20px rgba(0,0,0,.2);
+  z-index: 50;
+}
+.dropdown-menu li a {
+  color: #222;
+  padding: 8px 12px;
+  display: block;
+  font-weight: 500;
+}
+
+/* mostrar en hover */
+.nav-item.dropdown:hover > .dropdown-menu {
+  display: block;
+}
+
+/* contenedor del contenido de la página */
+.content {
+  padding: 24px;
+}
+
+/* responsive: en pantallas pequeñas simplificamos */
+@media (max-width: 860px) {
+  .page-title { font-size: 18px; letter-spacing: 2px; padding-top: 6px; }
+  .logo img { height: 60px; }
+  .visits-box { right: 90px; font-size: 13px; padding: 4px 8px; }
+  .nav-items { flex-wrap: wrap; gap: 4px; }
+}
+
+/* Nuevo fondo de gradiente azul para el footer, reemplazando bg-dark */
+.footer-gradient-blue {
+    /* Define los colores de tu gradiente. Puedes ajustarlos */
+    background: linear-gradient(135deg, #0f3d59 0%, #30739c 100%);
+    /* Establece una altura mínima si el contenido es escaso */
+    min-height: 250px; 
+    /* Asegura que el texto claro sea visible */
+    color: #fff;
+    /* Ajusta el padding para que se vea bien */
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+/* Opcional: Estilo para la línea de copyright, si usas la nueva clase */
+.footer-gradient-blue hr {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Opcional: Estilo para los enlaces sociales si no tienen color por defecto */
+.footer-gradient-blue .social-link {
+    color: #fff; /* Asegura que los íconos sean blancos */
+}
+
+/***************************/
+/* Nuevos estilos para el Hero Section */
+
+.hero-image-container {
+    position: relative;
+    height: 100%;
+    z-index: 10; /* Asegura que la imagen y sus formas estén encima del fondo principal */
+}
+
+/* Contenedor para posicionar las formas */
+.hero-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 400px; /* Define una altura fija para contener las formas */
+}
+
+/* La Forma de Blob Blanca/Crema */
+.blob-shape-light {
+    position: absolute;
+    width: 350px;
+    height: 300px;
+    background-color: #eaf3f5; /* Color crema/azul muy claro */
+    /* Usamos clip-path para la forma curva (simulación) o un blob real */
+    clip-path: polygon(0 0, 100% 0, 100% 65%, 75% 100%, 25% 90%, 0 50%);
+    border-radius: 60% 40% 50% 50% / 60% 40% 40% 60%; /* Forma curva suave */
+    top: 0;
+    right: 0;
+    transform: rotate(-10deg);
+    z-index: -1; /* Detrás de la imagen */
+}
+
+/* La Forma de Blob Oscura/Azul Claro */
+.blob-shape-dark {
+    position: absolute;
+    width: 250px;
+    height: 200px;
+    background-color: #5bb3d6; /* Azul claro del diseño */
+    clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
+    border-radius: 50% 50% 40% 60% / 50% 40% 60% 50%;
+    bottom: -50px; /* Posicionamiento debajo */
+    left: 20px;
+    transform: rotate(15deg);
+    z-index: -1; /* Detrás de la imagen */
+}
+
+/* La Brocha Azul Oscuro */
+.blob-brush {
+    position: absolute;
+    width: 280px;
+    height: 80px;
+    background-color: #276e93; /* Un tono azul oscuro */
+    bottom: -20px;
+    left: 20px;
+    border-radius: 0 0 50% 50%;
+    transform: skewX(-20deg);
+    z-index: 0; /* Entre las formas y la imagen */
+}
+
+.hero-image-container img {
+    /* Ajusta la imagen de la familia para que se vea bien sobre las formas */
+    position: absolute;
+    max-width: 110%;
+    height: auto;
+    bottom: 0;
+    left: -5%; 
+}
+/***********************/
+/* --- Estilos para la sección de Servicios (Asesoría) --- */
+
+/* Estilo para el contenedor general de la sección, similar a la imagen */
+.services-container {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+/* Estilo para las tarjetas de paso individual */
+.service-step-card {
+    background-color: #f8f8f8; /* Fondo gris muy claro */
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    height: 100%; /* Asegura que todas las tarjetas tengan la misma altura */
+    text-align: left;
+    transition: transform 0.3s ease;
+}
+
+.service-step-card:hover {
+    transform: translateY(-5px); /* Pequeño efecto de elevación al pasar el mouse */
+}
+
+/* Estilo para el círculo del ícono */
+.service-icon-circle {
+    width: 50px;
+    height: 50px;
+    background-color: #dbe9f4; /* Azul claro del fondo del círculo */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    margin-right: auto;
+    margin-left: 0;
+}
+
+/* Estilo para el ícono dentro del círculo */
+.service-icon-circle i {
+    color: #175e8d; /* Color azul más oscuro para el ícono */
+    font-size: 1.2rem;
+}
+
+/* Estilos de títulos y texto */
+.service-step-card h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #175e8d; /* Color azul */
+    margin-bottom: 10px;
+}
+
+.service-step-card strong {
+    color: #000; /* Texto en negrita en color negro */
+}
+
+.service-step-card ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+.service-step-card ul li {
+    padding-left: 1.5em;
+    position: relative;
+}
+
+.service-step-card ul li:before {
+    content: "•"; /* Simula las viñetas */
+    color: #5bb3d6; /* Color azul claro para la viñeta */
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1.5em;
+}

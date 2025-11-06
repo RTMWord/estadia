@@ -1,0 +1,28 @@
+/* public/assets/css/bs-navbar.css
+   Estilos mínimos/overrides para el navbar Bootstrap y soporte sticky.
+   Prefijo "meta-" para minimizar conflicto con Bootstrap.
+*/
+
+/* Ejemplo de gradiente similar al que usas (ajusta colores si lo deseas) */
+.bg-gradient-primary {
+    background-color: #276e93 !important;
+    background-image: linear-gradient(90deg, #5d92ae 0%, #276e93 50%, #1d526e 100%) !important;
+}
+
+/* Asegurar que el contraste de links sea correcto */
+.navbar-dark .navbar-nav .nav-link { color: rgba(255,255,255,0.95); }
+.navbar-dark .navbar-nav .nav-link.active { color: #fff; }
+
+/* Placeholder (por defecto 0, se rellena por JS cuando el navbar está fijo) */
+.meta-navbar-placeholder { height: 0; }
+
+/* Cuando el navbar tiene la clase 'fixed-top' (se añade por JS), aplicamos una sombra ligera */
+.meta-navbar-root.fixed-top {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  transition: box-shadow .18s ease;
+}
+
+/* Reducir logo o altura en pantallas pequeñas si necesitas (opcional) */
+@media (max-width: 768px) {
+  .navbar-brand span { font-size: 1rem; }
+}
