@@ -25,7 +25,7 @@
                     <div class="card-body p-5">
                         <!-- Logo y Título -->
                         <div class="text-center mb-4">
-                            <img src="images/LogoMeta.png" alt="MetaHogar" height="60" class="mb-3">
+                            <img src="assets/css/images/LogoMeta.png" alt="MetaHogar" height="145" class="mb-3">
                             <h2 class="fw-bold text-primary">Crear Cuenta</h2>
                             <p class="text-muted">Crea una cuenta para formar parte de nuestra comunidad</p>
                         </div>
@@ -83,7 +83,7 @@
                                 <select id="tipo_usuario" name="tipo_usuario" class="form-select" required>
                                     <option value="">Selecciona el tipo de usuario</option>
                                     <option value="cliente">Cliente</option>
-                                    <!-- <option value="administrador">Administrador</option> -->
+                                    <option value="administrador">Administrador</option>
                                 </select>
                             </div>
 

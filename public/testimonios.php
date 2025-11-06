@@ -337,6 +337,33 @@
     </script>
     
     <style>
+        /* Paleta pastel azul */
+        :root{
+            --pastel-blue: #bfe9ff;
+            --pastel-blue-600: #7ec9ff;
+            --pastel-blue-700: #57b6ff;
+            --text-on-pastel: #043a5b;
+        }
+
+        /* Sobrescribir colores "amarillos" de Bootstrap por azules pasteles */
+        .text-warning {
+            color: var(--pastel-blue-700) !important;
+        }
+
+        .btn-warning {
+            background-color: var(--pastel-blue-600) !important;
+            border-color: var(--pastel-blue-600) !important;
+            color: var(--text-on-pastel) !important;
+            box-shadow: none !important;
+        }
+
+        .btn-warning:hover, .btn-warning:focus {
+            background-color: var(--pastel-blue-700) !important;
+            border-color: var(--pastel-blue-700) !important;
+            color: #fff !important;
+        }
+
+        /* Rating input stars: usar tonos pastel azules */
         .rating-input {
             display: flex;
             flex-direction: row-reverse;
@@ -350,7 +377,7 @@
         
         .rating-input .star {
             font-size: 2rem;
-            color: #ddd;
+            color: #9bbfdc; /* color por defecto suave */
             cursor: pointer;
             transition: color 0.2s;
         }
@@ -358,7 +385,7 @@
         .rating-input input[type="radio"]:checked ~ .star,
         .rating-input .star:hover,
         .rating-input .star:hover ~ .star {
-            color: #ffc107;
+            color: var(--pastel-blue-700);
         }
         
         .testimonial-card {

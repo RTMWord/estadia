@@ -1,0 +1,101 @@
+/* public/assets/css/navbar.css
+   Estilos UPE navbar + reglas para versión "fixed" (sticky on scroll).
+   Clases prefijadas con 'upe-' para evitar conflictos con Bootstrap.
+*/
+
+:root {
+  --upe-red: #e60000;
+  --upe-purple: #7b2ad1;
+  --upe-title-yellow: #ffe56b;
+  --upe-yellow-bg: #fff58a;
+  --upe-header-height: 120px;
+  --font-sans: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  --upe-z: 1050;
+}
+
+.upe-navbar-root { font-family: var(--font-sans); }
+
+/* franja roja */
+.upe-top-strip { height: 26px; background: var(--upe-red); }
+
+/* header morado */
+.upe-header {
+  position: relative;
+  background: var(--upe-purple);
+  color: #fff;
+  padding: 8px 18px 12px 18px;
+  min-height: var(--upe-header-height);
+  display: block;
+  transition: box-shadow .2s ease;
+}
+
+/* logo (derecha) */
+.upe-logo {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  height: calc(var(--upe-header-height) - 12px);
+}
+.upe-logo img { height: 96px; width: auto; display:block; }
+
+/* título centrado */
+.upe-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--upe-title-yellow);
+  letter-spacing: 6px;
+  padding-top: 8px;
+  padding-bottom: 6px;
+}
+
+/* nav */
+.upe-nav { margin-top: 6px; padding-left: 6px; }
+.upe-nav-list { list-style: none; margin:0; padding:0; display:flex; gap:12px; align-items:center; }
+.upe-nav-item a { display:inline-block; padding:8px 12px; color:#fff; text-decoration:none; font-weight:600; border-radius:3px; }
+.upe-nav-item.active a { background: var(--upe-red); color:#fff; box-shadow: 0 2px 0 rgba(0,0,0,.15); }
+
+/* dropdown */
+.upe-dropdown {
+  position: absolute; top:100%; left:0; min-width:180px; background:#fff; color:#222;
+  border-radius:3px; display:none; padding:6px 0; margin:8px 0 0 0; box-shadow:0 6px 20px rgba(0,0,0,.18); z-index:40;
+}
+.upe-dropdown li a { color:#222; padding:8px 14px; display:block; font-weight:500; }
+.upe-nav-item.dropdown:hover > .upe-dropdown { display:block; }
+
+.caret { margin-left:6px; font-size:0.8em; opacity:0.9; }
+
+/* Placeholder (oculto por defecto) */
+.upe-navbar-placeholder { height: 0; }
+
+/* ===== REGLAS PARA LA BARRA FIJA =====
+   Cuando .upe-navbar-root tiene la clase .upe-fixed la fijamos al top y mostramos sombra.
+   El placeholder se llenará con la altura real vía JS para que el contenido no "salte".
+*/
+.upe-navbar-root.upe-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--upe-z);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+
+/* Opcional: reducir ligeramente el logo cuando está fijo para ahorrar espacio */
+.upe-navbar-root.upe-fixed .upe-logo img {
+  height: 70px;
+  transition: height .18s ease;
+}
+
+/* Si tu layout muestra el contador encima del header, ajusta la posición cuando está fijo. */
+/* .upe-navbar-root.upe-fixed .upe-visits { position: absolute; top: 6px; right: 140px; } */
+
+/* Mobile */
+@media (max-width: 880px) {
+  .upe-title { font-size:18px; letter-spacing:2px; padding-top:6px; }
+  .upe-logo img { height:64px; }
+  .upe-nav-list { flex-wrap:wrap; gap:8px; }
+  .upe-dropdown { position: static; box-shadow: none; margin:6px 0 0 0; }
+}
