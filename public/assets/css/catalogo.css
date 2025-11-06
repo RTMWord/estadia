@@ -1,0 +1,11 @@
+/* public/assets/css/catalogo.css */
+.servicio-imagen {
+    height: 220px;
+    object-fit: cover;
+    width: 100%;
+}
+@media (max-width: 767px) {
+    .servicio-imagen { height: 180px; }
+}
+.card .card-body { display:flex; flex-direction:column; }
+.card-title { font-size:1.15rem; margin-bottom:0.25rem; }
