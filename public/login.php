@@ -80,6 +80,12 @@ $error = isset($_GET['error']) ? intval($_GET['error']) : 0;
                                 Tu cuenta está bloqueada temporalmente por intentos fallidos. Intenta más tarde.
                             </div>
                         <?php endif; ?>
+                        
+                        <?php if (isset($_GET['reset'])): ?>
+                            <div class="alert alert-success" role="alert">
+                                ¡Contraseña restablecida con éxito! Ya puedes iniciar sesión.
+                            </div>
+                        <?php endif; ?>
 
                         <?php $next = isset($_GET['next']) ? htmlspecialchars($_GET['next']) : ''; ?>
                         <form method="POST" action="../app/controllers/AuthController.php" novalidate>
