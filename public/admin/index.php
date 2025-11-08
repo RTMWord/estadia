@@ -89,6 +89,28 @@ requireRole($pdo, 'administrador');
         <div class="col-6 col-md-3">
             <div class="card text-center">
                 <div class="card-body">
+                    <h5 class="card-title">Contenidos</h5>
+                    <p class="display-6 mb-0"><?= $counts['contenidos'] ?></p>
+                </div>
+                <div class="card-footer">
+                    <a href="contenidos.php" class="stretched-link">Gestionar contenidos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Testimonios</h5>
+                    <p class="display-6 mb-0"><?= $counts['testimonios'] ?></p>
+                </div>
+                <div class="card-footer">
+                    <a href="testimonios.php" class="stretched-link">Gestionar testimonios</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
                     <h5 class="card-title">Citas</h5>
                     <p class="display-6 mb-0"><?= $counts['citas'] ?></p>
                 </div>

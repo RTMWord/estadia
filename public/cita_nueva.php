@@ -1,8 +1,9 @@
 <?php
 require_once '../app/config/db.php';
-// Obtener usuarios y servicios
-$usuarios = $pdo->query('SELECT idUsuario, Nombre FROM Usuario WHERE Activo=1')->fetchAll();
-$servicios = $pdo->query('SELECT idServicio, Nombre FROM Servicio WHERE Activo=1')->fetchAll();
+require_once '../app/helpers/auth.php';
+requireLogin();
+// Obtener servicios activos
+$servicios = $pdo->query('SELECT idServicio, Nombre FROM servicio WHERE Activo=1')->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -17,14 +18,6 @@ $servicios = $pdo->query('SELECT idServicio, Nombre FROM Servicio WHERE Activo=1
         <h2 class="text-primary mb-4">Agendar Nueva Cita</h2>
         <form method="POST" action="../app/controllers/CitaController.php">
             <div class="mb-3">
-                <label class="form-label">Usuario</label>
-                <select name="usuario" class="form-select" required>
-                    <?php foreach ($usuarios as $u): ?>
-                        <option value="<?= $u['idUsuario'] ?>"><?= $u['Nombre'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="mb-3">
                 <label class="form-label">Servicio</label>
                 <select name="servicio" class="form-select" required>
                     <?php foreach ($servicios as $s): ?>
@@ -36,15 +29,7 @@ $servicios = $pdo->query('SELECT idServicio, Nombre FROM Servicio WHERE Activo=1
                 <label class="form-label">Fecha y Hora</label>
                 <input type="datetime-local" name="fechahora" class="form-control" required>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Estado</label>
-                <select name="estado" class="form-select">
-                    <option value="AGENDADA">Agendada</option>
-                    <option value="CONFIRMADA">Confirmada</option>
-                    <option value="CANCELADA">Cancelada</option>
-                    <option value="REALIZADA">Realizada</option>
-                </select>
-            </div>
+            <!-- El estado lo define el administrador desde su panel; por defecto la cita se creará como 'AGENDADA' -->
             <div class="mb-3">
                 <label class="form-label">Notas</label>
                 <textarea name="notas" class="form-control" rows="3"></textarea>

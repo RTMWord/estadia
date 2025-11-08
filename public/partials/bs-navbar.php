@@ -3,6 +3,7 @@
 // Partial que renderiza el navbar Bootstrap que enviaste.
 // Instrucciones: inclúyelo justo después de <body> en tu index.php con:
 // <?php include __DIR__ . '/partials/bs-navbar.php';
+require_once __DIR__ . '/../../app/helpers/auth.php';
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary meta-navbar-root fixed-top" role="navigation" aria-label="Main navbar">
     <div class="container">
@@ -56,10 +57,16 @@
                 </li>
             </ul>
 
-            <div class="d-flex">
-                <a href="login.php" class="btn btn-outline-light me-2">Iniciar Sesión</a>
-                <a href="signup.php" class="btn btn-warning">Registrarse</a>
-            </div>
+            <ul class="navbar-nav ms-auto d-flex align-items-center">
+                <?php if (isLogged()): ?>
+                    <li class="nav-item"><a href="cita_nueva.php" class="nav-link">Agendar Cita</a></li>
+                    <li class="nav-item"><a href="testimonios.php" class="nav-link">Testimonios</a></li>
+                    <li class="nav-item"><a href="logout.php" class="nav-link">Cerrar sesión</a></li>
+                <?php else: ?>
+                    <li class="nav-item"><a href="login.php" class="nav-link text-light me-2">Iniciar Sesión</a></li>
+                    <li class="nav-item"><a href="signup.php" class="nav-link text-warning">Registrarse</a></li>
+                <?php endif; ?>
+            </ul>
         </div>
     </div>
 </nav>

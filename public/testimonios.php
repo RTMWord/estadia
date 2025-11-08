@@ -7,70 +7,35 @@
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS (match index.php) -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/navbar.css">
+    <link rel="stylesheet" href="assets/css/bs-navbar.css">
+    <link rel="stylesheet" href="assets/css/testimonios.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    
+
     <!-- Widget de Accesibilidad -->
     <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary fixed-top">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="login.php">
-                <!-- <img src="images/LogoMeta.png" alt="MetaHogar" height="40" class="me-2"> -->
-                <span class="fw-bold">MetaHogar</span>
-            </a>
-            
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.php">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="sobre-nosotros.php">Sobre Nosotros</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="servicios.php">Servicios</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="productos.php">Productos</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="blog.php">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="contacto.php">Contacto</a>
-                    </li>
-                </ul>
-                
-                <div class="d-flex">
-                    <a href="login.php" class="btn btn-outline-light me-2">Iniciar Sesión</a>
-                    <a href="signup.php" class="btn btn-warning">Registrarse</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <?php include __DIR__ . '/partials/bs-navbar.php'; ?>
 
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section py-6 bg-hero">
         <div class="container">
-            <div class="row align-items-center min-vh-100">
-                <div class="col-12 text-center">
-                    <h1 class="display-4 fw-bold text-white mb-4">
+            <div class="row align-items-center" style="min-height:40vh">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h1 class="display-5 fw-bold text-white mb-3">
                         <span class="text-warning">Testimonios</span>
                     </h1>
-                    <p class="lead text-white-50 mb-4">
-                        Lo que dicen nuestros clientes satisfechos
+                    <p class="lead text-white-75 mb-4">
+                        Historias reales de clientes que confiaron en MetaHogar. Lee sus experiencias y comparte la tuya.
                     </p>
+                    <a href="#add-testimonial" class="btn btn-light btn-lg">Compartir mi experiencia</a>
                 </div>
             </div>
         </div>
@@ -79,19 +44,19 @@
     <!-- Testimonials Section -->
     <section class="py-5">
         <div class="container">
-            <div class="row g-4" id="testimonials-container">
+            <div class="row gy-4" id="testimonials-container" aria-live="polite">
                 <!-- Los testimonios se cargarán dinámicamente -->
             </div>
-            
+
             <div id="loading-testimonials" class="text-center py-5">
-                <div class="loading-spinner"></div>
+                <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
                 <p class="mt-3 text-muted">Cargando testimonios...</p>
             </div>
         </div>
     </section>
 
     <!-- Add Testimonial Section -->
-    <section class="py-5 bg-light">
+    <section id="add-testimonial" class="py-5 bg-light">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
@@ -103,7 +68,7 @@
                             
                             <div id="testimonial-alert"></div>
                             
-                            <form id="testimonialForm">
+                            <form id="testimonialForm" novalidate>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="nombre" class="form-label fw-semibold">Nombre Completo</label>
@@ -111,13 +76,14 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="email" class="form-label fw-semibold">Correo Electrónico</label>
-                                        <input type="email" id="email" name="email" class="form-control" required>
+                                        <input type="email" id="email" name="email" class="form-control" placeholder="(opcional)" aria-describedby="emailHelp">
+                                        <div id="emailHelp" class="form-text">No publicaremos tu correo.</div>
                                     </div>
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label for="calificacion" class="form-label fw-semibold">Calificación</label>
-                                    <div class="rating-input">
+                                    <div class="rating-input" role="radiogroup" aria-label="Calificación">
                                         <input type="radio" id="star5" name="calificacion" value="5" required>
                                         <label for="star5" class="star">★</label>
                                         <input type="radio" id="star4" name="calificacion" value="4">
@@ -134,7 +100,7 @@
                                 <div class="mb-4">
                                     <label for="testimonio" class="form-label fw-semibold">Tu Testimonio</label>
                                     <textarea id="testimonio" name="testimonio" class="form-control" rows="5" 
-                                              placeholder="Cuéntanos sobre tu experiencia con TechSolutions..." required></textarea>
+                                              placeholder="Cuéntanos sobre tu experiencia con MetaHogar..." required></textarea>
                                 </div>
                                 
                                 <div class="text-center">
@@ -156,11 +122,11 @@
             <div class="row g-4">
                 <div class="col-lg-4">
                     <div class="footer-brand">
-                        <img src="images/TSLogo.png" alt="TechSolutions" height="40" class="mb-3">
-                        <h5 class="text-white">TechSolutions</h5>
-                        <p class="text-white-50">Tu aliado tecnológico de confianza desde 2014</p>
+                        <img src="images/LogoMeta.png" alt="MetaHogar" height="40" class="mb-3">
+                        <h5 class="text-white">MetaHogar</h5>
+                        <p class="text-white-50">Soluciones para el hogar y servicios de confianza</p>
                         <div class="social-links">
-                            <a href="https://www.facebook.com/share/16fYCfMcYm/" target="_blank" class="social-link">
+                            <a href="https://www.facebook.com/MetaHogar" target="_blank" class="social-link">
                                 <i class="fab fa-facebook-f"></i>
                             </a>
                             <a href="#" class="social-link">
@@ -201,11 +167,11 @@
                     <ul class="footer-contact">
                         <li>
                             <i class="fas fa-envelope me-2"></i>
-                            <a href="mailto:techsolutionsindustries@gmail.com">techsolutionsindustries@gmail.com</a>
+                            <a href="mailto:contacto@metahogar.com">contacto@metahogar.com</a>
                         </li>
                         <li>
                             <i class="fas fa-phone me-2"></i>
-                            <a href="tel:7352899793">735-289-9793</a>
+                            <a href="tel:+525552223333">55 5222 3333</a>
                         </li>
                         <li>
                             <i class="fas fa-map-marker-alt me-2"></i>
@@ -231,6 +197,8 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Navbar sticky script (same as index.php) -->
+    <script src="assets/js/navbar-sticky.js"></script>
     <!-- Custom JS -->
     <script src="js/main.js"></script>
     
@@ -248,7 +216,7 @@
                 const container = document.getElementById('testimonials-container');
                 const loading = document.getElementById('loading-testimonials');
                 
-                if (data.success && data.testimonios) {
+                if (data.success && data.testimonios && data.testimonios.length) {
                     displayTestimonials(data.testimonios);
                     loading.style.display = 'none';
                 } else {
@@ -270,14 +238,22 @@
                 
                 const testimonialCard = document.createElement('div');
                 testimonialCard.className = 'col-lg-4 col-md-6 mb-4';
+                const initials = (testimonio.nombre || 'Usuario').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
                 testimonialCard.innerHTML = `
                     <div class="testimonial-card h-100">
-                        <div class="stars text-warning mb-3">${stars}</div>
-                        <p class="testimonial-text">"${testimonio.testimonio}"</p>
-                        <div class="testimonial-author">
-                            <strong>${testimonio.nombre}</strong>
-                            <div class="text-muted small">${new Date(testimonio.fecha_creacion).toLocaleDateString()}</div>
+                        <div class="d-flex align-items-start mb-3 gap-3">
+                            <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:56px;height:56px;font-weight:700;">${initials}</div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong class="testimonial-author">${testimonio.nombre}</strong>
+                                        <div class="text-muted small">${new Date(testimonio.fecha_creacion).toLocaleDateString()}</div>
+                                    </div>
+                                    <div class="stars text-warning">${stars}</div>
+                                </div>
+                            </div>
                         </div>
+                        <p class="testimonial-text">“${testimonio.testimonio}”</p>
                     </div>
                 `;
                 
@@ -302,14 +278,15 @@
                     });
                     
                     const data = await response.json();
-                    
                     if (data.success) {
-                        showTestimonialAlert('¡Gracias por tu testimonio! Será revisado y publicado pronto.', 'success');
+                        showTestimonialAlert('¡Gracias! Tu testimonio se envió y será revisado pronto.', 'success');
                         e.target.reset();
                         // Reset rating
                         document.querySelectorAll('input[name="calificacion"]').forEach(input => input.checked = false);
+                        // reload previews after a short delay so admin may approve
+                        setTimeout(() => loadTestimonials(), 1200);
                     } else {
-                        showTestimonialAlert(data.message, 'danger');
+                        showTestimonialAlert(data.message || 'Error al enviar. Intenta nuevamente.', 'danger');
                     }
                 } catch (error) {
                     showTestimonialAlert('Error enviando testimonio. Intenta nuevamente.', 'danger');
@@ -336,87 +313,6 @@
         }
     </script>
     
-    <style>
-        /* Paleta pastel azul */
-        :root{
-            --pastel-blue: #bfe9ff;
-            --pastel-blue-600: #7ec9ff;
-            --pastel-blue-700: #57b6ff;
-            --text-on-pastel: #043a5b;
-        }
-
-        /* Sobrescribir colores "amarillos" de Bootstrap por azules pasteles */
-        .text-warning {
-            color: var(--pastel-blue-700) !important;
-        }
-
-        .btn-warning {
-            background-color: var(--pastel-blue-600) !important;
-            border-color: var(--pastel-blue-600) !important;
-            color: var(--text-on-pastel) !important;
-            box-shadow: none !important;
-        }
-
-        .btn-warning:hover, .btn-warning:focus {
-            background-color: var(--pastel-blue-700) !important;
-            border-color: var(--pastel-blue-700) !important;
-            color: #fff !important;
-        }
-
-        /* Rating input stars: usar tonos pastel azules */
-        .rating-input {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-            gap: 5px;
-        }
-        
-        .rating-input input[type="radio"] {
-            display: none;
-        }
-        
-        .rating-input .star {
-            font-size: 2rem;
-            color: #9bbfdc; /* color por defecto suave */
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        
-        .rating-input input[type="radio"]:checked ~ .star,
-        .rating-input .star:hover,
-        .rating-input .star:hover ~ .star {
-            color: var(--pastel-blue-700);
-        }
-        
-        .testimonial-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .testimonial-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
-        }
-        
-        .testimonial-text {
-            font-style: italic;
-            margin-bottom: 1.5rem;
-            color: #666;
-            font-size: 1.1rem;
-        }
-        
-        .testimonial-author {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        
-        .stars {
-            font-size: 1.5rem;
-        }
-    </style>
+    <!-- testimonios styles moved to assets/css/testimonios.css -->
 </body>
 </html>
