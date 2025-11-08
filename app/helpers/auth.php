@@ -10,8 +10,8 @@ function isLogged() {
 
 function requireLogin() {
     if (!isLogged()) {
-        $req = $_SERVER['REQUEST_URI'] ?? '/Estadia/public/index.php';
-        header('Location: /Estadia/public/login.php?next=' . urlencode($req));
+        $req = $_SERVER['REQUEST_URI'] ?? '/estadia/public/index.php';
+        header('Location: /estadia/public/login.php?next=' . urlencode($req));
         exit;
     }
 }
@@ -22,8 +22,8 @@ function getUserId() {
 
 function requireRole($pdo, $roleName) {
     if (!isLogged()) {
-        $req = $_SERVER['REQUEST_URI'] ?? '/Estadia/public/index.php';
-        header('Location: /Estadia/public/login.php?next=' . urlencode($req));
+        $req = $_SERVER['REQUEST_URI'] ?? '/estadia/public/index.php';
+        header('Location: /estadia/public/login.php?next=' . urlencode($req));
         exit;
     }
     $userId = getUserId();
