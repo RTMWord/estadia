@@ -138,10 +138,7 @@ requireRole($pdo, 'administrador');
                     <a href="usuario_nuevo.php" class="btn btn-primary me-2">Crear usuario</a>
                     <a href="servicio_nuevo.php" class="btn btn-primary me-2">Crear servicio</a>
                     <a href="agencia_nueva.php" class="btn btn-primary me-2">Registrar agencia</a>
-                    <a href="producto_nuevo.php" class="btn btn-outline-primary me-2">Nuevo producto</a>
-                    <a href="contenido_nuevo.php" class="btn btn-outline-primary me-2">Nuevo contenido</a>
-                    <a href="galeria.php" class="btn btn-outline-secondary me-2">Galería</a>
-                    <a href="testimonios.php" class="btn btn-outline-secondary">Testimonios</a>
+                    <a href="reportes.php" class="btn btn-info mt-2"> Generar Reportes...</a> 
                 </div>
             </div>
         </div>
