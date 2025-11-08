@@ -3,7 +3,18 @@ require_once '../../app/config/db.php';
 require_once '../../app/models/Servicio.php';
 require_once '../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
-$servicios = Servicio::getAll($pdo);
+
+// Usar PDO directamente para listar servicios (evita llamar a métodos inexistentes)
+try {
+    $sql = "SELECT s.idServicio, s.Nombre, s.Descripcion, s.Costo, a.Nombre AS Agencia, s.Activo
+            FROM servicio s
+            LEFT JOIN agencia a ON s.Agencia_idAgencia = a.idAgencia
+            ORDER BY s.idServicio DESC";
+    $stmt = $pdo->query($sql);
+    $servicios = $stmt->fetchAll();
+} catch (Exception $e) {
+    $servicios = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

@@ -34,7 +34,7 @@
                         <div id="alertContainer"></div>
 
                         <!-- Formulario -->
-                        <form id="registerForm">
+                        <form id="registerForm" method="post" action="php/register.php">
                             <div class="row">
                                 <div class="col-md-4 mb-3">
                                     <label for="nombres" class="form-label fw-semibold">
@@ -76,16 +76,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="tipo_usuario" class="form-label fw-semibold">
-                                    <i class="fas fa-user-tag me-2 text-primary"></i>Tipo de Usuario
-                                </label>
-                                <select id="tipo_usuario" name="tipo_usuario" class="form-select" required>
-                                    <option value="">Selecciona el tipo de usuario</option>
-                                    <option value="cliente">Cliente</option>
-                                    <option value="administrador">Administrador</option>
-                                </select>
-                            </div>
+                            <!-- Tipo de usuario eliminado: todos los registros se asignan automáticamente al rol 'Usuario' -->
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -120,6 +111,13 @@
                                 <i class="fa-regular fa-user-circle-plus"></i>Crear Cuenta
                             </button>
                         </form>
+
+                        <!-- Mensajes -->
+                        <?php if (!empty($_GET['registered'])): ?>
+                            <div class="alert alert-success mt-3">Registro exitoso. Ahora puedes iniciar sesión.</div>
+                        <?php elseif (!empty($_GET['error'])): ?>
+                            <div class="alert alert-danger mt-3"><?= htmlspecialchars($_GET['error']) ?></div>
+                        <?php endif; ?>
 
                         <!-- Enlaces -->
                         <div class="text-center mt-4">

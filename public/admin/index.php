@@ -4,16 +4,22 @@ require_once '../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
 
 // Obtener métricas rápidas
-try {
+    try {
     $counts = [];
-    $counts['usuarios'] = (int)$pdo->query('SELECT COUNT(*) FROM Usuario')->fetchColumn();
-    $counts['agencias'] = (int)$pdo->query('SELECT COUNT(*) FROM Agencia')->fetchColumn();
-    $counts['servicios'] = (int)$pdo->query('SELECT COUNT(*) FROM Servicio')->fetchColumn();
-    $counts['citas'] = (int)$pdo->query('SELECT COUNT(*) FROM Cita')->fetchColumn();
-    $counts['sugerencias'] = (int)$pdo->query('SELECT COUNT(*) FROM Sugerencia')->fetchColumn();
+    $counts['usuarios'] = (int)$pdo->query('SELECT COUNT(*) FROM usuario')->fetchColumn();
+    $counts['agencias'] = (int)$pdo->query('SELECT COUNT(*) FROM agencia')->fetchColumn();
+    $counts['servicios'] = (int)$pdo->query('SELECT COUNT(*) FROM servicio')->fetchColumn();
+    $counts['citas'] = (int)$pdo->query('SELECT COUNT(*) FROM cita')->fetchColumn();
+    $counts['sugerencias'] = (int)$pdo->query('SELECT COUNT(*) FROM sugerencia')->fetchColumn();
+    // Nuevos módulos
+    $counts['productos'] = (int)$pdo->query('SELECT COUNT(*) FROM producto')->fetchColumn();
+    $counts['contenidos'] = (int)$pdo->query('SELECT COUNT(*) FROM contenido')->fetchColumn();
+    // multimedia y testimonios (testimonio tabla puede no existir aún)
+    try { $counts['multimedia'] = (int)$pdo->query('SELECT COUNT(*) FROM multimedia')->fetchColumn(); } catch (Exception $e) { $counts['multimedia'] = 0; }
+    try { $counts['testimonios'] = (int)$pdo->query('SELECT COUNT(*) FROM testimonio')->fetchColumn(); } catch (Exception $e) { $counts['testimonios'] = 0; }
 } catch (Exception $e) {
     // En caso de error, inicializar en 0
-    $counts = ['usuarios'=>0,'agencias'=>0,'servicios'=>0,'citas'=>0,'sugerencias'=>0];
+    $counts = ['usuarios'=>0,'agencias'=>0,'servicios'=>0,'citas'=>0,'sugerencias'=>0,'productos'=>0,'contenidos'=>0,'multimedia'=>0,'testimonios'=>0];
 }
 ?>
 <!DOCTYPE html>
@@ -66,6 +72,39 @@ try {
                 </div>
                 <div class="card-footer">
                     <a href="servicios.php" class="stretched-link">Gestionar servicios</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Productos</h5>
+                    <p class="display-6 mb-0"><?= $counts['productos'] ?></p>
+                </div>
+                <div class="card-footer">
+                    <a href="productos.php" class="stretched-link">Gestionar productos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Contenidos</h5>
+                    <p class="display-6 mb-0"><?= $counts['contenidos'] ?></p>
+                </div>
+                <div class="card-footer">
+                    <a href="contenidos.php" class="stretched-link">Gestionar contenidos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Testimonios</h5>
+                    <p class="display-6 mb-0"><?= $counts['testimonios'] ?></p>
+                </div>
+                <div class="card-footer">
+                    <a href="testimonios.php" class="stretched-link">Gestionar testimonios</a>
                 </div>
             </div>
         </div>
