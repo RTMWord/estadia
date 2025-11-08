@@ -98,7 +98,11 @@ try {
                     <h5 class="card-title">Acciones rápidas</h5>
                     <a href="usuario_nuevo.php" class="btn btn-primary me-2">Crear usuario</a>
                     <a href="servicio_nuevo.php" class="btn btn-primary me-2">Crear servicio</a>
-                    <a href="agencia_nueva.php" class="btn btn-primary">Registrar agencia</a>
+                    <a href="agencia_nueva.php" class="btn btn-primary me-2">Registrar agencia</a>
+                    <a href="reportes.php" class="btn btn-info mt-2"> Generar Reportes...</a>
+                    
+                    <a href="backup.php" class="btn btn-success mt-2">Generar Respaldo (.sql)</a>
+                    <a href="restore.php" class="btn btn-danger mt-2">Restaurar BD</a>
                 </div>
             </div>
         </div>
