@@ -1,7 +1,7 @@
 <?php
 // Conexión a la base de datos MetaHogar
 $host = 'localhost';
-$db   = 'MetaHogar';
+$db   = 'metaHogar';
 $user = 'root'; // o 'hector'
 $pass = '';
 $charset = 'utf8mb4';

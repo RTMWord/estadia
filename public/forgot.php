@@ -12,6 +12,13 @@
             <div class="col-md-5">
                 <div class="card p-4">
                     <h2 class="text-center text-primary mb-4">Recuperar Contraseña</h2>
+                    <?php if (isset($_GET['sent'])): ?>
+                        <div class="alert alert-success" role="alert">
+                            Si la dirección de correo electrónico está registrada, te hemos enviado un enlace de recuperación.
+                        </div>
+                    <?php endif; ?>
+                    
+                    <!-- <form method="POST" action="../app/controllers/AuthController.php"></form> -->
                     <form method="POST" action="../app/controllers/AuthController.php">
                         <div class="mb-3">
                             <label for="email" class="form-label">Correo electrónico</label>
