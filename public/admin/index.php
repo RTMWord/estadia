@@ -142,8 +142,6 @@ requireRole($pdo, 'administrador');
                     
                     <a href="backup.php" class="btn btn-success mt-2">Generar Respaldo (.sql)</a>
                     <a href="restore.php" class="btn btn-danger mt-2">Restaurar BD</a>
-
-                    <a href="reportes.php" class="btn btn-info mt-2"> Generar Reportes...</a> 
                 </div>
             </div>
         </div>
