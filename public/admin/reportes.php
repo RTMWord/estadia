@@ -5,20 +5,79 @@ require_once '../../app/controllers/ReporteController.php';
 requireRole($pdo, 'administrador');
 
 $reporteCtrl = new ReporteController($pdo);
-$reporteActual = $_GET['reporte'] ?? 'citas'; // Reporte por defecto
+$reporteActual = $_GET['reporte'] ?? 'citas'; 
 
 $filtros = [
     'estado' => $_GET['estado'] ?? '',
+    'rol' => $_GET['rol'] ?? '',
+    'tipo' => $_GET['tipo'] ?? '',
+    'activo' => $_GET['activo'] ?? '',
+    'agencia' => $_GET['agencia'] ?? '',
+    'existencia' => $_GET['existencia'] ?? '',
+    'existencia_op' => $_GET['existencia_op'] ?? '>=',
     'fecha_inicio' => $_GET['fecha_inicio'] ?? '',
     'fecha_fin' => $_GET['fecha_fin'] ?? '',
 ];
 
 $resultados = [];
-if ($reporteActual === 'citas') {
-    $resultados = $reporteCtrl->getCitasReporte($filtros);
-    $filtros_select = $reporteCtrl->getCitaEstados();
+$filtros_data = [];
+$titulo_reporte = "Reporte Desconocido";
+$is_analitico = false;
+$analitico_data = [];
+
+switch ($reporteActual) {
+    case 'citas':
+        $resultados = $reporteCtrl->getCitasReporte($filtros);
+        $filtros_data['estados'] = $reporteCtrl->getCitaEstados();
+        $titulo_reporte = "Citas (CRUD)";
+        break;
+    case 'usuarios':
+        $resultados = $reporteCtrl->getUsuariosReporte($filtros);
+        $filtros_data['roles'] = $reporteCtrl->getRoles();
+        $filtros_data['tipos'] = $reporteCtrl->getUsuarioTipos();
+        $filtros_data['activos'] = $reporteCtrl->getActivoStatus();
+        $titulo_reporte = "Usuarios (CRUD)";
+        break;
+    case 'servicios':
+        $resultados = $reporteCtrl->getServiciosReporte($filtros);
+        $filtros_data['activos'] = $reporteCtrl->getActivoStatus();
+        $filtros_data['agencias'] = $reporteCtrl->getAgencias();
+        $titulo_reporte = "Servicios (CRUD)";
+        break;
+    case 'productos':
+        $resultados = $reporteCtrl->getProductosReporte($filtros);
+        $filtros_data['activos'] = $reporteCtrl->getActivoStatus();
+        $titulo_reporte = "Productos (CRUD)";
+        break;
+    case 'capacidad_operativa':
+        $analitico_data = $reporteCtrl->getCapacidadOperativaReport($filtros);
+        $is_analitico = true;
+        $filtros_data['estados'] = $reporteCtrl->getCitaEstados(); // Para filtros de fechas
+        $titulo_reporte = "Capacidad Operativa (Analítico)";
+        break;
+    case 'inventario_rendimiento':
+        $analitico_data = $reporteCtrl->getInventarioRendimientoReport($filtros);
+        $is_analitico = true;
+        $filtros_data['activos'] = $reporteCtrl->getActivoStatus(); // Para filtros de activo
+        $titulo_reporte = "Rendimiento Inventario (Analítico)";
+        break;
+    case 'usuario_riesgo':
+         $is_analitico = true;
+         $titulo_reporte = "Perfil de Riesgo de Usuario (Analítico)";
+         $analitico_data = $reporteCtrl->getUsuarioPerfilRiesgoReport($filtros);
+         break;
+    case 'temas_criticos':
+        $is_analitico = true;
+        $titulo_reporte = "Detección de Temas Críticos (Analítico)";
+        $analitico_data = $reporteCtrl->getTemasCriticosReport($filtros);
+        break;
+    default:
+        $titulo_reporte = "Reporte Desconocido";
+        break;
 }
-// Aquí se añadiría la lógica para 'usuarios', 'servicios', 'productos'
+
+// Se necesita contar los resultados de las secciones de tablas para los analíticos.
+$total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($analitico_data, 'is_array'))) : count($resultados);
 
 ?>
 <!DOCTYPE html>
@@ -28,52 +87,136 @@ if ($reporteActual === 'citas') {
     <title>Reportes Dinámicos - MetaHogar Admin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .nav-tabs .nav-link {
+            color: #495057; 
+        }
+        .nav-tabs .nav-link.active {
+            color: #007bff; 
+            background-color: #fff;
+            border-color: #dee2e6 #dee2e6 #fff;
+        }
+    </style>
 </head>
 <body>
     <div class="container py-5">
         <h2 class="text-primary mb-4">Generador de Reportes Dinámicos</h2>
         
         <ul class="nav nav-tabs mb-4">
-            <li class="nav-item">
-                <a class="nav-link <?= $reporteActual == 'citas' ? 'active' : '' ?>" href="?reporte=citas">Citas</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link <?= $reporteActual == 'usuarios' ? 'active' : '' ?>" href="?reporte=usuarios">Usuarios</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link <?= $reporteActual == 'servicios' ? 'active' : '' ?>" href="?reporte=servicios">Servicios</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link <?= $reporteActual == 'productos' ? 'active' : '' ?>" href="?reporte=productos">Productos</a>
-            </li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'citas' ? 'active' : '' ?>" href="?reporte=citas">Citas (CRUD)</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'usuarios' ? 'active' : '' ?>" href="?reporte=usuarios">Usuarios (CRUD)</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'servicios' ? 'active' : '' ?>" href="?reporte=servicios">Servicios (CRUD)</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'productos' ? 'active' : '' ?>" href="?reporte=productos">Productos (CRUD)</a></li>
+            
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'capacidad_operativa' ? 'active' : '' ?> text-success" href="?reporte=capacidad_operativa">Capacidad Operativa</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'inventario_rendimiento' ? 'active' : '' ?> text-success" href="?reporte=inventario_rendimiento">Rendimiento Inventario</a></li>
+             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'usuario_riesgo' ? 'active' : '' ?> text-info" href="?reporte=usuario_riesgo">Perfil de Riesgo</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'temas_criticos' ? 'active' : '' ?> text-info" href="?reporte=temas_criticos">Temas Críticos</a></li>
         </ul>
 
         <div class="card mb-4">
-            <div class="card-header">Filtros para Reporte de Citas</div>
+            <div class="card-header">Filtros para Reporte de <?= $titulo_reporte ?></div>
             <div class="card-body">
                 <form method="GET" class="row g-3">
                     <input type="hidden" name="reporte" value="<?= htmlspecialchars($reporteActual) ?>">
                     
-                    <div class="col-md-3">
-                        <label class="form-label">Estado</label>
-                        <select name="estado" class="form-select">
-                            <option value="">Todos</option>
-                            <?php foreach ($filtros_select as $e): ?>
-                                <option value="<?= $e ?>" <?= $filtros['estado'] == $e ? 'selected' : '' ?>><?= $e ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                    <?php if ($reporteActual == 'citas' || $reporteActual == 'capacidad_operativa'): ?>
+                        <div class="col-md-3">
+                            <label class="form-label">Estado</label>
+                            <select name="estado" class="form-select" <?= $reporteActual == 'capacidad_operativa' ? 'disabled' : '' ?>>
+                                <option value="">Todos</option>
+                                <?php foreach ($filtros_data['estados'] ?? [] as $e): ?>
+                                    <option value="<?= $e ?>" <?= $filtros['estado'] == $e ? 'selected' : '' ?>><?= $e ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha Inicio</label>
+                            <input type="date" name="fecha_inicio" class="form-control" value="<?= htmlspecialchars($filtros['fecha_inicio']) ?>">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha Fin</label>
+                            <input type="date" name="fecha_fin" class="form-control" value="<?= htmlspecialchars($filtros['fecha_fin']) ?>">
+                        </div>
+                    <?php elseif ($reporteActual == 'usuarios'): ?>
+                        <div class="col-md-2">
+                            <label class="form-label">Rol</label>
+                            <select name="rol" class="form-select">
+                                <option value="">Todos</option>
+                                <?php foreach ($filtros_data['roles'] ?? [] as $r): ?>
+                                    <option value="<?= $r ?>" <?= $filtros['rol'] == $r ? 'selected' : '' ?>><?= $r ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                         <div class="col-md-2">
+                            <label class="form-label">Tipo</label>
+                            <select name="tipo" class="form-select">
+                                <option value="">Todos</option>
+                                <?php foreach ($filtros_data['tipos'] ?? [] as $t): ?>
+                                    <option value="<?= $t ?>" <?= $filtros['tipo'] == $t ? 'selected' : '' ?>><?= ucfirst($t) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Activo</label>
+                            <select name="activo" class="form-select">
+                                <option value="">Todos</option>
+                                <?php foreach ($filtros_data['activos'] ?? [] as $val => $label): ?>
+                                    <option value="<?= $val ?>" <?= (string)$filtros['activo'] === (string)$val ? 'selected' : '' ?>><?= $label ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                         <div class="col-md-3">
+                            <label class="form-label">Fecha Registro (Desde)</label>
+                            <input type="date" name="fecha_inicio" class="form-control" value="<?= htmlspecialchars($filtros['fecha_inicio']) ?>">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha Registro (Hasta)</label>
+                            <input type="date" name="fecha_fin" class="form-control" value="<?= htmlspecialchars($filtros['fecha_fin']) ?>">
+                        </div>
+                    <?php elseif ($reporteActual == 'servicios'): ?>
+                        <div class="col-md-3">
+                            <label class="form-label">Activo</label>
+                            <select name="activo" class="form-select">
+                                <option value="">Todos</option>
+                                <?php foreach ($filtros_data['activos'] ?? [] as $val => $label): ?>
+                                    <option value="<?= $val ?>" <?= (string)$filtros['activo'] === (string)$val ? 'selected' : '' ?>><?= $label ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                             <label class="form-label">Agencia</label>
+                            <select name="agencia" class="form-select">
+                                <option value="">Todas</option>
+                                <?php foreach ($filtros_data['agencias'] ?? [] as $a): ?>
+                                    <option value="<?= $a ?>" <?= $filtros['agencia'] == $a ? 'selected' : '' ?>><?= $a ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    <?php elseif ($reporteActual == 'productos' || $reporteActual == 'inventario_rendimiento'): ?>
+                        <div class="col-md-3">
+                            <label class="form-label">Activo</label>
+                            <select name="activo" class="form-select">
+                                <option value="">Todos</option>
+                                <?php foreach ($filtros_data['activos'] ?? [] as $val => $label): ?>
+                                    <option value="<?= $val ?>" <?= (string)$filtros['activo'] === (string)$val ? 'selected' : '' ?>><?= $label ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                         <div class="col-md-3">
+                            <label class="form-label">Existencia</label>
+                            <div class="input-group">
+                                <select name="existencia_op" class="form-select" style="max-width: 100px;" <?= $reporteActual == 'inventario_rendimiento' ? 'disabled' : '' ?>>
+                                    <option value=">=" <?= $filtros['existencia_op'] == '>=' ? 'selected' : '' ?>>&ge;</option>
+                                    <option value="=" <?= $filtros['existencia_op'] == '=' ? 'selected' : '' ?>>=</option>
+                                    <option value="<=" <?= $filtros['existencia_op'] == '<=' ? 'selected' : '' ?>>&le;</option>
+                                </select>
+                                <input type="number" name="existencia" class="form-control" value="<?= htmlspecialchars($filtros['existencia']) ?>" <?= $reporteActual == 'inventario_rendimiento' ? 'disabled' : '' ?>>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     
-                    <div class="col-md-3">
-                        <label class="form-label">Fecha Inicio</label>
-                        <input type="date" name="fecha_inicio" class="form-control" value="<?= htmlspecialchars($filtros['fecha_inicio']) ?>">
-                    </div>
-
-                    <div class="col-md-3">
-                        <label class="form-label">Fecha Fin</label>
-                        <input type="date" name="fecha_fin" class="form-control" value="<?= htmlspecialchars($filtros['fecha_fin']) ?>">
-                    </div>
-
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-2">Aplicar Filtros</button>
                         <a href="reportes.php?reporte=<?= htmlspecialchars($reporteActual) ?>" class="btn btn-secondary">Limpiar</a>
@@ -82,39 +225,87 @@ if ($reporteActual === 'citas') {
             </div>
         </div>
 
-        <h3>Resultados (<?= count($resultados) ?>)</h3>
-        <?php if ($reporteActual == 'citas' && !empty($resultados)): ?>
+        <h3>Resultados (<?= $total_resultados ?>)</h3>
+        
+        <?php if (!empty($resultados) || $is_analitico): ?>
             <?php 
-                // Construye la URL de exportación con los filtros actuales
                 $export_query = http_build_query(array_merge($_GET, ['pdf' => 1]));
             ?>
             <a href="reporte_pdf.php?<?= $export_query ?>" target="_blank" class="btn btn-danger mb-3">Exportar a PDF</a>
 
-            <table class="table table-bordered table-hover">
-                <thead>
-                    <tr>
-                        <th>ID Cita</th>
-                        <th>Usuario</th>
-                        <th>Email</th>
-                        <th>Servicio</th>
-                        <th>Fecha y Hora</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($resultados as $r): ?>
-                    <tr>
-                        <td><?= $r['idCita'] ?></td>
-                        <td><?= htmlspecialchars($r['Usuario']) ?></td>
-                        <td><?= htmlspecialchars($r['Email']) ?></td>
-                        <td><?= htmlspecialchars($r['Servicio']) ?></td>
-                        <td><?= $r['FechaHora'] ?></td>
-                        <td><?= $r['Estado'] ?></td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php elseif (empty($resultados)): ?>
+            <?php if ($is_analitico): ?>
+                <?php foreach ($analitico_data as $seccion_nombre => $datos_seccion): ?>
+                    <h4 class="mt-4 mb-2 text-primary"><?= str_replace('_', ' ', htmlspecialchars($seccion_nombre)) ?></h4>
+                    <?php if (empty($datos_seccion)): ?>
+                        <div class="alert alert-info">No hay datos disponibles para esta sección.</div>
+                    <?php elseif (array_key_exists(0, $datos_seccion) && is_array($datos_seccion[0])): 
+                        // Es un array de arrays (tabla)
+                        $keys = array_keys($datos_seccion[0]); ?>
+                        <table class="table table-bordered table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <?php foreach ($keys as $k): ?>
+                                        <th><?= htmlspecialchars(str_replace('_', ' ', $k)) ?></th>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($datos_seccion as $r): ?>
+                                    <tr>
+                                        <?php foreach ($r as $key => $val): ?>
+                                            <td><?= htmlspecialchars($val) ?></td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php else: 
+                        // Es un array asociativo simple (resumen de métricas) ?>
+                        <table class="table table-sm table-borderless w-50">
+                            <tbody>
+                                <?php foreach ($datos_seccion as $key => $val): ?>
+                                    <tr>
+                                        <td class="fw-bold"><?= htmlspecialchars($key) ?></td>
+                                        <td><?= htmlspecialchars($val) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <?php 
+                    // Renderizado de tablas CRUD (existente)
+                    $keys = !empty($resultados) ? array_keys($resultados[0]) : [];
+                ?>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <?php foreach ($keys as $k) echo '<th>' . htmlspecialchars($k) . '</th>'; ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($resultados as $r): ?>
+                        <tr>
+                            <?php foreach ($r as $key => $val): ?>
+                                <td>
+                                    <?php
+                                        if ($key === 'Activo') {
+                                            echo $val ? 'Sí' : 'No';
+                                        } elseif (in_array($key, ['Costo', 'Precio'])) {
+                                            echo '$' . number_format((float)$val, 2);
+                                        } else {
+                                            echo htmlspecialchars($val);
+                                        }
+                                    ?>
+                                </td>
+                            <?php endforeach; ?>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        <?php else: ?>
             <div class="alert alert-warning">No hay resultados para los filtros seleccionados.</div>
         <?php endif; ?>
         
