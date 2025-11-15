@@ -15,6 +15,17 @@ if (isLogged()) {
     $user = $stmt->fetch();
 }
 
+// Determine if current user is admin to show admin button in UI
+$showAdminButton = false;
+if (isLogged()) {
+    $stmt = $pdo->prepare('SELECT r.Nombre FROM UsuarioRol ur JOIN Rol r ON ur.Rol_idRol = r.idRol WHERE ur.Usuario_idUsuario = ? LIMIT 1');
+    $stmt->execute([getUserId()]);
+    $rol = $stmt->fetchColumn();
+    if ($rol === 'administrador') {
+        $showAdminButton = true;
+    }
+}
+
 // Incrementa el contador al cargar la página y obtiene el total actual
 // Si prefieres NO incrementar en cada recarga (por sesión o IP), dímelo y lo cambio.
 $visits = increment_and_get_visits();
@@ -25,10 +36,13 @@ $visits = increment_and_get_visits();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MetaHogar - Longevitud Segura</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Load Bootstrap first, then custom CSS to ensure overrides apply -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/navbar.css">
     <link rel="stylesheet" href="assets/css/bs-navbar.css">
+    <!-- Page-specific CSS (moved from inline <style>) -->
+    <link rel="stylesheet" href="assets/css/index.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MetaHogar - Vivir más, Vivir mejor</title>
@@ -37,123 +51,7 @@ $visits = increment_and_get_visits();
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
 
-    <style>
-        /* Estilos existentes para el contador */
-        .top-controls { display:flex; gap:10px; align-items:center; }
-        .visits-box {
-            background: #fff18b;
-            color: #144d7bff;
-            padding: 6px 10px;
-            font-weight: 700;
-            border-radius: 4px;
-            box-shadow: 0 1px 0 rgba(0,0,0,.08);
-            white-space: nowrap;
-            font-size: 0.95rem;
-        }
-        @media (max-width: 520px) {
-            .visits-box { font-size: 0.85rem; padding: 4px 8px; }
-        }
-        
-        /* Estilos de la IMAGEN HERO */
-        
-        .hero-section {
-            /* Color de fondo degradado (Azul oscuro a azul medio) */
-            background-color: #032e54;
-            background-image: linear-gradient(135deg, #032e54 0%, #175e8d 100%);
-            min-height: 80vh; /* Altura mínima de la sección */
-            display: flex;
-            align-items: center;
-            padding: 100px 0 50px 0; /* Padding superior para separar del navbar fijo */
-            color: white;
-            position: relative;
-            overflow: hidden; /* Oculta partes de la imagen que desborden */
-        }
-        .hero-image-container {
-            position: relative;
-            height: 100%;
-        }
-        /* Ajuste de la tipografía para el título */
-        .hero-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Sombra suave */
-        }
-        /* Ajuste del botón 'Leer Más' */
-        .btn-custom-blue {
-            background-color: #5bb3d6; /* Azul más claro del botón */
-            border-color: #5bb3d6;
-            color: white;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-        .btn-custom-blue:hover {
-            background-color: #4da3c4;
-            border-color: #4da3c4;
-            color: white;
-        }
-        /* Ajuste del botón 'Contáctanos' */
-        .btn-custom-outline {
-            border-color: white;
-            color: white;
-            font-weight: 500;
-        }
-        .btn-custom-outline:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        /* Nuevos estilos para los blobs del Hero (Asumidos de la respuesta anterior) */
-        .hero-image-wrapper {
-            position: relative;
-            width: 100%;
-            height: 400px; /* Define una altura fija para contener las formas */
-        }
-        .blob-shape-light {
-            position: absolute;
-            width: 350px;
-            height: 300px;
-            background-color: #eaf3f5;
-            clip-path: polygon(0 0, 100% 0, 100% 65%, 75% 100%, 25% 90%, 0 50%);
-            border-radius: 60% 40% 50% 50% / 60% 40% 40% 60%;
-            top: 0;
-            right: 0;
-            transform: rotate(-10deg);
-            z-index: -1;
-        }
-        .blob-shape-dark {
-            position: absolute;
-            width: 250px;
-            height: 200px;
-            background-color: #5bb3d6;
-            clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
-            border-radius: 50% 50% 40% 60% / 50% 40% 60% 50%;
-            bottom: -50px;
-            left: 20px;
-            transform: rotate(15deg);
-            z-index: -1;
-        }
-        .blob-brush {
-            position: absolute;
-            width: 280px;
-            height: 80px;
-            background-color: #276e93;
-            bottom: -20px;
-            left: 20px;
-            border-radius: 0 0 50% 50%;
-            transform: skewX(-20deg);
-            z-index: 0;
-        }
-        .hero-image-container img {
-            position: absolute;
-            max-width: 110%;
-            height: auto;
-            bottom: 0;
-            left: -5%; 
-        }
-
-    </style>
+    <!-- moved inline styles to assets/css/index.css -->
     <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
 </head>
 <body>
@@ -164,6 +62,11 @@ $visits = increment_and_get_visits();
             <div class="visits-box">
                 N° Visitas: <span id="visits-count"><?= htmlspecialchars($visits) ?></span>
             </div>
+            <?php if (!empty($showAdminButton)): ?>
+                <div style="margin-top:6px; text-align:right;">
+                    <a href="admin/index.php" class="btn btn-sm btn-outline-light">Panel Admin</a>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
     
@@ -341,8 +244,54 @@ $visits = increment_and_get_visits();
             </form>
         </section>
     </main>
-    <footer class="bg-light text-center py-3">
-        <small>&copy; 2025 MetaHogar. Todos los derechos reservados.</small>
+    <footer class="footer-gradient-blue">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <img src="assets/css/images/LogoMeta.png" alt="MetaHogar" />
+                <p style="margin-top:12px; max-width:360px; color:rgba(255,255,255,0.95);">MetaHogar diseña hogares seguros e inteligentes para una longevidad más digna y confortable.</p>
+                <div style="margin-top:16px; display:flex; gap:10px;">
+                    <a class="social-link" href="#"><i class="fab fa-twitter fa-lg"></i></a>
+                    <a class="social-link" href="#"><i class="fab fa-facebook-f fa-lg"></i></a>
+                    <a class="social-link" href="#"><i class="fab fa-instagram fa-lg"></i></a>
+                    <a class="social-link" href="#"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h5 style="color:#fff; margin-bottom:14px;">Dirección</h5>
+                <ul class="footer-contact" style="list-style:none; padding:0; margin:0; color:rgba(255,255,255,0.95);">
+                    <li><i class="fas fa-map-marker-alt"></i> Av. Par Vial 10, Atlacomulco, 62560 Jiutepec, Mor.</li>
+                    <li style="margin-top:8px;"><i class="fas fa-phone"></i> +52 1 777 129 4253</li>
+                    <li style="margin-top:6px;"><i class="fas fa-envelope"></i> contacto@metahogar.com</li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h5 style="color:#fff; margin-bottom:14px;">Boletín informativo</h5>
+                <p style="color:rgba(255,255,255,0.95);">¡Mantente informado con nuestro boletín!</p>
+                <div class="footer-newsletter" style="margin-top:10px;">
+                    <input type="email" placeholder="Ingresa tu Email" aria-label="Ingresa tu Email">
+                    <button class="send-btn" aria-label="Enviar boletín"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
+            <div class="footer-col" style="display:flex; align-items:center; justify-content:center;">
+                <!-- Decorative image / icon similar to reference -->
+                <img src="assets/css/images/hero-ico-footer.png" alt="icono" style="max-height:160px; opacity:0.95;" />
+            </div>
+        </div>
+
+        <div style="border-top:1px solid rgba(255,255,255,0.12); margin-top:32px;">
+            <div class="container d-flex align-items-center justify-content-between py-3">
+                <div style="color:rgba(255,255,255,0.85);">&copy; <?= date('Y') ?> MetaHogar. Todos los derechos reservados.</div>
+                <div style="color:rgba(255,255,255,0.85);">
+                    <a href="#" style="color:rgba(255,255,255,0.85); margin-right:14px;">Home</a>
+                    <a href="#" style="color:rgba(255,255,255,0.85); margin-right:14px;">Cookies</a>
+                    <a href="#" style="color:rgba(255,255,255,0.85); margin-right:14px;">Help</a>
+                    <a href="#" style="color:rgba(255,255,255,0.85);">FAQs</a>
+                </div>
+            </div>
+        </div>
     </footer>
 
     <script>

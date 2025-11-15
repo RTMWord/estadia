@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary meta-navbar-root fixed-top" role="navigation" aria-label="Main navbar">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="meta3.html">
+        <a class="navbar-brand d-flex align-items-center" href="index.php">
             <span class="ms-2">MetaHogar</span>
         </a>
 
@@ -18,7 +18,7 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                    <a class="nav-link active" href="meta3.html">Inicio</a>
+                    <a class="nav-link active" href="index.php">Inicio</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="sobre-nosotros.html">¿Quiénes Somos?</a>

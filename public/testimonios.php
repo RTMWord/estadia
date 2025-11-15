@@ -41,6 +41,27 @@
         </div>
     </section>
 
+    <!-- Carrusel de imágenes (opcional) -->
+    <section class="py-4 bg-light">
+        <div class="container">
+            <div id="testimonials-carousel-wrapper" style="display:none">
+                <div id="testimonialsCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner" id="carousel-inner">
+                        <!-- Items dinámicos -->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#testimonialsCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Siguiente</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Testimonials Section -->
     <section class="py-5">
         <div class="container">
@@ -83,19 +104,28 @@
                                 
                                 <div class="mb-3">
                                     <label for="calificacion" class="form-label fw-semibold">Calificación</label>
-                                    <div class="rating-input" role="radiogroup" aria-label="Calificación">
-                                        <input type="radio" id="star5" name="calificacion" value="5" required>
-                                        <label for="star5" class="star">★</label>
-                                        <input type="radio" id="star4" name="calificacion" value="4">
-                                        <label for="star4" class="star">★</label>
-                                        <input type="radio" id="star3" name="calificacion" value="3">
-                                        <label for="star3" class="star">★</label>
-                                        <input type="radio" id="star2" name="calificacion" value="2">
-                                        <label for="star2" class="star">★</label>
-                                        <input type="radio" id="star1" name="calificacion" value="1">
-                                        <label for="star1" class="star">★</label>
+                                    <!-- CSS radio-based star rating (accessible) -->
+                                    <div id="full-stars-example">
+                                        <div class="rating-group">
+                                            <input class="rating__input rating__input--none" name="calificacion" id="rating-none" value="0" type="radio">
+                                            <label aria-label="No rating" class="rating__label" for="rating-none"><i class="rating__icon rating__icon--none fa fa-ban"></i></label>
+                                            <label aria-label="1 star" class="rating__label" for="rating-1"><i class="rating__icon rating__icon--star fa fa-star"></i></label>
+                                            <input class="rating__input" name="calificacion" id="rating-1" value="1" type="radio">
+                                            <label aria-label="2 stars" class="rating__label" for="rating-2"><i class="rating__icon rating__icon--star fa fa-star"></i></label>
+                                            <input class="rating__input" name="calificacion" id="rating-2" value="2" type="radio">
+                                            <label aria-label="3 stars" class="rating__label" for="rating-3"><i class="rating__icon rating__icon--star fa fa-star"></i></label>
+                                            <input class="rating__input" name="calificacion" id="rating-3" value="3" type="radio">
+                                            <label aria-label="4 stars" class="rating__label" for="rating-4"><i class="rating__icon rating__icon--star fa fa-star"></i></label>
+                                            <input class="rating__input" name="calificacion" id="rating-4" value="4" type="radio">
+                                            <label aria-label="5 stars" class="rating__label" for="rating-5"><i class="rating__icon rating__icon--star fa fa-star"></i></label>
+                                            <input checked class="rating__input" name="calificacion" id="rating-5" value="5" type="radio">
+                                        </div>
+                                        <p class="desc" style="margin-bottom: 0.5rem; font-family: sans-serif; font-size:0.9rem">Selecciona las estrellas para puntuar</p>
                                     </div>
+                                    <div class="form-text">Pulsa sobre una estrella para asignar la calificación. También puedes seleccionar "No rating".</div>
                                 </div>
+
+                                
                                 
                                 <div class="mb-4">
                                     <label for="testimonio" class="form-label fw-semibold">Tu Testimonio</label>
@@ -204,10 +234,59 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            loadCarousel();
             loadTestimonials();
             setupTestimonialForm();
         });
         
+        async function loadCarousel() {
+            try {
+                const resp = await fetch('php/testimonials/get_carousel.php');
+                const data = await resp.json();
+                if (!data.success) return;
+                const images = data.images || [];
+                if (!images.length) return;
+
+                const wrapper = document.getElementById('testimonials-carousel-wrapper');
+                const inner = document.getElementById('carousel-inner');
+                inner.innerHTML = '';
+
+                images.forEach((img, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'carousel-item' + (idx === 0 ? ' active' : '');
+
+                    // Normalize ruta: remove leading ../ if present
+                    let ruta = (img.ruta || '').toString();
+                    ruta = ruta.replace(/^\.\.\//, '');
+
+                    // Create image element so we can handle load/error
+                    const imgEl = document.createElement('img');
+                    imgEl.className = 'd-block w-100';
+                    imgEl.style.maxHeight = '420px';
+                    imgEl.style.objectFit = 'cover';
+                    imgEl.alt = img.descripcion || '';
+                    imgEl.src = ruta;
+                    imgEl.onerror = function(e) {
+                        console.error('Error loading carousel image:', ruta, e);
+                        // show a subtle placeholder (1x1 svg) to avoid broken-icon
+                        imgEl.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300"><rect width="100%" height="100%" fill="%23e9ecef"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23777" font-family="Arial, sans-serif" font-size="20">Imagen no disponible</text></svg>';
+                    };
+
+                    const caption = document.createElement('div');
+                    caption.className = 'carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2';
+                    caption.innerHTML = `<p class="mb-0">${img.descripcion || ''}</p>`;
+
+                    div.appendChild(imgEl);
+                    div.appendChild(caption);
+                    inner.appendChild(div);
+                });
+
+                wrapper.style.display = 'block';
+            } catch (e) {
+                console.error('Error cargando carousel:', e);
+            }
+        }
+
         async function loadTestimonials() {
             try {
                 const response = await fetch('php/testimonials/get_public.php');
@@ -232,13 +311,24 @@
         function displayTestimonials(testimonios) {
             const container = document.getElementById('testimonials-container');
             container.innerHTML = '';
-            
+
             testimonios.forEach(testimonio => {
-                const stars = '★'.repeat(testimonio.calificacion) + '☆'.repeat(5 - testimonio.calificacion);
-                
+                const nombre = testimonio.nombre || testimonio.Nombre || 'Usuario';
+                const cal = Number(testimonio.calificacion || testimonio.Calificacion || 0);
+                const stars = '★'.repeat(Math.max(0, Math.min(5, cal))) + '☆'.repeat(Math.max(0, 5 - Math.max(0, Math.min(5, cal))));
+
+                const dateRaw = testimonio.fecha_creacion || testimonio.FechaCreacion || '';
+                let dateText = '';
+                if (dateRaw) {
+                    // Try to normalize MySQL DATETIME to ISO
+                    const iso = dateRaw.replace(' ', 'T');
+                    const d = new Date(iso);
+                    if (!isNaN(d)) dateText = d.toLocaleDateString();
+                }
+
                 const testimonialCard = document.createElement('div');
                 testimonialCard.className = 'col-lg-4 col-md-6 mb-4';
-                const initials = (testimonio.nombre || 'Usuario').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase();
+                const initials = (nombre.split(' ').map(n=>n[0]).slice(0,2).join('') || 'U').toUpperCase();
                 testimonialCard.innerHTML = `
                     <div class="testimonial-card h-100">
                         <div class="d-flex align-items-start mb-3 gap-3">
@@ -246,20 +336,32 @@
                             <div class="flex-grow-1">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <strong class="testimonial-author">${testimonio.nombre}</strong>
-                                        <div class="text-muted small">${new Date(testimonio.fecha_creacion).toLocaleDateString()}</div>
+                                        <strong class="testimonial-author">${escapeHtml(nombre)}</strong>
+                                        <div class="text-muted small">${escapeHtml(dateText)}</div>
                                     </div>
                                     <div class="stars text-warning">${stars}</div>
                                 </div>
                             </div>
                         </div>
-                        <p class="testimonial-text">“${testimonio.testimonio}”</p>
+                        <p class="testimonial-text">“${escapeHtml(testimonio.testimonio || testimonio.Testimonio || '')}”</p>
                     </div>
                 `;
-                
+
                 container.appendChild(testimonialCard);
             });
         }
+
+        // Small helper to escape HTML when inserting text
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>\"'`]/g, function (s) {
+                return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'})[s];
+            });
+        }
+
+        
+
+        
         
         function setupTestimonialForm() {
             document.getElementById('testimonialForm').addEventListener('submit', async function(e) {
@@ -281,8 +383,8 @@
                     if (data.success) {
                         showTestimonialAlert('¡Gracias! Tu testimonio se envió y será revisado pronto.', 'success');
                         e.target.reset();
-                        // Reset rating
-                        document.querySelectorAll('input[name="calificacion"]').forEach(input => input.checked = false);
+                        // Reset rating to default (5 stars)
+                        const def = document.getElementById('rating-5'); if (def) def.checked = true;
                         // reload previews after a short delay so admin may approve
                         setTimeout(() => loadTestimonials(), 1200);
                     } else {
