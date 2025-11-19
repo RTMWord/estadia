@@ -415,6 +415,6 @@
         }
     </script>
     
-    <!-- testimonios styles moved to assets/css/testimonios.css -->
+    <!-- testimonios styles moved to public/assets/css/testimonios.css -->
 </body>
 </html>
