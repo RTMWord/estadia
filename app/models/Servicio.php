@@ -10,189 +10,120 @@ if (!class_exists('Servicio')) {
             $this->conn = $conn;
         }
 
-        // Obtener servicios activos con filtros opcionales
-        public function obtenerActivos($filters = [], $limit = 0, $offset = 0) {
-            $sql = "SELECT id, titulo, descripcion_corta, categoria, ubicacion, contacto, imagen, precio, created_at
-                    FROM servicios WHERE status = 1";
-            $params = [];
-            $types = '';
-
-            if (!empty($filters['categoria'])) {
-                $sql .= " AND categoria = ?";
-                $params[] = $filters['categoria'];
-                $types .= 's';
-            }
-            if (!empty($filters['ubicacion'])) {
-                $sql .= " AND ubicacion = ?";
-                $params[] = $filters['ubicacion'];
-                $types .= 's';
-            }
-            if (!empty($filters['q'])) {
-                $sql .= " AND (titulo LIKE ? OR descripcion LIKE ?)";
-                $q = '%' . $filters['q'] . '%';
-                $params[] = $q;
-                $params[] = $q;
-                $types .= 'ss';
-            }
-            $sql .= " ORDER BY created_at DESC";
-            if ($limit > 0) {
-                $sql .= " LIMIT ?";
-                $params[] = (int)$limit;
-                $types .= 'i';
-                if ($offset > 0) {
-                    $sql .= " OFFSET ?";
-                    $params[] = (int)$offset;
-                    $types .= 'i';
-                }
-            }
-
-            $stmt = $this->conn->prepare($sql);
-            if ($stmt === false) {
-                error_log("prepare obtenerActivos: " . $this->conn->error);
+        // Static helper for legacy calls: get all active servicios
+        public static function getAll($pdo) {
+            try {
+                $stmt = $pdo->prepare("SELECT s.*, a.Nombre AS Agencia FROM servicio s LEFT JOIN agencia a ON s.Agencia_idAgencia = a.idAgencia WHERE s.Activo=1 ORDER BY s.Nombre");
+                $stmt->execute();
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {
+                error_log('Servicio::getAll error: ' . $e->getMessage());
                 return [];
             }
-            if (!empty($params)) {
-                $stmt->bind_param($types, ...$params);
+        }
+
+        // Obtener servicios activos con filtros opcionales
+        public function obtenerActivos($filters = [], $limit = 0, $offset = 0) {
+            // Use PDO for queries
+            $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status
+                    FROM servicio WHERE Activo = 1";
+            $params = [];
+            if (!empty($filters['q'])) {
+                $sql .= " AND (Nombre LIKE :q OR Descripcion LIKE :q2)";
+                $params[':q'] = '%' . $filters['q'] . '%';
+                $params[':q2'] = '%' . $filters['q'] . '%';
             }
-            $stmt->execute();
-            $res = $stmt->get_result();
-            $rows = $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
-            $stmt->close();
-            return $rows;
+            $sql .= " ORDER BY idServicio DESC";
+            if ($limit > 0) {
+                $sql .= " LIMIT " . intval($limit);
+                if ($offset > 0) {
+                    $sql .= " OFFSET " . intval($offset);
+                }
+            }
+            try {
+                $stmt = $this->conn->prepare($sql);
+                $stmt->execute($params);
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {
+                error_log('Servicio::obtenerActivos error: ' . $e->getMessage());
+                return [];
+            }
         }
 
         // Obtener servicio por id (incluso inactivo)
         public function obtenerPorId($id) {
-            $sql = "SELECT * FROM servicios WHERE id = ? LIMIT 1";
-            $stmt = $this->conn->prepare($sql);
-            if ($stmt === false) {
-                error_log("prepare obtenerPorId: " . $this->conn->error);
+            $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status FROM servicio WHERE idServicio = ? LIMIT 1";
+            try {
+                $stmt = $this->conn->prepare($sql);
+                $stmt->execute([$id]);
+                return $stmt->fetch(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {
+                error_log('Servicio::obtenerPorId error: ' . $e->getMessage());
                 return null;
             }
-            $stmt->bind_param('i', $id);
-            $stmt->execute();
-            $res = $stmt->get_result();
-            $row = $res ? $res->fetch_assoc() : null;
-            $stmt->close();
-            return $row;
         }
 
         // Agregar servicio
         public function crear($data) {
-            $sql = "INSERT INTO servicios (titulo, descripcion, descripcion_corta, categoria, ubicacion, contacto, imagen, precio, status, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
-            $stmt = $this->conn->prepare($sql);
-            if ($stmt === false) {
-                return ['ok' => false, 'error' => $this->conn->error];
+            // Adapt to existing `servicio` table (PDO)
+            $sql = "INSERT INTO servicio (Nombre, Descripcion, Costo, Agencia_idAgencia, Activo) VALUES (?, ?, ?, ?, ?)";
+            try {
+                $status = isset($data['status']) ? (int)$data['status'] : 1;
+                $precio = isset($data['precio']) ? (float)$data['precio'] : 0.0;
+                $nombre = $data['titulo'] ?? '';
+                $descripcion = $data['descripcion'] ?? '';
+                $agencia = !empty($data['agencia']) ? (int)$data['agencia'] : null;
+                $stmt = $this->conn->prepare($sql);
+                $stmt->execute([$nombre, $descripcion, $precio, $agencia, $status]);
+                $id = $this->conn->lastInsertId();
+                return ['ok' => true, 'id' => $id];
+            } catch (Exception $e) {
+                return ['ok' => false, 'error' => $e->getMessage()];
             }
-            $status = isset($data['status']) ? (int)$data['status'] : 1;
-            $precio = isset($data['precio']) ? (float)$data['precio'] : 0.0;
-
-            // Tipos: titulo(s), descripcion(s), descripcion_corta(s), categoria(s), ubicacion(s),
-            // contacto(s), imagen(s), precio(d), status(i) => 'sssssssdi' (7x s, d, i)
-            $types = 'sssssssdi';
-            $bindParams = [
-                $data['titulo'] ?? '',
-                $data['descripcion'] ?? '',
-                $data['descripcion_corta'] ?? '',
-                $data['categoria'] ?? '',
-                $data['ubicacion'] ?? '',
-                $data['contacto'] ?? '',
-                $data['imagen'] ?? '',
-                $precio,
-                $status
-            ];
-
-            $stmt->bind_param($types, ...$bindParams);
-            $exec = $stmt->execute();
-            if (!$exec) {
-                $err = $stmt->error;
-                $stmt->close();
-                return ['ok' => false, 'error' => $err];
-            }
-            $id = $stmt->insert_id;
-            $stmt->close();
-            return ['ok' => true, 'id' => $id];
         }
 
         // Editar servicio (si 'imagen' no está en $data, no cambia la imagen)
         public function editar($id, $data) {
-            $sql = "UPDATE servicios SET titulo = ?, descripcion = ?, descripcion_corta = ?, categoria = ?, ubicacion = ?, contacto = ?, precio = ?, status = ?, updated_at = NOW()";
-            $params = [];
-            $types = '';
-
-            $params[] = $data['titulo']; $types .= 's';
-            $params[] = $data['descripcion']; $types .= 's';
-            $params[] = $data['descripcion_corta']; $types .= 's';
-            $params[] = $data['categoria']; $types .= 's';
-            $params[] = $data['ubicacion']; $types .= 's';
-            $params[] = $data['contacto']; $types .= 's';
-            $params[] = (float)$data['precio']; $types .= 'd';
-            $params[] = (int)$data['status']; $types .= 'i';
-
-            if (!empty($data['imagen'])) {
-                $sql .= ", imagen = ?";
-                $params[] = $data['imagen']; $types .= 's';
+            // Map to `servicio` table columns
+            $sql = "UPDATE servicio SET Nombre = ?, Descripcion = ?, Costo = ?, Agencia_idAgencia = ?, Activo = ? WHERE idServicio = ?";
+            $params = [
+                $data['titulo'],
+                $data['descripcion'],
+                (float)$data['precio'],
+                !empty($data['agencia']) ? (int)$data['agencia'] : null,
+                (int)$data['status'],
+                (int)$id
+            ];
+            try {
+                $stmt = $this->conn->prepare($sql);
+                $stmt->execute($params);
+                return ['ok' => true, 'affected' => $stmt->rowCount()];
+            } catch (Exception $e) {
+                return ['ok' => false, 'error' => $e->getMessage()];
             }
-
-            $sql .= " WHERE id = ?";
-            $params[] = (int)$id; $types .= 'i';
-
-            $stmt = $this->conn->prepare($sql);
-            if ($stmt === false) {
-                return ['ok' => false, 'error' => $this->conn->error];
-            }
-            $stmt->bind_param($types, ...$params);
-            $exec = $stmt->execute();
-            if (!$exec) {
-                $err = $stmt->error;
-                $stmt->close();
-                return ['ok' => false, 'error' => $err];
-            }
-            $affected = $stmt->affected_rows;
-            $stmt->close();
-            return ['ok' => true, 'affected' => $affected];
         }
 
         // Eliminación lógica
         public function eliminar($id) {
-            $sql = "UPDATE servicios SET status = 0, updated_at = NOW() WHERE id = ?";
-            $stmt = $this->conn->prepare($sql);
-            if ($stmt === false) {
-                return ['ok' => false, 'error' => $this->conn->error];
+            $sql = "UPDATE servicio SET Activo = 0 WHERE idServicio = ?";
+            try {
+                $stmt = $this->conn->prepare($sql);
+                $stmt->execute([$id]);
+                return ['ok' => true];
+            } catch (Exception $e) {
+                return ['ok' => false, 'error' => $e->getMessage()];
             }
-            $stmt->bind_param('i', $id);
-            $exec = $stmt->execute();
-            if (!$exec) {
-                $err = $stmt->error;
-                $stmt->close();
-                return ['ok' => false, 'error' => $err];
-            }
-            $stmt->close();
-            return ['ok' => true];
         }
 
         // Obtener categorías y ubicaciones (para filtros)
         public function obtenerCategorias() {
-            $sql = "SELECT DISTINCT categoria FROM servicios WHERE categoria IS NOT NULL AND categoria <> ''";
-            $res = $this->conn->query($sql);
-            $out = [];
-            if ($res) {
-                while ($r = $res->fetch_assoc()) $out[] = $r['categoria'];
-                $res->free();
-            }
-            return $out;
+            // No hay columna 'categoria' en la tabla actual 'servicio'. Devolver vacío.
+            return [];
         }
 
         public function obtenerUbicaciones() {
-            $sql = "SELECT DISTINCT ubicacion FROM servicios WHERE ubicacion IS NOT NULL AND ubicacion <> ''";
-            $res = $this->conn->query($sql);
-            $out = [];
-            if ($res) {
-                while ($r = $res->fetch_assoc()) $out[] = $r['ubicacion'];
-                $res->free();
-            }
-            return $out;
+            // No hay columna 'ubicacion' en la tabla actual 'servicio'. Devolver vacío.
+            return [];
         }
     }
 }

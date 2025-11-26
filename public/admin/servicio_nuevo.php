@@ -1,14 +1,10 @@
 <?php
 // public/admin/servicio_nuevo.php
-session_start();
+require_once __DIR__ . '/../../app/config/db.php';
+require_once __DIR__ . '/../../app/helpers/auth.php';
+requireRole($pdo, 'administrador');
 require_once __DIR__ . '/../../app/controllers/ServicioController.php';
 $ctrl = new ServicioController();
-
-// Verificar permisos de admin (ajusta si usas AuthController)
-if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../login.php');
-    exit;
-}
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,6 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = $res['error'] ?? 'Error al crear servicio';
     }
 }
+// Obtener lista de agencias para el select
+try {
+    $stmtAg = $pdo->query('SELECT idAgencia, Nombre FROM agencia ORDER BY Nombre');
+    $agencias = $stmtAg->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $agencias = [];
+}
 ?>
 <!doctype html>
 <html lang="es">
@@ -30,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="p-4">
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
 <div class="container">
     <h1>Agregar nuevo servicio</h1>
     <?php if (!empty($errors)): ?>
@@ -62,6 +66,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label class="form-label">Contacto</label>
                 <input class="form-control" name="contacto" value="<?php echo htmlspecialchars($_POST['contacto'] ?? ''); ?>">
             </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Agencia</label>
+            <select name="agencia" class="form-select">
+                <option value="">-- Seleccionar agencia --</option>
+                <?php foreach ($agencias as $a): ?>
+                    <option value="<?= $a['idAgencia'] ?>" <?= (isset($_POST['agencia']) && $_POST['agencia'] == $a['idAgencia']) ? 'selected' : ''?>><?= htmlspecialchars($a['Nombre']) ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
         <div class="mb-3">
             <label class="form-label">Precio</label>

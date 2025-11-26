@@ -25,6 +25,7 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
     <div class="container py-5">
         <h2 class="text-primary mb-4">Panel de Servicios</h2>
         <a href="servicio_nuevo.php" class="btn btn-success mb-3">Nuevo Servicio</a>

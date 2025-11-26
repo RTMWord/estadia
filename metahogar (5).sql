@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-11-2025 a las 03:26:45
+-- Tiempo de generación: 25-11-2025 a las 01:33:49
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -81,60 +81,45 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `accesibilidad`
---
-
-CREATE TABLE `accesibilidad` (
-  `idAccesibilidad` int(11) NOT NULL,
-  `Usuario_idUsuario` int(11) NOT NULL,
-  `TamLetra` enum('NORMAL','MEDIANA','GRANDE') DEFAULT 'NORMAL',
-  `ModoContraste` enum('NORMAL','ALTO') DEFAULT 'NORMAL',
-  `LecturaVoz` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `agencia`
 --
 
 CREATE TABLE `agencia` (
   `idAgencia` int(11) NOT NULL,
   `Nombre` varchar(120) NOT NULL,
-  `Contacto` varchar(120) DEFAULT NULL,
-  `Telefono` varchar(25) DEFAULT NULL,
-  `Email` varchar(100) DEFAULT NULL,
-  `Direccion` varchar(255) DEFAULT NULL,
+  `Contacto` varchar(120) NOT NULL,
+  `Telefono` varchar(25) NOT NULL,
+  `Email` varchar(100) NOT NULL,
+  `Direccion` varchar(255) NOT NULL,
   `EstadoValidacion` enum('PENDIENTE','APROBADA','RECHAZADA') DEFAULT 'PENDIENTE'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Estructura de tabla para la tabla `auditoriapedido`
+-- Volcado de datos para la tabla `agencia`
 --
 
-CREATE TABLE `auditoriapedido` (
-  `idAudit` int(11) NOT NULL,
-  `idPedido` int(11) DEFAULT NULL,
-  `Usuario_id` int(11) DEFAULT NULL,
-  `Fecha` datetime DEFAULT current_timestamp(),
-  `Accion` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `agencia` (`idAgencia`, `Nombre`, `Contacto`, `Telefono`, `Email`, `Direccion`, `EstadoValidacion`) VALUES
+(1, 'Agencia de enfermeras', 'Juan Sanchez Godoy', '7772319257', '17250902@uagro.mx', 'aguilas 18 manzana 1 Cond tarianes', 'PENDIENTE');
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `auditoriaproducto`
+-- Estructura de tabla para la tabla `carousel_testimonios`
 --
 
-CREATE TABLE `auditoriaproducto` (
-  `idAudit` int(11) NOT NULL,
-  `idProducto` int(11) DEFAULT NULL,
-  `Cambio` int(11) DEFAULT NULL,
-  `FechaCambio` datetime DEFAULT current_timestamp(),
-  `Usuario` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `carousel_testimonios` (
+  `id` int(11) NOT NULL,
+  `multimedia_id` int(11) NOT NULL,
+  `orden` int(11) DEFAULT 0,
+  `activo` tinyint(1) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `carousel_testimonios`
+--
+
+INSERT INTO `carousel_testimonios` (`id`, `multimedia_id`, `orden`, `activo`) VALUES
+(1, 1, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -147,8 +132,8 @@ CREATE TABLE `cita` (
   `Usuario_idUsuario` int(11) NOT NULL,
   `Servicio_idServicio` int(11) NOT NULL,
   `FechaHora` datetime NOT NULL,
-  `Estado` enum('AGENDADA','CONFIRMADA','CANCELADA','REALIZADA') DEFAULT 'AGENDADA',
-  `Notas` text DEFAULT NULL,
+  `Estado` enum('PENDIENTE','AGENDADA','CONFIRMADA','CANCELADA','REALIZADA') DEFAULT 'PENDIENTE',
+  `Notas` text NOT NULL,
   `FechaRegistro` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -162,25 +147,18 @@ CREATE TABLE `contenido` (
   `idContenido` int(11) NOT NULL,
   `Tipo` enum('NOTICIA','ARTICULO','BLOG','SITIO_INTERES') NOT NULL,
   `Titulo` varchar(200) NOT NULL,
-  `Cuerpo` text DEFAULT NULL,
+  `Cuerpo` text NOT NULL,
   `AutorUsuario_id` int(11) DEFAULT NULL,
-  `FechaPublicacion` datetime DEFAULT current_timestamp(),
+  `FechaPublicacion` datetime NOT NULL DEFAULT current_timestamp(),
   `Activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
 --
--- Estructura de tabla para la tabla `detallepedido`
+-- Volcado de datos para la tabla `contenido`
 --
 
-CREATE TABLE `detallepedido` (
-  `idDetalle` int(11) NOT NULL,
-  `Pedido_idPedido` int(11) NOT NULL,
-  `Producto_idProducto` int(11) NOT NULL,
-  `Cantidad` int(11) NOT NULL DEFAULT 1,
-  `PrecioUnitario` decimal(10,2) NOT NULL DEFAULT 0.00
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+INSERT INTO `contenido` (`idContenido`, `Tipo`, `Titulo`, `Cuerpo`, `AutorUsuario_id`, `FechaPublicacion`, `Activo`) VALUES
+(1, 'ARTICULO', 'Información que cura', 'Este es un mensaje de prueba para que podamos observar la insuficiencia de este sistema', NULL, '2025-11-24 17:46:10', 1);
 
 -- --------------------------------------------------------
 
@@ -191,8 +169,8 @@ CREATE TABLE `detallepedido` (
 CREATE TABLE `incidencia` (
   `idIncidencia` int(11) NOT NULL,
   `Usuario_idUsuario` int(11) DEFAULT NULL,
-  `Titulo` varchar(150) DEFAULT NULL,
-  `Descripcion` text DEFAULT NULL,
+  `Titulo` varchar(150) NOT NULL,
+  `Descripcion` text NOT NULL,
   `Estado` enum('ABIERTA','EN_PROGRESO','RESUELTA','CERRADA') DEFAULT 'ABIERTA',
   `FechaRegistro` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -208,8 +186,15 @@ CREATE TABLE `multimedia` (
   `Contenido_idContenido` int(11) DEFAULT NULL,
   `Tipo` enum('IMAGEN','VIDEO','DOCUMENTO') DEFAULT 'IMAGEN',
   `Ruta` varchar(255) NOT NULL,
-  `Descripcion` varchar(255) DEFAULT NULL
+  `Descripcion` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `multimedia`
+--
+
+INSERT INTO `multimedia` (`idMedia`, `Contenido_idContenido`, `Tipo`, `Ruta`, `Descripcion`) VALUES
+(1, NULL, 'IMAGEN', 'assets/media/media_1763523364_9433.jpeg', 'ejemplo clave');
 
 -- --------------------------------------------------------
 
@@ -220,36 +205,11 @@ CREATE TABLE `multimedia` (
 CREATE TABLE `notificacion` (
   `idNotificacion` int(11) NOT NULL,
   `Usuario_idUsuario` int(11) NOT NULL,
-  `Titulo` varchar(150) DEFAULT NULL,
-  `Mensaje` text DEFAULT NULL,
+  `Titulo` varchar(150) NOT NULL,
+  `Mensaje` text NOT NULL,
   `Leida` tinyint(1) DEFAULT 0,
   `FechaEnvio` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `pedido`
---
-
-CREATE TABLE `pedido` (
-  `idPedido` int(11) NOT NULL,
-  `Usuario_idUsuario` int(11) NOT NULL,
-  `FechaPedido` datetime NOT NULL DEFAULT current_timestamp(),
-  `Total` decimal(12,2) NOT NULL DEFAULT 0.00,
-  `Estado` enum('PENDIENTE','PAGADO','ENVIADO','CANCELADO','ENTREGADO') DEFAULT 'PENDIENTE'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Disparadores `pedido`
---
-DELIMITER $$
-CREATE TRIGGER `trg_pedido_insert` AFTER INSERT ON `pedido` FOR EACH ROW BEGIN
-    INSERT INTO AuditoriaPedido(idPedido, Usuario_id, Accion)
-    VALUES(NEW.idPedido, NEW.Usuario_idUsuario, 'CREACION');
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -270,13 +230,13 @@ CREATE TABLE `producto` (
 -- Disparadores `producto`
 --
 DELIMITER $$
-CREATE TRIGGER `trg_producto_update` AFTER UPDATE ON `producto` FOR EACH ROW BEGIN
-    DECLARE vUsuario VARCHAR(100);
-    SELECT USER() INTO vUsuario;
-    IF (NEW.Existencia <> OLD.Existencia) THEN
-        INSERT INTO AuditoriaProducto(idProducto, Cambio, Usuario)
-        VALUES(NEW.idProducto, NEW.Existencia - OLD.Existencia, vUsuario);
-    END IF;
+CREATE TRIGGER `trg_producto_update` AFTER UPDATE ON `producto` FOR EACH ROW BEGIN
+    DECLARE vUsuario VARCHAR(100);
+    SELECT USER() INTO vUsuario;
+    IF (NEW.Existencia <> OLD.Existencia) THEN
+        INSERT INTO AuditoriaProducto(idProducto, Cambio, Usuario)
+        VALUES(NEW.idProducto, NEW.Existencia - OLD.Existencia, vUsuario);
+    END IF;
 END
 $$
 DELIMITER ;
@@ -290,7 +250,7 @@ DELIMITER ;
 CREATE TABLE `rol` (
   `idRol` int(11) NOT NULL,
   `Nombre` varchar(45) NOT NULL,
-  `Descripcion` varchar(255) DEFAULT NULL
+  `Descripcion` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -298,7 +258,8 @@ CREATE TABLE `rol` (
 --
 
 INSERT INTO `rol` (`idRol`, `Nombre`, `Descripcion`) VALUES
-(1, 'administrador', 'Administrador del sistema');
+(1, 'administrador', 'Administrador del sistema'),
+(2, 'Usuario', 'Ciudadano / Familiar / Adulto mayor');
 
 -- --------------------------------------------------------
 
@@ -309,7 +270,7 @@ INSERT INTO `rol` (`idRol`, `Nombre`, `Descripcion`) VALUES
 CREATE TABLE `servicio` (
   `idServicio` int(11) NOT NULL,
   `Nombre` varchar(120) NOT NULL,
-  `Descripcion` text DEFAULT NULL,
+  `Descripcion` text NOT NULL,
   `Costo` decimal(10,2) DEFAULT 0.00,
   `Agencia_idAgencia` int(11) DEFAULT NULL,
   `Activo` tinyint(1) DEFAULT 1
@@ -333,38 +294,68 @@ CREATE TABLE `sugerencia` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `testimonio`
+--
+
+CREATE TABLE `testimonio` (
+  `idTestimonio` int(11) NOT NULL,
+  `Nombre` varchar(150) NOT NULL,
+  `Email` varchar(150) DEFAULT NULL,
+  `Calificacion` tinyint(4) NOT NULL DEFAULT 5,
+  `Testimonio` text NOT NULL,
+  `Aprobado` tinyint(1) DEFAULT 0,
+  `FechaCreacion` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `testimonio`
+--
+
+INSERT INTO `testimonio` (`idTestimonio`, `Nombre`, `Email`, `Calificacion`, `Testimonio`, `Aprobado`, `FechaCreacion`) VALUES
+(1, 'Alexis Reyes Ocampo', '', 1, 'Este es un ejemplo de cómo se vería el sitio de \"Testimonios\"', 1, '2025-11-13 23:13:20'),
+(2, 'Juanito Perez Corral.es', '', 1, 'No venden pizza, pésimo servicio.', 1, '2025-11-18 21:37:19');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `usuario`
 --
 
 CREATE TABLE `usuario` (
   `idUsuario` int(11) NOT NULL,
   `Nombre` varchar(60) NOT NULL,
-  `ApellidoP` varchar(60) DEFAULT NULL,
-  `ApellidoM` varchar(60) DEFAULT NULL,
+  `ApellidoP` varchar(60) NOT NULL,
+  `ApellidoM` varchar(60) NOT NULL,
   `Email` varchar(100) NOT NULL,
   `PasswordHash` varchar(255) NOT NULL,
-  `Telefono` varchar(25) DEFAULT NULL,
+  `Telefono` varchar(25) NOT NULL,
   `FechaRegistro` datetime NOT NULL DEFAULT current_timestamp(),
   `Activo` tinyint(1) NOT NULL DEFAULT 1,
-  `Tipo` varchar(45) DEFAULT NULL,
+  `Tipo` varchar(45) NOT NULL,
   `FechaActualizacion` datetime DEFAULT NULL,
   `IntentosFallidos` int(11) NOT NULL DEFAULT 0,
-  `BloqueadoHasta` datetime DEFAULT NULL
+  `BloqueadoHasta` datetime DEFAULT NULL,
+  `PasswordResetToken` varchar(64) DEFAULT NULL,
+  `PasswordResetExpires` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`idUsuario`, `Nombre`, `ApellidoP`, `ApellidoM`, `Email`, `PasswordHash`, `Telefono`, `FechaRegistro`, `Activo`, `Tipo`, `FechaActualizacion`, `IntentosFallidos`, `BloqueadoHasta`) VALUES
-(1, 'Admin', 'Meta', 'Hogar', 'admin@example.com', '$2y$10$LhX65waxtcCTcX8/itF51Orv97X4bSvfukhHok4LH64LS4wnDiP6.', '', '2025-11-03 17:37:57', 1, 'interno', '2025-11-03 21:47:12', 0, NULL);
+INSERT INTO `usuario` (`idUsuario`, `Nombre`, `ApellidoP`, `ApellidoM`, `Email`, `PasswordHash`, `Telefono`, `FechaRegistro`, `Activo`, `Tipo`, `FechaActualizacion`, `IntentosFallidos`, `BloqueadoHasta`, `PasswordResetToken`, `PasswordResetExpires`) VALUES
+(1, 'Admin', 'Meta', 'Hogar', 'admin@example.com', '$2y$10$LhX65waxtcCTcX8/itF51Orv97X4bSvfukhHok4LH64LS4wnDiP6.', '', '2025-11-03 17:37:57', 1, 'interno', '2025-11-21 11:41:37', 0, NULL, NULL, NULL),
+(2, 'Alexis', 'Reyes', 'Ocampo', 'alexis.re.ye.es.14@gmail.com', '$2y$10$MTOSETstvfCcfTTWWXGhFefApmPHw7pz2O4aVh7sEk/x2zcFAxlFy', '7772319257', '2025-11-06 23:00:28', 1, 'externo', '2025-11-14 20:08:57', 0, NULL, '587f5d201bf227c1aec0164e8f71db9a785cb102bce4a196b5930862c7ae05b5', '2025-11-15 04:08:57'),
+(3, 'Alexis', 'Reyes', 'Ocampo', 'reysalexis3@gmail.com', '$2y$10$qK0jg0SCiKc0UohBcMaOU.aKKzNdTAfqXICjiZQ5TqUec5cbAZCsy', '7772319257', '2025-11-08 02:25:40', 1, 'externo', NULL, 0, NULL, NULL, NULL),
+(4, 'Juan 55', 'Reyes', 'Ocampo5', 'alex_iss11@outlook.com', '$2y$10$85UFFJgN6xMb68mklCmS4O9u6D.71.jt5yWnM1McPfh7uLQ7rq2rC', '7772319257', '2025-11-13 23:28:07', 1, 'externo', NULL, 0, NULL, NULL, NULL),
+(5, 'Alexis', 'Reyes', 'Ocampo', 'rklcolek@outlook.com', '$2y$10$ge.eLz.Eo9XwejFwp65aHeDLoCXPY6hc4AE/f.7pECHrcQAgTuroO', '7772319257', '2025-11-13 23:37:42', 0, 'interno', '2025-11-13 23:43:09', 1, NULL, NULL, NULL);
 
 --
 -- Disparadores `usuario`
 --
 DELIMITER $$
-CREATE TRIGGER `trg_usuario_update` BEFORE UPDATE ON `usuario` FOR EACH ROW BEGIN
-    SET NEW.FechaActualizacion = NOW();
+CREATE TRIGGER `trg_usuario_update` BEFORE UPDATE ON `usuario` FOR EACH ROW BEGIN
+    SET NEW.FechaActualizacion = NOW();
 END
 $$
 DELIMITER ;
@@ -386,18 +377,15 @@ CREATE TABLE `usuariorol` (
 --
 
 INSERT INTO `usuariorol` (`idUsuarioRol`, `Usuario_idUsuario`, `Rol_idRol`) VALUES
-(1, 1, 1);
+(1, 1, 1),
+(2, 2, 1),
+(3, 3, 1),
+(4, 4, 1),
+(5, 5, 2);
 
 --
 -- Índices para tablas volcadas
 --
-
---
--- Indices de la tabla `accesibilidad`
---
-ALTER TABLE `accesibilidad`
-  ADD PRIMARY KEY (`idAccesibilidad`),
-  ADD KEY `fk_Accesibilidad_Usuario` (`Usuario_idUsuario`);
 
 --
 -- Indices de la tabla `agencia`
@@ -406,16 +394,11 @@ ALTER TABLE `agencia`
   ADD PRIMARY KEY (`idAgencia`);
 
 --
--- Indices de la tabla `auditoriapedido`
+-- Indices de la tabla `carousel_testimonios`
 --
-ALTER TABLE `auditoriapedido`
-  ADD PRIMARY KEY (`idAudit`);
-
---
--- Indices de la tabla `auditoriaproducto`
---
-ALTER TABLE `auditoriaproducto`
-  ADD PRIMARY KEY (`idAudit`);
+ALTER TABLE `carousel_testimonios`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_multimedia` (`multimedia_id`);
 
 --
 -- Indices de la tabla `cita`
@@ -433,14 +416,6 @@ ALTER TABLE `contenido`
   ADD PRIMARY KEY (`idContenido`),
   ADD KEY `fk_Contenido_Autor` (`AutorUsuario_id`),
   ADD KEY `idx_contenido_tipo_fecha` (`Tipo`,`FechaPublicacion`);
-
---
--- Indices de la tabla `detallepedido`
---
-ALTER TABLE `detallepedido`
-  ADD PRIMARY KEY (`idDetalle`),
-  ADD KEY `fk_Detalle_Pedido` (`Pedido_idPedido`),
-  ADD KEY `fk_Detalle_Producto` (`Producto_idProducto`);
 
 --
 -- Indices de la tabla `incidencia`
@@ -462,13 +437,6 @@ ALTER TABLE `multimedia`
 ALTER TABLE `notificacion`
   ADD PRIMARY KEY (`idNotificacion`),
   ADD KEY `fk_Notificacion_Usuario` (`Usuario_idUsuario`);
-
---
--- Indices de la tabla `pedido`
---
-ALTER TABLE `pedido`
-  ADD PRIMARY KEY (`idPedido`),
-  ADD KEY `idx_pedido_usuario_fecha` (`Usuario_idUsuario`,`FechaPedido`);
 
 --
 -- Indices de la tabla `producto`
@@ -497,11 +465,18 @@ ALTER TABLE `sugerencia`
   ADD KEY `fk_Sugerencia_Usuario` (`Usuario_idUsuario`);
 
 --
+-- Indices de la tabla `testimonio`
+--
+ALTER TABLE `testimonio`
+  ADD PRIMARY KEY (`idTestimonio`);
+
+--
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`idUsuario`),
   ADD UNIQUE KEY `Email` (`Email`),
+  ADD UNIQUE KEY `PasswordResetToken` (`PasswordResetToken`),
   ADD KEY `idx_usuario_email` (`Email`);
 
 --
@@ -517,28 +492,16 @@ ALTER TABLE `usuariorol`
 --
 
 --
--- AUTO_INCREMENT de la tabla `accesibilidad`
---
-ALTER TABLE `accesibilidad`
-  MODIFY `idAccesibilidad` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `agencia`
 --
 ALTER TABLE `agencia`
-  MODIFY `idAgencia` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idAgencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de la tabla `auditoriapedido`
+-- AUTO_INCREMENT de la tabla `carousel_testimonios`
 --
-ALTER TABLE `auditoriapedido`
-  MODIFY `idAudit` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `auditoriaproducto`
---
-ALTER TABLE `auditoriaproducto`
-  MODIFY `idAudit` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `carousel_testimonios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `cita`
@@ -550,13 +513,7 @@ ALTER TABLE `cita`
 -- AUTO_INCREMENT de la tabla `contenido`
 --
 ALTER TABLE `contenido`
-  MODIFY `idContenido` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `detallepedido`
---
-ALTER TABLE `detallepedido`
-  MODIFY `idDetalle` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idContenido` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `incidencia`
@@ -568,19 +525,13 @@ ALTER TABLE `incidencia`
 -- AUTO_INCREMENT de la tabla `multimedia`
 --
 ALTER TABLE `multimedia`
-  MODIFY `idMedia` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idMedia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `notificacion`
 --
 ALTER TABLE `notificacion`
   MODIFY `idNotificacion` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `pedido`
---
-ALTER TABLE `pedido`
-  MODIFY `idPedido` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
@@ -592,7 +543,7 @@ ALTER TABLE `producto`
 -- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `servicio`
@@ -607,26 +558,26 @@ ALTER TABLE `sugerencia`
   MODIFY `idSugerencia` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `testimonio`
+--
+ALTER TABLE `testimonio`
+  MODIFY `idTestimonio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `usuariorol`
 --
 ALTER TABLE `usuariorol`
-  MODIFY `idUsuarioRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idUsuarioRol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas
 --
-
---
--- Filtros para la tabla `accesibilidad`
---
-ALTER TABLE `accesibilidad`
-  ADD CONSTRAINT `fk_Accesibilidad_Usuario` FOREIGN KEY (`Usuario_idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `cita`
@@ -640,13 +591,6 @@ ALTER TABLE `cita`
 --
 ALTER TABLE `contenido`
   ADD CONSTRAINT `fk_Contenido_Autor` FOREIGN KEY (`AutorUsuario_id`) REFERENCES `usuario` (`idUsuario`) ON DELETE SET NULL ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `detallepedido`
---
-ALTER TABLE `detallepedido`
-  ADD CONSTRAINT `fk_Detalle_Pedido` FOREIGN KEY (`Pedido_idPedido`) REFERENCES `pedido` (`idPedido`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_Detalle_Producto` FOREIGN KEY (`Producto_idProducto`) REFERENCES `producto` (`idProducto`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `incidencia`
@@ -667,12 +611,6 @@ ALTER TABLE `notificacion`
   ADD CONSTRAINT `fk_Notificacion_Usuario` FOREIGN KEY (`Usuario_idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `pedido`
---
-ALTER TABLE `pedido`
-  ADD CONSTRAINT `fk_Pedido_Usuario` FOREIGN KEY (`Usuario_idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Filtros para la tabla `servicio`
 --
 ALTER TABLE `servicio`
@@ -690,84 +628,6 @@ ALTER TABLE `sugerencia`
 ALTER TABLE `usuariorol`
   ADD CONSTRAINT `fk_UsuarioRol_Rol` FOREIGN KEY (`Rol_idRol`) REFERENCES `rol` (`idRol`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_UsuarioRol_Usuario` FOREIGN KEY (`Usuario_idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-
---
--- Metadatos
---
-USE `phpmyadmin`;
-
---
--- Metadatos para la tabla accesibilidad
---
-
---
--- Metadatos para la tabla agencia
---
-
---
--- Metadatos para la tabla auditoriapedido
---
-
---
--- Metadatos para la tabla auditoriaproducto
---
-
---
--- Metadatos para la tabla cita
---
-
---
--- Metadatos para la tabla contenido
---
-
---
--- Metadatos para la tabla detallepedido
---
-
---
--- Metadatos para la tabla incidencia
---
-
---
--- Metadatos para la tabla multimedia
---
-
---
--- Metadatos para la tabla notificacion
---
-
---
--- Metadatos para la tabla pedido
---
-
---
--- Metadatos para la tabla producto
---
-
---
--- Metadatos para la tabla rol
---
-
---
--- Metadatos para la tabla servicio
---
-
---
--- Metadatos para la tabla sugerencia
---
-
---
--- Metadatos para la tabla usuario
---
-
---
--- Metadatos para la tabla usuariorol
---
-
---
--- Metadatos para la base de datos metahogar
---
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

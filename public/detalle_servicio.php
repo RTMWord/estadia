@@ -15,6 +15,17 @@ if (!$servicio) {
     echo "<h1>Servicio no encontrado</h1>";
     exit;
 }
+
+// Prepare safe view values (some columns may be absent in the model result)
+$view = [];
+$view['id'] = $servicio['id'] ?? $servicio['idServicio'] ?? 0;
+$view['titulo'] = $servicio['titulo'] ?? $servicio['Nombre'] ?? '';
+$view['descripcion'] = $servicio['descripcion'] ?? $servicio['Descripcion'] ?? '';
+$view['categoria'] = $servicio['categoria'] ?? $servicio['Categoria'] ?? '';
+$view['ubicacion'] = $servicio['ubicacion'] ?? $servicio['Ubicacion'] ?? '';
+$view['precio'] = $servicio['precio'] ?? $servicio['Costo'] ?? '';
+$view['contacto'] = $servicio['contacto'] ?? $servicio['Contacto'] ?? '';
+$view['imagen'] = $servicio['imagen'] ?? '';
 ?>
 <!doctype html>
 <html lang="es">
@@ -31,18 +42,18 @@ if (!$servicio) {
 
     <div class="row g-4">
         <div class="col-md-5">
-            <?php if (!empty($servicio['imagen'])): ?>
-                <img src="<?php echo htmlspecialchars($servicio['imagen']); ?>" class="img-fluid rounded servicio-imagen" alt="<?php echo htmlspecialchars($servicio['titulo']); ?>">
-            <?php endif; ?>
-        </div>
-        <div class="col-md-7">
-            <h1><?php echo htmlspecialchars($servicio['titulo']); ?></h1>
-            <p class="text-muted small"><?php echo htmlspecialchars($servicio['categoria']); ?> — <?php echo htmlspecialchars($servicio['ubicacion']); ?></p>
-            <h4 class="text-primary"><?php echo (!empty($servicio['precio']) ? 'Precio: $' . number_format((float)$servicio['precio'], 2) : 'Precio: A convenir'); ?></h4>
-            <hr>
-            <div><?php echo nl2br(htmlspecialchars($servicio['descripcion'])); ?></div>
-            <hr>
-            <p><strong>Contacto:</strong> <?php echo htmlspecialchars($servicio['contacto']); ?></p>
+                <?php if (!empty($view['imagen'])): ?>
+                    <img src="<?php echo htmlspecialchars($view['imagen']); ?>" class="img-fluid rounded servicio-imagen" alt="<?php echo htmlspecialchars($view['titulo']); ?>">
+                <?php endif; ?>
+            </div>
+            <div class="col-md-7">
+                <h1><?php echo htmlspecialchars($view['titulo']); ?></h1>
+                <p class="text-muted small"><?php echo htmlspecialchars($view['categoria']); ?> — <?php echo htmlspecialchars($view['ubicacion']); ?></p>
+                <h4 class="text-primary"><?php echo (!empty($view['precio']) ? 'Precio: $' . number_format((float)$view['precio'], 2) : 'Precio: A convenir'); ?></h4>
+                <hr>
+                <div><?php echo nl2br(htmlspecialchars($view['descripcion'])); ?></div>
+                <hr>
+                <p><strong>Contacto:</strong> <?php echo htmlspecialchars($view['contacto']); ?></p>
 
             <?php if (!empty($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                 <a href="admin/servicio_editar.php?id=<?php echo (int)$servicio['id']; ?>" class="btn btn-secondary">Editar</a>

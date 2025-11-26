@@ -49,6 +49,7 @@ foreach ($selStmt->fetchAll() as $r) $selectedMap[$r['multimedia_id']] = $r['ord
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="p-4">
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
 <div class="container">
     <div class="d-flex justify-content-between mb-3">
         <h1>Imágenes del Carrusel (Testimonios)</h1>

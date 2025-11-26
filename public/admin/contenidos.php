@@ -14,9 +14,11 @@ $items = Contenido::getAll($pdo);
 ?>
 <!doctype html>
 <html lang="es">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
+    <div class="container py-5">
+    <div class="container py-5">
     <title>Contenidos - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>

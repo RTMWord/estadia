@@ -32,6 +32,7 @@ requireRole($pdo, 'administrador');
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Panel de Administración</h1>

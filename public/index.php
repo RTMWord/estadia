@@ -243,6 +243,51 @@ $visits = increment_and_get_visits();
                 </div>
             </form>
         </section>
+
+        <?php if (isLogged()):
+            // cargar servicios activos para el select
+            $stm = $pdo->prepare('SELECT idServicio, Nombre FROM servicio WHERE Activo = 1 ORDER BY Nombre ASC');
+            $stm->execute();
+            $servicios = $stm->fetchAll(PDO::FETCH_ASSOC);
+        ?>
+        <section id="pedir-cita" class="mb-5">
+            <h2 class="text-primary">Pedir una cita</h2>
+            <p>Como usuario registrado puedes solicitar una cita con nuestros servicios. Te contactaremos para confirmar.</p>
+
+            <div id="cita-alert"></div>
+
+            <form id="citaForm" class="row g-3">
+                <div class="col-md-6">
+                    <label for="servicio" class="form-label">Servicio</label>
+                    <select id="servicio" name="servicio" class="form-select" required>
+                        <option value="">-- Selecciona un servicio --</option>
+                        <?php foreach ($servicios as $s): ?>
+                            <option value="<?= htmlspecialchars($s['idServicio']) ?>"><?= htmlspecialchars($s['Nombre']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="fecha_hora" class="form-label">Fecha y hora</label>
+                    <input id="fecha_hora" name="fecha_hora" type="datetime-local" class="form-control" required>
+                </div>
+
+                <div class="col-12">
+                    <label for="notas" class="form-label">Notas / Dirección / Preferencias</label>
+                    <textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Opcional: indica dirección, notas o preferencia" ></textarea>
+                </div>
+
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-success">Solicitar cita</button>
+                </div>
+            </form>
+        </section>
+        <?php else: ?>
+            <section class="mb-5">
+                <h2 class="text-primary">Pedir una cita</h2>
+                <p>Para solicitar una cita debes <a href="login.php">iniciar sesión</a> o crear una cuenta.</p>
+            </section>
+        <?php endif; ?>
     </main>
     <footer class="footer-gradient-blue">
         <div class="container footer-inner">
@@ -306,6 +351,45 @@ $visits = increment_and_get_visits();
         }).catch(()=>{});
       }, 30000);
     })();
+    </script>
+
+    <script>
+    // Handle cita form submission via fetch
+    document.addEventListener('DOMContentLoaded', function(){
+        const citaForm = document.getElementById('citaForm');
+        if (!citaForm) return;
+
+        citaForm.addEventListener('submit', async function(e){
+            e.preventDefault();
+            const formData = new FormData(citaForm);
+            const submit = citaForm.querySelector('button[type="submit"]');
+            submit.disabled = true;
+            submit.innerHTML = 'Enviando...';
+
+            try {
+                const resp = await fetch('php/citas/add.php', { method: 'POST', body: formData });
+                const data = await resp.json();
+                const alertBox = document.getElementById('cita-alert');
+                alertBox.innerHTML = '';
+                const div = document.createElement('div');
+                if (data.success) {
+                    div.className = 'alert alert-success';
+                    div.textContent = data.message || 'Cita solicitada.';
+                    citaForm.reset();
+                } else {
+                    div.className = 'alert alert-danger';
+                    div.textContent = data.message || 'Error al solicitar.';
+                }
+                alertBox.appendChild(div);
+            } catch (err) {
+                const alertBox = document.getElementById('cita-alert');
+                alertBox.innerHTML = '<div class="alert alert-danger">Error enviando la solicitud.</div>';
+            } finally {
+                submit.disabled = false;
+                submit.innerHTML = 'Solicitar cita';
+            }
+        });
+    });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

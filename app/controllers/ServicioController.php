@@ -86,6 +86,7 @@ class ServicioController {
         $categoria = trim($post['categoria'] ?? '');
         $ubicacion = trim($post['ubicacion'] ?? '');
         $contacto = trim($post['contacto'] ?? '');
+        $agencia = isset($post['agencia']) ? (int)$post['agencia'] : null;
         $precio = isset($post['precio']) ? floatval($post['precio']) : 0;
         $status = isset($post['status']) ? 1 : 0;
 
@@ -108,6 +109,7 @@ class ServicioController {
             'categoria' => $categoria,
             'ubicacion' => $ubicacion,
             'contacto' => $contacto,
+            'agencia' => $agencia,
             'imagen' => $imagen_ruta,
             'precio' => $precio,
             'status' => $status
@@ -134,6 +136,7 @@ class ServicioController {
             'ubicacion' => trim($post['ubicacion'] ?? ''),
             'contacto' => trim($post['contacto'] ?? ''),
             'precio' => isset($post['precio']) ? floatval($post['precio']) : 0,
+            'agencia' => isset($post['agencia']) ? (int)$post['agencia'] : null,
             'status' => isset($post['status']) ? 1 : 0
         ];
 
@@ -169,17 +172,35 @@ class ServicioController {
 
     // Verifica admin según sesión. Ajusta según tu sistema (AuthController).
     protected function esAdmin($session) {
-        if (empty($session)) return false;
-        if (!empty($session['role']) && $session['role'] === 'admin') return true;
-        if (!empty($session['user_role']) && $session['user_role'] === 'admin') return true;
-        if (!empty($session['is_admin']) && $session['is_admin'] == true) return true;
+        // Prefer explicit session flags if present
+        if (!empty($session)) {
+            if (!empty($session['role']) && ($session['role'] === 'admin' || $session['role'] === 'administrador')) return true;
+            if (!empty($session['user_role']) && ($session['user_role'] === 'admin' || $session['user_role'] === 'administrador')) return true;
+            if (!empty($session['is_admin']) && $session['is_admin'] == true) return true;
+        }
+
+        // Fallback: check DB mapping Usuario -> UsuarioRol -> Rol
+        $userId = $session['user_id'] ?? $_SESSION['user_id'] ?? null;
+        if ($userId) {
+            try {
+                global $pdo;
+                if (!empty($pdo)) {
+                    $stm = $pdo->prepare('SELECT r.Nombre FROM UsuarioRol ur JOIN Rol r ON ur.Rol_idRol = r.idRol WHERE ur.Usuario_idUsuario = ? LIMIT 1');
+                    $stm->execute([$userId]);
+                    $rol = $stm->fetchColumn();
+                    if ($rol === 'administrador' || $rol === 'admin') return true;
+                }
+            } catch (Throwable $e) {
+                error_log('ServicioController::esAdmin DB check failed: ' . $e->getMessage());
+            }
+        }
+
         return false;
     }
 }
 
 // Procedural handler (integra el fragmento original).
 // Este bloque permite que envíos desde formularios sigan redirigiendo igual que antes.
-session_start();
 $controller = new ServicioController();
 
 // Crear

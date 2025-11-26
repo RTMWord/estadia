@@ -99,6 +99,7 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
     </style>
 </head>
 <body>
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
     <div class="container py-5">
         <h2 class="text-primary mb-4">Generador de Reportes Dinámicos</h2>
         
