@@ -39,7 +39,7 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
                     <a class="nav-link" href="blog.html">Blog</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="buzon.html">Buzón</a>
+                    <a class="nav-link" href="testimonios.php">Buzón</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="contacto.html">Contacto</a>

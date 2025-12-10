@@ -1,0 +1,79 @@
+/* Footer specific styles moved out of PHP file */
+.footer-gradient-blue {
+    background: linear-gradient(180deg, #1f5f86 0%, #2b87aa 100%);
+    color: #fff;
+    padding-top: 48px;
+    padding-bottom: 24px;
+}
+
+.footer-inner {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.footer-brand {
+    flex: 1.2 1 320px;
+}
+
+.footer-logo {
+    max-width: 220px;
+    height: auto;
+    display: block;
+}
+
+.footer-desc {
+    margin-top: 12px;
+    max-width: 360px;
+    color: rgba(255,255,255,0.95);
+}
+
+.social-row {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+}
+
+.social-link i {
+    color: rgba(255,255,255,0.95);
+    font-size: 18px;
+}
+
+.footer-col {
+    flex: 1 1 220px;
+}
+
+.footer-col h5 {
+    color: #fff;
+    margin-bottom: 14px;
+}
+
+.footer-contact {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: rgba(255,255,255,0.95);
+}
+
+.footer-contact li { margin-top: 8px; }
+.footer-contact li i { margin-right: 8px; }
+
+.footer-newsletter { margin-top: 10px; max-width: 420px; }
+.newsletter-pill { display:flex; align-items:center; background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:40px; }
+.newsletter-pill input { flex:1; border:0; background:transparent; color:#fff; outline:none; padding:6px 10px; }
+.newsletter-pill .send-btn { border-radius:28px; margin-left:8px; }
+
+.footer-hero-icon img, .footer-hero-icon { max-height:160px; opacity:0.95; }
+
+.footer-bottom { border-top:1px solid rgba(255,255,255,0.12); margin-top:32px; }
+.footer-bottom .container { padding-top:12px; padding-bottom:12px; }
+.footer-bottom a { color: rgba(255,255,255,0.85); margin-right:14px; text-decoration:none; }
+
+@media (max-width: 768px) {
+    .footer-inner { flex-direction: column; gap: 18px; }
+    .footer-brand { text-align: center; }
+    .footer-contact { text-align: left; }
+    .footer-bottom { text-align: center; }
+}

@@ -12,7 +12,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- Shared auth styles (login/signup) -->
+    <link rel="stylesheet" href="assets/css/auth.css">
     
     <!-- Widget de Accesibilidad -->
     <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>

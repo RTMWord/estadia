@@ -54,3 +54,4 @@ $items = Producto::getAll($pdo);
 </div>
 </body>
 </html>
+<?php require_once '../includes/footer.php'; ?>
