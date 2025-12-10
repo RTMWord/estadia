@@ -1,4 +1,5 @@
 <?php
+
 require_once '../../app/config/db.php';
 require_once '../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
@@ -152,3 +153,4 @@ requireRole($pdo, 'administrador');
 </div>
 </body>
 </html>
+<?php require_once '../includes/footer.php'; ?>

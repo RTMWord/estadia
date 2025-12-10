@@ -250,127 +250,180 @@ body { margin: 0; font-family: var(--font-sans); background: #fff; }
 }
 
 /***************************/
-/* Nuevos estilos para el Hero Section */
+/* ESTILOS CLAVE PARA SECCIÓN HERO CON FONDO DIVIDIDO AZUL/BLANCO */
 
+/* 1. El contenedor principal de la sección */
+.hero-section {
+    padding-top: 5rem; 
+    padding-bottom: 5rem;
+    position: relative;
+    /* Usamos un min-height para que se vea el fondo azul */
+    min-height: 550px; 
+    display: flex;
+    align-items: center; 
+}
+
+/* 2. Contenedor que aplica el fondo dividido (div.container) */
+.hero-split-bg {
+    position: relative;
+    /* IMPORTANTE: asegura que el contenido interno se estire */
+    height: 100%; 
+    width: 100%; 
+}
+
+/* 3. PSEUDO-ELEMENTO que crea el fondo azul que se extiende por toda la izquierda */
+.hero-split-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    /* Empieza el fondo AZUL fuera de la pantalla (a la izquierda) */
+    left: -100vw; 
+    /* Esta anchura es CRUCIAL: cubre la izquierda de la pantalla + el 70% del contenedor actual */
+    width: calc(100vw + 70%); 
+    height: 100%;
+    background-color: #007bff; 
+    z-index: -1; /* Va detrás del contenido */
+}
+
+/* 4. Asegura que la columna de imagen tenga un fondo blanco y maneje el desborde */
+.hero-image-col {
+    background-color: #ffffff; 
+    overflow: hidden; 
+    /* El z-index es crucial si la imagen queda oculta por algo */
+    z-index: 10;
+}
+
+/* 5. Estilos para texto en la sección azul */
+.hero-text-area {
+    /* IMPORTANTE: Asegura que la columna de texto se vea sobre el fondo azul */
+    position: relative;
+    z-index: 20;
+}
+.hero-text-area .hero-title, 
+.hero-text-area .lead, 
+.hero-text-area a {
+    color: white !important; /* Fuerza el color blanco del texto */
+}
+
+/* Estilos de las formas de Blob y la imagen */
 .hero-image-container {
     position: relative;
     height: 100%;
-    z-index: 10; /* Asegura que la imagen y sus formas estén encima del fondo principal */
+    z-index: 10; 
 }
 
-/* Contenedor para posicionar las formas */
 .hero-image-wrapper {
     position: relative;
     width: 100%;
-    height: 400px; /* Define una altura fija para contener las formas */
+    min-height: 400px; 
 }
 
-/* La Forma de Blob Blanca/Crema */
 .blob-shape-light {
     position: absolute;
     width: 350px;
     height: 300px;
-    background-color: #eaf3f5; /* Color crema/azul muy claro */
-    /* Usamos clip-path para la forma curva (simulación) o un blob real */
+    background-color: #eaf3f5; 
     clip-path: polygon(0 0, 100% 0, 100% 65%, 75% 100%, 25% 90%, 0 50%);
-    border-radius: 60% 40% 50% 50% / 60% 40% 40% 60%; /* Forma curva suave */
+    border-radius: 60% 40% 50% 50% / 60% 40% 40% 60%; 
     top: 0;
     right: 0;
     transform: rotate(-10deg);
-    z-index: -1; /* Detrás de la imagen */
+    z-index: -1; 
 }
 
-/* La Forma de Blob Oscura/Azul Claro */
 .blob-shape-dark {
     position: absolute;
     width: 250px;
     height: 200px;
-    background-color: #5bb3d6; /* Azul claro del diseño */
+    background-color: #5bb3d6; 
     clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
     border-radius: 50% 50% 40% 60% / 50% 40% 60% 50%;
-    bottom: -50px; /* Posicionamiento debajo */
+    bottom: -50px; 
     left: 20px;
     transform: rotate(15deg);
-    z-index: -1; /* Detrás de la imagen */
+    z-index: -1; 
 }
 
-/* La Brocha Azul Oscuro */
 .blob-brush {
     position: absolute;
     width: 280px;
     height: 80px;
-    background-color: #276e93; /* Un tono azul oscuro */
+    background-color: #276e93; 
     bottom: -20px;
     left: 20px;
     border-radius: 0 0 50% 50%;
     transform: skewX(-20deg);
-    z-index: 0; /* Entre las formas y la imagen */
+    z-index: 0; 
 }
 
 .hero-image-container img {
-    /* Ajusta la imagen de la familia para que se vea bien sobre las formas */
     position: absolute;
     max-width: 110%;
     height: auto;
     bottom: 0;
     left: -5%; 
+    z-index: 1; 
 }
-/***********************/
-/* --- Estilos para la sección de Servicios (Asesoría) --- */
 
-/* Estilo para el contenedor general de la sección, similar a la imagen */
+
+/***********************/
+/* --- Estilos de las secciones de Carouseles y Tarjetas --- */
+
 .services-container {
     padding-top: 50px;
     padding-bottom: 50px;
 }
 
-/* Estilo para las tarjetas de paso individual */
+/* Estilo general para la tarjeta de servicio */
 .service-step-card {
-    background-color: #f8f8f8; /* Fondo gris muy claro */
-    border-radius: 12px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    height: 100%; /* Asegura que todas las tarjetas tengan la misma altura */
-    text-align: left;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    height: 100%; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     transition: transform 0.3s ease;
+    border: 1px solid #e9ecef; 
 }
 
 .service-step-card:hover {
-    transform: translateY(-5px); /* Pequeño efecto de elevación al pasar el mouse */
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
-/* Estilo para el círculo del ícono */
+/* Círculo del ícono: Color azul principal */
 .service-icon-circle {
-    width: 50px;
-    height: 50px;
-    background-color: #dbe9f4; /* Azul claro del fondo del círculo */
+    background-color: #007bff; 
+    color: #fff;
+    width: 70px; 
+    height: 70px;
     border-radius: 50%;
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
-    margin-right: auto;
-    margin-left: 0;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
 }
 
-/* Estilo para el ícono dentro del círculo */
-.service-icon-circle i {
-    color: #175e8d; /* Color azul más oscuro para el ícono */
-    font-size: 1.2rem;
-}
-
-/* Estilos de títulos y texto */
+/* Color de acento para títulos - Azul Primario */
 .service-step-card h4 {
-    font-size: 1.25rem;
+    color: #007bff; 
     font-weight: 600;
-    color: #175e8d; /* Color azul */
     margin-bottom: 10px;
 }
 
-.service-step-card strong {
-    color: #000; /* Texto en negrita en color negro */
+/* Alineación de texto y listas dentro de la tarjeta */
+.service-step-card p, .service-step-card ul {
+    font-size: 0.95rem;
+    text-align: left;
+    width: 100%;
+    flex-grow: 1; 
 }
 
+/* Viñetas en listas */
 .service-step-card ul {
     list-style: none;
     padding-left: 0;
@@ -380,25 +433,66 @@ body { margin: 0; font-family: var(--font-sans); background: #fff; }
 .service-step-card ul li {
     padding-left: 1.5em;
     position: relative;
+    text-indent: -1.5em; 
 }
 
 .service-step-card ul li:before {
-    content: "•"; /* Simula las viñetas */
-    color: #5bb3d6; /* Color azul claro para la viñeta */
+    content: "•"; 
+    color: #007bff; 
     font-weight: bold;
     display: inline-block;
     width: 1em;
-    margin-left: -1.5em;
+    margin-right: 0.5em;
+    text-indent: 0;
 }
 
-/* Añadir al final de public/assets/css/style.css */
-/* Fuerza el color del texto de las pestañas de Bootstrap (nav-link) */
-.nav-tabs .nav-link {
-    color: #495057; /* Gris oscuro para mayor contraste */
+
+/* ================================================= */
+/* === AJUSTE DE POSICIONAMIENTO DE FLECHAS (A LAS ORILLAS) === */
+/* ================================================= */
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%; 
+    background: none;
+    opacity: 1; 
+    transition: opacity 0.15s ease;
+    /* Corrección para pegar a la orilla */
+    top: 50%; 
+    transform: translateY(-50%);
 }
-.nav-tabs .nav-link.active {
-    color: #007bff; /* Color azul primario para la pestaña activa */
-    /* Asegura que el fondo blanco de la pestaña activa no se pierda */
-    background-color: #fff;
-    border-color: #dee2e6 #dee2e6 #fff;
+
+.carousel-control-prev {
+    left: -40px; 
+}
+
+.carousel-control-next {
+    right: -40px; 
+}
+
+/* Estilo del ícono de la flecha de Bootstrap para que se vean bien */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #007bff; 
+    border-radius: 50%;
+    padding: 15px; 
+    width: 40px;
+    height: 40px;
+}
+
+/* Efecto hover */
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon {
+    background-color: #0056b3; 
+}
+
+
+/* Media Query: Ocultar flechas en pantallas pequeñas (lg breakpoint) */
+@media (max-width: 991.98px) {
+    .carousel-control-prev,
+    .carousel-control-next {
+        display: none !important;
+        left: 0;
+        right: 0;
+    }
 }

@@ -20,43 +20,8 @@ $error = isset($_GET['error']) ? intval($_GET['error']) : 0;
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
     
-    <style>
-        /* FONDO AZUL DEGRADADO (Mantenido de tu login.php original) */
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f4c81 0%, #031526 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            margin: 0;
-        }
-        
-        /* AJUSTES DE DISEÑO (Tomado de loginchido) */
-        .card {
-            border-radius: 12px; /* border-radius-custom */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Sombra fuerte y moderna */
-            border: none;
-        }
-
-        /* Usamos el fondo blanco normal para la tarjeta, no el degradado ligero de loginchido */
-        .card-body {
-            background-color: #ffffff; 
-        }
-
-        .btn-primary {
-            background-color: #175e8d; /* Color primario de MetaHogar (ajustado para ser legible) */
-            border-color: #175e8d;
-            transition: background-color 0.3s;
-        }
-        .btn-primary:hover {
-            background-color: #0f4c81;
-            border-color: #0f4c81;
-        }
-
-    </style>
 </head>
 <body>
     <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5">

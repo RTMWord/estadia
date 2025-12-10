@@ -1,6 +1,6 @@
 <?php
 // Script para crear un usuario administrador inicial.
-require_once DIR . '/../app/config/db.php';
+require_once __DIR__ . '/../app/config/db.php';
 
 $nombre = 'Admin';
 $apellidoP = 'Meta';
