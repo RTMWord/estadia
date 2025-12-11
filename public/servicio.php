@@ -27,5 +27,6 @@ if (!$servicio) { header('Location: servicios.php'); exit; }
         </div>
         <a href="servicios.php" class="btn btn-secondary">Volver al catálogo</a>
     </div>
+    <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

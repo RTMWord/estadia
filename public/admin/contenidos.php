@@ -5,9 +5,18 @@ require_once __DIR__ . '/../../app/models/Contenido.php';
 require_once __DIR__ . '/../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
 
-if (isset($_GET['eliminar'])) {
-    Contenido::eliminar($pdo, $_GET['eliminar']);
-    header('Location: contenidos.php'); exit;
+// Procesar acciones por POST: eliminar y toggle activo
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!empty($_POST['eliminar'])) {
+        Contenido::eliminar($pdo, $_POST['eliminar']);
+        header('Location: contenidos.php'); exit;
+    }
+    if (!empty($_POST['toggle_active']) && isset($_POST['id'])) {
+        $id = (int)$_POST['id'];
+        $activo = isset($_POST['activo']) && (int)$_POST['activo'] === 1 ? 1 : 0;
+        Contenido::setActivo($pdo, $id, $activo);
+        header('Location: contenidos.php'); exit;
+    }
 }
 
 $items = Contenido::getAll($pdo);
@@ -37,10 +46,20 @@ $items = Contenido::getAll($pdo);
                 <td><?= htmlspecialchars($r['Tipo']) ?></td>
                 <td><?= htmlspecialchars($r['Titulo']) ?></td>
                 <td><?= htmlspecialchars($r['FechaPublicacion']) ?></td>
-                <td><?= $r['Activo'] ? 'Sí' : 'No' ?></td>
+                <td>
+                    <form method="post" class="d-inline">
+                        <input type="hidden" name="id" value="<?= $r['idContenido'] ?>">
+                        <input type="hidden" name="activo" value="0">
+                        <input type="checkbox" name="activo" value="1" <?= $r['Activo'] ? 'checked' : '' ?> onchange="this.form.submit()" aria-label="Activo">
+                        <input type="hidden" name="toggle_active" value="1">
+                    </form>
+                </td>
                 <td>
                     <a class="btn btn-sm btn-secondary" href="contenido_editar.php?id=<?= $r['idContenido'] ?>">Editar</a>
-                    <a class="btn btn-sm btn-danger" href="?eliminar=<?= $r['idContenido'] ?>" onclick="return confirm('Eliminar contenido?')">Eliminar</a>
+                    <form method="post" class="d-inline" onsubmit="return confirm('Eliminar contenido?')">
+                        <input type="hidden" name="eliminar" value="<?= $r['idContenido'] ?>">
+                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                    </form>
                 </td>
             </tr>
             <?php endforeach; ?>

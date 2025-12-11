@@ -19,7 +19,7 @@ class Producto {
             $data['descripcion'] ?? '',
             isset($data['precio']) ? (float)$data['precio'] : 0.0,
             isset($data['existencia']) ? (int)$data['existencia'] : 0,
-            isset($data['activo']) ? 1 : 0
+            isset($data['activo']) ? (int)$data['activo'] : 0
         ]);
         return $pdo->lastInsertId();
     }
@@ -31,7 +31,7 @@ class Producto {
             $data['descripcion'] ?? '',
             isset($data['precio']) ? (float)$data['precio'] : 0.0,
             isset($data['existencia']) ? (int)$data['existencia'] : 0,
-            isset($data['activo']) ? 1 : 0,
+            isset($data['activo']) ? (int)$data['activo'] : 0,
             (int)$id
         ]);
     }
@@ -40,6 +40,11 @@ class Producto {
         // Eliminación lógica
         $stmt = $pdo->prepare('UPDATE producto SET Activo = 0 WHERE idProducto = ?');
         return $stmt->execute([(int)$id]);
+    }
+
+    public static function setActivo($pdo, $id, $activo) {
+        $stmt = $pdo->prepare('UPDATE producto SET Activo = ? WHERE idProducto = ?');
+        return $stmt->execute([(int)$activo, (int)$id]);
     }
 }
 ?>
