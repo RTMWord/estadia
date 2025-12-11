@@ -4,25 +4,20 @@ require_once '../../app/helpers/auth.php';
 require_once '../../app/controllers/ReporteController.php';
 requireRole($pdo, 'administrador');
 
-// 1. Incluir autoload de Composer (para Dompdf)
-// Se comprueba más abajo para mostrar un mensaje amigable si falta.
-
-use Dompdf\Dompdf;
-use Dompdf\Options;
-
-// 2. Obtener datos del reporte
+// Usar REQUEST porque el export analítico puede enviar imágenes por POST
 $reporteCtrl = new ReporteController($pdo);
-$reporteActual = $_GET['reporte'] ?? 'citas'; 
+$reporteActual = $_REQUEST['reporte'] ?? 'citas';
+
 $filtros = [
-    'estado' => $_GET['estado'] ?? '',
-    'rol' => $_GET['rol'] ?? '',
-    'tipo' => $_GET['tipo'] ?? '',
-    'activo' => $_GET['activo'] ?? '',
-    'agencia' => $_GET['agencia'] ?? '',
-    'existencia' => $_GET['existencia'] ?? '',
-    'existencia_op' => $_GET['existencia_op'] ?? '>=',
-    'fecha_inicio' => $_GET['fecha_inicio'] ?? '',
-    'fecha_fin' => $_GET['fecha_fin'] ?? '',
+    'estado' => $_REQUEST['estado'] ?? '',
+    'rol' => $_REQUEST['rol'] ?? '',
+    'tipo' => $_REQUEST['tipo'] ?? '',
+    'activo' => $_REQUEST['activo'] ?? '',
+    'agencia' => $_REQUEST['agencia'] ?? '',
+    'existencia' => $_REQUEST['existencia'] ?? '',
+    'existencia_op' => $_REQUEST['existencia_op'] ?? '>=',
+    'fecha_inicio' => $_REQUEST['fecha_inicio'] ?? '',
+    'fecha_fin' => $_REQUEST['fecha_fin'] ?? '',
 ];
 
 $tituloReporte = "Reporte Desconocido";
@@ -32,6 +27,7 @@ $resultados = [];
 $is_analitico = false;
 $analitico_data = [];
 
+// Cargar datos según tipo de reporte
 switch ($reporteActual) {
     case 'citas':
         $resultados = $reporteCtrl->getCitasReporte($filtros);
@@ -73,6 +69,9 @@ switch ($reporteActual) {
         $tituloReporte = "Análisis de Detección de Temas Críticos";
         $analitico_data = $reporteCtrl->getTemasCriticosReport($filtros);
         break;
+    default:
+        // deja $resultados vacío y título por defecto
+        break;
 }
 
 $total_registros = 0;
@@ -91,14 +90,14 @@ if ($is_analitico) {
             // Es un array de arrays (tabla)
             $total_registros += count($datos_seccion);
             $keys = array_keys($datos_seccion[0]);
-            
+
             $htmlTabla .= '<table border="1" width="100%" cellspacing="0" cellpadding="5">';
             $htmlTabla .= '<thead><tr>';
             foreach ($keys as $k) {
                 $htmlTabla .= '<th>' . htmlspecialchars(str_replace('_', ' ', $k)) . '</th>';
             }
             $htmlTabla .= '</tr></thead><tbody>';
-            
+
             foreach ($datos_seccion as $r) {
                 $htmlTabla .= '<tr>';
                 foreach ($keys as $key) {
@@ -131,7 +130,7 @@ if ($is_analitico) {
         $htmlTabla .= '<th>' . htmlspecialchars($k) . '</th>';
     }
     $htmlTabla .= '</tr></thead><tbody>';
-    
+
     foreach ($resultados as $r) {
         $htmlTabla .= '<tr>';
         foreach ($columnas_labels as $key) {
@@ -148,7 +147,6 @@ if ($is_analitico) {
     $htmlTabla .= '</tbody></table>';
 }
 
-
 // 3. Crear el HTML completo para Dompdf
 $filtrosAplicados = [];
 foreach ($filtros as $key => $value) {
@@ -158,32 +156,67 @@ foreach ($filtros as $key => $value) {
 }
 $filtrosStr = empty($filtrosAplicados) ? 'Ninguno' : implode(', ', $filtrosAplicados);
 
-$html = '
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>'.$tituloReporte.'</title>
-        <style>
-            body { font-family: sans-serif; }
-            h1 { color: #007bff; }
-            h3 { color: #0056b3; }
-            table { border-collapse: collapse; width: 100%; margin-top: 5px; }
-            th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 10pt; }
-            th { background-color: #f8f9fa; }
-            .info { margin-bottom: 20px; }
-        </style>
-    </head>
-    <body>
-        <h1>'.$tituloReporte.' de MetaHogar</h1>
-        <div class="info">
-            <p><strong>Fecha de Generación:</strong> '.date('Y-m-d H:i:s').'</p>
-            <p><strong>Filtros Aplicados:</strong> '. $filtrosStr .'</p>
-            ' . ($is_analitico ? '' : '<p><strong>Total de Registros:</strong> '. $total_registros .'</p>') . '
-        </div>
-        '.$htmlTabla.'
-    </body>
-    </html>';
+$html = '<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>' . htmlspecialchars($tituloReporte) . '</title>
+    <style>
+        body { font-family: sans-serif; }
+        h1 { color: #007bff; }
+        h3 { color: #0056b3; }
+        table { border-collapse: collapse; width: 100%; margin-top: 5px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 10pt; }
+        th { background-color: #f8f9fa; }
+        .info { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>' . htmlspecialchars($tituloReporte) . ' de MetaHogar</h1>
+    <div class="info">
+        <p><strong>Fecha de Generación:</strong> ' . date('Y-m-d H:i:s') . '</p>
+        <p><strong>Filtros Aplicados:</strong> ' . $filtrosStr . '</p>';
+
+if (!$is_analitico) {
+    $html .= '<p><strong>Total de Registros:</strong> ' . $total_registros . '</p>';
+}
+
+$html .= '</div>';
+
+// Charts handling (pueden venir por POST o REQUEST)
+$chartHtml = '';
+$canRenderImages = (extension_loaded('gd') || extension_loaded('imagick') || class_exists('Imagick'));
+
+if (!$canRenderImages) {
+    // Si enviaron imágenes pero el servidor no puede procesarlas, avisar en el PDF
+    if (!empty($_REQUEST['chart_image_demanda']) || !empty($_REQUEST['chart_image_latencia'])) {
+        $chartHtml .= '<h2 style="color:#dc3545;">Gráficas (no incluidas)</h2>';
+        $chartHtml .= '<p>Las gráficas no se han incluido porque la extensión <strong>GD</strong> ni <strong>Imagick</strong> no están disponibles en PHP. Habilita GD o Imagick para incluir imágenes en el PDF.</p>';
+    }
+} else {
+    if (!empty($_REQUEST['chart_image_demanda'])) {
+        $img = $_REQUEST['chart_image_demanda'];
+        if (strpos($img, 'data:') !== 0) {
+            $img = 'data:image/png;base64,' . $img;
+        }
+        $chartHtml .= '<h2 style="color:#007bff;">Gráficas</h2>';
+        $chartHtml .= '<div><img src="' . $img . '" style="max-width:100%; height:auto; margin-bottom: 8px;" /></div>';
+    }
+    if (!empty($_REQUEST['chart_image_latencia'])) {
+        $img2 = $_REQUEST['chart_image_latencia'];
+        if (strpos($img2, 'data:') !== 0) {
+            $img2 = 'data:image/png;base64,' . $img2;
+        }
+        $chartHtml .= '<div><img src="' . $img2 . '" style="max-width:100%; height:auto; margin-bottom: 8px;" /></div>';
+    }
+}
+
+// Añadir charts (si existen) y la tabla generada
+$html .= $chartHtml;
+$html .= $htmlTabla;
+
+// Cerrar documento HTML
+$html .= "\n</body>\n</html>";
 
 // 4. Configurar y generar PDF con Dompdf
 $autoloadPath = dirname(__DIR__, 2) . '/vendor/autoload.php';
@@ -194,7 +227,6 @@ if (!file_exists($autoloadPath)) {
     exit;
 }
 
-// Verificar que las clases de Dompdf estén disponibles y usar la API correcta de Options
 require_once $autoloadPath;
 if (!class_exists(\Dompdf\Dompdf::class) || !class_exists(\Dompdf\Options::class)) {
     http_response_code(500);
@@ -203,6 +235,9 @@ if (!class_exists(\Dompdf\Dompdf::class) || !class_exists(\Dompdf\Options::class
     exit;
 }
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 $options = new Options();
 $options->setDefaultFont('Helvetica');
 $options->setIsHtml5ParserEnabled(true);
@@ -210,12 +245,11 @@ $options->setIsRemoteEnabled(true);
 
 $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
-
-$dompdf->setPaper('A4', 'landscape'); 
-
+$dompdf->setPaper('A4', 'landscape');
 $dompdf->render();
 
 // 5. Enviar el PDF al navegador
-$dompdf->stream(str_replace(' ', '_', $tituloReporte) . '_' . date('Ymd') . '.pdf', ["Attachment" => false]);
+$fileName = str_replace(' ', '_', $tituloReporte) . '_' . date('Ymd') . '.pdf';
+$dompdf->stream($fileName, ["Attachment" => false]);
 exit(0);
 ?>

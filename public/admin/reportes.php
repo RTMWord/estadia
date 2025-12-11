@@ -87,6 +87,7 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
     <title>Reportes Dinámicos - MetaHogar Admin</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         .nav-tabs .nav-link {
             color: #495057; 
@@ -228,14 +229,28 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
 
         <h3>Resultados (<?= $total_resultados ?>)</h3>
         
-        <?php if (!empty($resultados) || $is_analitico): ?>
+            <?php if (!empty($resultados) || $is_analitico): ?>
             <?php 
                 $export_query = http_build_query(array_merge($_GET, ['pdf' => 1]));
             ?>
-            <a href="reporte_pdf.php?<?= $export_query ?>" target="_blank" class="btn btn-danger mb-3">Exportar a PDF</a>
+            <?php if ($is_analitico): ?>
+                <!-- Export form that will receive chart images as POST -->
+                <form id="exportPdfForm" method="POST" action="reporte_pdf.php" target="_blank" class="d-inline-block mb-3">
+                    <?php foreach ($_GET as $k => $v): ?>
+                        <input type="hidden" name="<?= htmlspecialchars($k) ?>" value="<?= htmlspecialchars($v) ?>">
+                    <?php endforeach; ?>
+                    <input type="hidden" name="pdf" value="1">
+                    <input type="hidden" name="chart_image_demanda" id="chart_image_demanda">
+                    <input type="hidden" name="chart_image_latencia" id="chart_image_latencia">
+                    <button id="exportPdfBtn" type="button" class="btn btn-danger">Exportar a PDF (con gráficas)</button>
+                </form>
+            <?php else: ?>
+                <a href="reporte_pdf.php?<?= $export_query ?>" target="_blank" class="btn btn-danger mb-3">Exportar a PDF</a>
+            <?php endif; ?>
 
             <?php if ($is_analitico): ?>
                 <?php foreach ($analitico_data as $seccion_nombre => $datos_seccion): ?>
+                    <?php // Render charts for capacidad_operativa sections ?>
                     <h4 class="mt-4 mb-2 text-primary"><?= str_replace('_', ' ', htmlspecialchars($seccion_nombre)) ?></h4>
                     <?php if (empty($datos_seccion)): ?>
                         <div class="alert alert-info">No hay datos disponibles para esta sección.</div>
@@ -274,6 +289,19 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
                         </table>
                     <?php endif; ?>
                 <?php endforeach; ?>
+
+                <?php if ($reporteActual == 'capacidad_operativa'): ?>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h5>Demanda Próxima (Próximos 30 días)</h5>
+                            <canvas id="chartDemanda"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Latencia Promedio de Agendamiento (horas)</h5>
+                            <canvas id="chartLatencia"></canvas>
+                        </div>
+                    </div>
+                <?php endif; ?>
             <?php else: ?>
                 <?php 
                     // Renderizado de tablas CRUD (existente)
@@ -313,5 +341,62 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
         <a href="index.php" class="btn btn-outline-secondary mt-3">Volver al Panel</a>
 
     </div>
+    <script>
+    // Only run chart code when capacidad_operativa
+    (function(){
+        const reporte = <?= json_encode($reporteActual) ?>;
+        if (reporte !== 'capacidad_operativa') return;
+
+        // Prepare data from PHP for Demanda (if present)
+        const analitico = <?= json_encode($analitico_data) ?>;
+
+        // Demanda
+        const demanda = analitico['Demanda_Proxima_(Proximos_30_Dias)'] || [];
+        const demandaLabels = demanda.map(d => d.Agencia || 'Sin agencia');
+        const demandaValues = demanda.map(d => parseInt(d.CitasProximas) || 0);
+
+        // Latencia
+        const latencia = analitico['Latencia_Promedio_de_Agendamiento'] || [];
+        const latLabels = latencia.map(l => l.Servicio || 'Sin servicio');
+        const latValues = latencia.map(l => parseFloat(l.LatenciaPromedioHoras) || 0);
+
+        // Render charts
+        const ctxD = document.getElementById('chartDemanda');
+        if (ctxD) {
+            new Chart(ctxD, {
+                type: 'bar',
+                data: { labels: demandaLabels, datasets: [{ label: 'Citas próximas', data: demandaValues, backgroundColor: 'rgba(54,162,235,0.6)' }] },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        const ctxL = document.getElementById('chartLatencia');
+        if (ctxL) {
+            new Chart(ctxL, {
+                type: 'bar',
+                data: { labels: latLabels, datasets: [{ label: 'Horas (avg)', data: latValues, backgroundColor: 'rgba(255,159,64,0.7)' }] },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+        }
+
+        // Export handler: capture canvases and submit form
+        const exportBtn = document.getElementById('exportPdfBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function(){
+                const form = document.getElementById('exportPdfForm');
+                // capture demanda
+                const cDem = document.getElementById('chartDemanda');
+                if (cDem && cDem.toDataURL) {
+                    try { document.getElementById('chart_image_demanda').value = cDem.toDataURL('image/png'); } catch(e) { console.warn(e); }
+                }
+                const cLat = document.getElementById('chartLatencia');
+                if (cLat && cLat.toDataURL) {
+                    try { document.getElementById('chart_image_latencia').value = cLat.toDataURL('image/png'); } catch(e) { console.warn(e); }
+                }
+                form.submit();
+            });
+        }
+    })();
+    </script>
 </body>
 </html>

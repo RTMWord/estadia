@@ -41,7 +41,7 @@ $usuarios = Usuario::getAll($pdo);
                     <td><?= $u['Rol'] ?></td>
                     <td>
                         <a href="usuario_editar.php?id=<?= $u['idUsuario'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="usuario_eliminar.php?id=<?= $u['idUsuario'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar usuario?')">Eliminar</a>
+                        <a href="../../app/controllers/UserController.php?eliminar=<?= $u['idUsuario'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar usuario?')">Eliminar</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
