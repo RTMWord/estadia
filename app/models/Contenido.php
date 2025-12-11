@@ -2,7 +2,7 @@
 // app/models/Contenido.php
 class Contenido {
     public static function getAll($pdo) {
-        $stmt = $pdo->query('SELECT idContenido, Tipo, Titulo, FechaPublicacion, Activo FROM contenido ORDER BY FechaPublicacion DESC');
+        $stmt = $pdo->query('SELECT idContenido, Tipo, Titulo, Cuerpo, FechaPublicacion, Activo FROM contenido ORDER BY FechaPublicacion DESC');
         return $stmt->fetchAll();
     }
 
@@ -19,7 +19,7 @@ class Contenido {
             $data['titulo'] ?? '',
             $data['cuerpo'] ?? '',
             isset($data['autor']) ? (int)$data['autor'] : null,
-            isset($data['activo']) ? 1 : 0
+            isset($data['activo']) ? (int)$data['activo'] : 0
         ]);
         return $pdo->lastInsertId();
     }
@@ -31,7 +31,7 @@ class Contenido {
             $data['titulo'] ?? '',
             $data['cuerpo'] ?? '',
             isset($data['autor']) ? (int)$data['autor'] : null,
-            isset($data['activo']) ? 1 : 0,
+            isset($data['activo']) ? (int)$data['activo'] : 0,
             (int)$id
         ]);
     }
@@ -40,6 +40,11 @@ class Contenido {
         // eliminación lógica
         $stmt = $pdo->prepare('UPDATE contenido SET Activo = 0 WHERE idContenido = ?');
         return $stmt->execute([(int)$id]);
+    }
+
+    public static function setActivo($pdo, $id, $activo) {
+        $stmt = $pdo->prepare('UPDATE contenido SET Activo = ? WHERE idContenido = ?');
+        return $stmt->execute([(int)$activo, (int)$id]);
     }
 }
 ?>

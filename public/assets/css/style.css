@@ -287,9 +287,8 @@ body { margin: 0; font-family: var(--font-sans); background: #fff; }
 
 /* 4. Asegura que la columna de imagen tenga un fondo blanco y maneje el desborde */
 .hero-image-col {
-    background-color: #ffffff; 
+    background: linear-gradient(180deg, #17466e 0%, #4b96c3 100%); 
     overflow: hidden; 
-    /* El z-index es crucial si la imagen queda oculta por algo */
     z-index: 10;
 }
 
