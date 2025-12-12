@@ -130,7 +130,7 @@
                                 <div class="mb-4">
                                     <label for="testimonio" class="form-label fw-semibold">Tu Testimonio</label>
                                     <textarea id="testimonio" name="testimonio" class="form-control" rows="5" 
-                                              placeholder="Cuéntanos sobre tu experiencia con MetaHogar..." required></textarea>
+                                              placeholder="Cuéntanos sobre tu experiencia con el sensor MetaHogar..." required></textarea>
                                 </div>
                                 
                                 <div class="text-center">

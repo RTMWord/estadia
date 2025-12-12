@@ -15,7 +15,7 @@ require_once '../app/config/db.php';
         <?php if (isset($_GET['sent'])): ?>
             <div class="alert alert-success">Gracias por tu comentario. Lo revisaremos pronto.</div>
         <?php endif; ?>
-        <form method="POST" action="app/controllers/SugerenciaController.php">
+        <form method="POST" action="../app/controllers/SugerenciaController.php">
             <div class="mb-3">
                 <label class="form-label">Tu correo (opcional)</label>
                 <input type="email" name="email" class="form-control" placeholder="Tu correo si deseas seguimiento">

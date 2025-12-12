@@ -39,7 +39,7 @@
         </li>
 
         <li class="upe-nav-item"><a href="#">Avisos de privacidad</a></li>
-        <li class="upe-nav-item"><a href="#">Buzón</a></li>
+        <li class="upe-nav-item"><a href="#">Buzón de Sugerencias</a></li>
         <li class="upe-nav-item"><a href="#">Sitios de interés</a></li>
       </ul>
     </nav>

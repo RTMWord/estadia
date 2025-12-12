@@ -16,7 +16,7 @@ $sugerencias = Sugerencia::getAll($pdo);
 <body>
 <?php include __DIR__ . '/partials/admin_nav.php'; ?>
     <div class="container py-5">
-        <h2 class="text-primary mb-4">Buzón de Sugerencias - Admin</h2>
+        <h2 class="text-primary mb-4">Buzón de Sugerencias - Administrador</h2>
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
