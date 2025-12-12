@@ -3,6 +3,10 @@ $requirePathDb = '../../app/config/db.php';
 require_once $requirePathDb;
 require_once '../../app/models/Sugerencia.php';
 require_once '../../app/helpers/auth.php';
+require_once '../../app/config/email.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 requireRole($pdo, 'administrador');
 $id = $_GET['id'] ?? null;
 if (!$id) { header('Location: sugerencias.php'); exit; }
@@ -20,6 +24,43 @@ if (isset($_POST['responder'])) {
     $estado = $_POST['estado'];
     $stmt2 = $pdo->prepare('UPDATE Sugerencia SET Estado = ? WHERE idSugerencia = ?');
     $stmt2->execute([$estado, $id]);
+
+    // Enviar correo de respuesta si el usuario tiene email
+    if (!empty($s['UsuarioEmail'])) {
+        try {
+            $mail = new PHPMailer(true);
+            $mail->isSMTP();
+            $mail->Host       = MAIL_HOST;
+            $mail->SMTPAuth   = true;
+            $mail->Username   = MAIL_USERNAME;
+            $mail->Password   = MAIL_PASSWORD;
+            $mail->SMTPSecure = MAIL_SECURE;
+            $mail->Port       = MAIL_PORT;
+            $mail->CharSet    = 'UTF-8';
+            $mail->SMTPDebug  = SMTP::DEBUG_OFF;
+
+            $mail->setFrom(MAIL_FROM_EMAIL, MAIL_FROM_NAME);
+            $mail->addAddress($s['UsuarioEmail'], $s['UsuarioNombre'] ?? '');
+
+            $mail->isHTML(true);
+            $mail->Subject = 'Respuesta a tu sugerencia';
+            $body  = '<h3>Hola '.htmlspecialchars($s['UsuarioNombre'] ?? 'Usuario').',</h3>';
+            $body .= '<p>Hemos revisado tu sugerencia:</p>';
+            $body .= '<p><strong>Título:</strong> '.htmlspecialchars($s['Titulo']).'</p>';
+            $body .= '<p><strong>Descripción:</strong><br>'.nl2br(htmlspecialchars($s['Descripcion'])).'</p>';
+            $body .= '<hr>';
+            $body .= '<p><strong>Respuesta del administrador:</strong><br>'.nl2br(htmlspecialchars($mensaje)).'</p>';
+            $body .= '<p><strong>Estado actualizado:</strong> '.htmlspecialchars($estado).'</p>';
+            $body .= '<p>Gracias por ayudarnos a mejorar.</p>';
+            $mail->Body    = $body;
+            $mail->AltBody = "Hemos respondido a tu sugerencia. Estado: $estado";
+
+            $mail->send();
+        } catch (Exception $e) {
+            error_log('No se pudo enviar el correo de sugerencia: ' . $e->getMessage());
+        }
+    }
+
     header('Location: sugerencias.php');
     exit;
 }

@@ -21,13 +21,13 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
                     <a class="nav-link active" href="index.php">Inicio</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="sobre-nosotros.html">¿Quiénes Somos?</a>
+                    <a class="nav-link" href="quienes_somos.php">¿Quiénes Somos?</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="vision.html">Visión</a>
+                    <a class="nav-link" href="vision.php">Visión</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="mision.html">Misión</a>
+                    <a class="nav-link" href="mision.php">Misión</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="servicios.html">Servicios</a>
@@ -46,18 +46,13 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="testimonios.php">Buzón</a>
+                    <a class="nav-link" href="sugerencias.php">Sugerencias MH</a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="sitiosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Sitios de Interés
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="sitiosDropdown">
-                        <li><a class="dropdown-item" href="https://www.microsoft.com/es-mx" target="_blank" rel="noopener">Microsoft</a></li>
-                        <li><a class="dropdown-item" href="https://www.hp.com/mx-es/home.html" target="_blank" rel="noopener">HP</a></li>
-                        <li><a class="dropdown-item" href="https://www.dell.com/es-mx" target="_blank" rel="noopener">Dell</a></li>
-                        <li><a class="dropdown-item" href="https://www.lenovo.com/mx/es/" target="_blank" rel="noopener">Lenovo</a></li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link" href="contacto.html">Contacto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="sitios_interes.php">Sitios de Interés</a>
                 </li>
             </ul>
 
