@@ -3,6 +3,9 @@
    Prefijo "meta-" para minimizar conflicto con Bootstrap.
 */
 
+/* Reset de márgenes para evitar pequeño espacio blanco por defecto del navegador */
+html, body { margin: 0; padding: 0; }
+
 /* Ejemplo de gradiente similar al que usas (ajusta colores si lo deseas) */
 .meta-navbar-root,
 html,
@@ -21,7 +24,7 @@ body {
 .navbar-dark .navbar-nav .nav-link.active { color: #fff; }
 
 /* Placeholder (por defecto 0, se rellena por JS cuando el navbar está fijo) */
-.meta-navbar-placeholder { height: 0; }
+.meta-navbar-placeholder { height: 35px; }
 
 /* Cuando el navbar tiene la clase 'fixed-top' (se añade por JS), aplicamos una sombra ligera */
 .meta-navbar-root.fixed-top {

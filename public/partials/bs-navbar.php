@@ -33,10 +33,17 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
                     <a class="nav-link" href="servicios.html">Servicios</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="productos.html">Productos</a>
+                    <a class="nav-link" href="productos.php">Productos</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="blog.html">Blog</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="blog.php" id="blogDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Blog
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="blogDropdown">
+                        <li><a class="dropdown-item" href="blog.php">Blog</a></li>
+                        <li><a class="dropdown-item" href="noticias.php">Noticias</a></li>
+                        <li><a class="dropdown-item" href="articulos.php">Artículos</a></li>
+                    </ul>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="sugerencias.php">Sugerencias MH</a>
@@ -62,4 +69,4 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
         </div>
     </div>
 </nav>
-<div class="navbar-placeholder" style="height: 31px;" aria-hidden="true"></div>
+<div class="meta-navbar-placeholder" aria-hidden="true"></div>

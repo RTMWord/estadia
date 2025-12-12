@@ -13,12 +13,14 @@ if (!$item) { header('Location: productos.php'); exit; }
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
+        // Use explicit '1' value from checkbox to determine activo, robust against hidden inputs
+        $activoVal = isset($_POST['activo']) && $_POST['activo'] === '1' ? 1 : 0;
         Producto::editar($pdo, $id, [
             'nombre' => $_POST['nombre'] ?? '',
             'descripcion' => $_POST['descripcion'] ?? '',
             'precio' => $_POST['precio'] ?? 0,
             'existencia' => $_POST['existencia'] ?? 0,
-            'activo' => isset($_POST['activo'])
+            'activo' => $activoVal
         ]);
         header('Location: productos.php'); exit;
     } catch (Exception $e) { $errors[] = $e->getMessage(); }
@@ -49,7 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row g-2 mb-3">
             <div class="col-md-4"><label class="form-label">Precio</label><input name="precio" type="number" step="0.01" class="form-control" value="<?= htmlspecialchars($item['Precio']) ?>"></div>
             <div class="col-md-4"><label class="form-label">Existencia</label><input name="existencia" type="number" class="form-control" value="<?= htmlspecialchars($item['Existencia']) ?>"></div>
-            <div class="col-md-4 d-flex align-items-end"><div class="form-check"><input type="checkbox" name="activo" id="activo" class="form-check-input" <?= $item['Activo'] ? 'checked' : '' ?>><label for="activo" class="form-check-label">Activo</label></div></div>
+            <div class="col-md-4 d-flex align-items-end"><div class="form-check">
+                <input type="hidden" name="activo" value="0">
+                <input type="checkbox" name="activo" id="activo" value="1" class="form-check-input" <?= $item['Activo'] ? 'checked' : '' ?>><label for="activo" class="form-check-label">Activo</label>
+            </div></div>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-success" type="submit">Guardar</button>

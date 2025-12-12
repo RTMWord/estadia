@@ -17,7 +17,7 @@ if (!defined('ESTADIA_INIT')) {
     <footer class="footer-gradient-blue">
         <div class="container footer-inner">
             <div class="footer-brand">
-                <img src="assets/css/images/LogoMeta.png" alt="MetaHogar" class="footer-logo" />
+                <img src="assets/css/images/logo_white.png" alt="MetaHogar" class="footer-logo" />
                 <p class="footer-desc">MetaHogar diseña hogares seguros e inteligentes para una longevidad más digna y confortable.</p>
                 <div class="social-row">
                     <a class="social-link" href="#"><i class="fab fa-twitter fa-lg"></i></a>

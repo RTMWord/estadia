@@ -31,5 +31,6 @@ require_once '../app/config/db.php';
             <button type="submit" name="enviar" class="btn btn-primary">Enviar Sugerencia</button>
         </form>
     </div>
+    <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

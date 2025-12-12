@@ -50,5 +50,6 @@ $servicios = $pdo->query('SELECT idServicio, Nombre FROM Servicio WHERE Activo=1
             <a href="citas.php" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
+    <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

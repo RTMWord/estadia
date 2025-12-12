@@ -54,6 +54,37 @@ if (!defined('ESTADIA_INIT')) {
     
 
     <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        /* Hero image styling to match provided reference */
+        .hero-section { background: linear-gradient(180deg,#17466e 0%,#4b96c3 100%); padding: 80px 0; position: relative; overflow: hidden; }
+        .hero-title { font-size: 2.25rem; line-height: 1.05; font-weight: 700; }
+        .hero-image-col { display:flex; align-items:center; justify-content:center; }
+        .hero-image-container { position: relative; width:100%; max-width:700px; }
+        .hero-image-wrapper { position: relative; }
+        /* decorative shapes & white blob behind the photo */
+        .hero-image-wrapper { position: relative; }
+        .hero-image-wrapper::before {
+            /* white organic blob behind the photo */
+            content: '';
+            position: absolute;
+            right: -40px;
+            top: -20px;
+            width: 560px;
+            height: 420px;
+            background: #ffffff;
+            border-radius: 48% 52% 46% 54% / 54% 46% 54% 46%;
+            transform: rotate(-6deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            z-index: 1;
+        }
+        .hero-image-wrapper .accent-blob-a, .hero-image-wrapper .accent-blob-b, .hero-image-wrapper .accent-brush { position:absolute; z-index:2; }
+        .accent-blob-a { width: 160px; height: 160px; background: rgba(168,223,215,0.9); left: -10px; bottom: -30px; border-radius: 40%; }
+        .accent-blob-b { width: 120px; height: 120px; background: rgba(67,146,227,0.12); right: 10px; bottom: -10px; border-radius: 40%; }
+        .accent-brush { width: 320px; height: 80px; background: rgba(67,146,227,0.95); right: 0px; bottom: -18px; border-radius: 24px; transform: rotate(-6deg); }
+        .hero-image-wrapper img { position: relative; display:block; width:100%; max-width:600px; height:auto; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.15); margin-top: -80px; z-index:3; }
+        @media(max-width:991px){ .hero-image-wrapper img { margin-top: 0; max-width:420px; } }
+        @media(max-width:767px){ .hero-image-col { display:none !important; } }
+    </style>
 </head>
 <body>
     <?php include __DIR__ . '/partials/bs-navbar.php'; ?>
@@ -90,13 +121,15 @@ if (!defined('ESTADIA_INIT')) {
                 </div>
             </div>
 
-            <div class="col-lg-5 d-none d-lg-block hero-image-col"> <div class="hero-image-container">
+            <div class="col-lg-5 d-none d-lg-flex hero-image-col">
+                <div class="hero-image-container">
                     <div class="hero-image-wrapper">
-                        <div class="blob-shape-light"></div>
-                        <div class="blob-shape-dark"></div>
-                        <div class="blob-brush"></div>
-                        
-                        <img src="assets/css/images/hero.jpg" class="img-fluid" alt="Familia multigeneracional usando tablet">         
+                        <!-- white blob created by CSS ::before, accent shapes and brush below -->
+                        <div class="accent-blob-a"></div>
+                        <div class="accent-blob-b"></div>
+                        <div class="accent-brush"></div>
+                        <!-- Use the masked PNG (transparent background) named img_adultos.png placed under assets/css/images/ -->
+                        <img class="img-fluid d-none d-sm-none d-md-block" style="max-width:600px; margin-top: -80px;" src="assets/css/images/img_adultos.png" alt="Familia multigeneracional usando tablet">
                     </div>
                 </div>
             </div>
@@ -599,6 +632,8 @@ if (!defined('ESTADIA_INIT')) {
             $stm->execute();
             $servicios = $stm->fetchAll(PDO::FETCH_ASSOC);
         ?>
+
+        <?php /*
         <section id="pedir-cita" class="mb-5">
             <h2 class="text-primary">Pedir una cita</h2>
             <p>Como usuario registrado puedes solicitar una cita con nuestros servicios. Te contactaremos para confirmar.</p>
@@ -631,6 +666,7 @@ if (!defined('ESTADIA_INIT')) {
                 </div>
             </form>
         </section>
+        */ ?>
         <?php else: ?>
             <section class="mb-5">
                 <h2 class="text-primary">Pedir una cita</h2>
