@@ -18,6 +18,16 @@ $roles = $pdo->query('SELECT * FROM Rol')->fetchAll();
     <title>Editar Usuario - MetaHogar</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body>
 <?php include __DIR__ . '/partials/admin_nav.php'; ?>

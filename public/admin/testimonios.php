@@ -24,13 +24,21 @@ $list = Testimonio::getAll($pdo);
 <!doctype html>
 <html lang="es">
 <head>
-<body>
-<?php include __DIR__ . '/partials/admin_nav.php'; ?>
-    <div class="container py-5">
     <title>Administrar Testimonios</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body class="p-4">
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
 <div class="container">
     <h1>Testimonios</h1>
     <p class="text-muted">Gestiona los testimonios enviados por usuarios. Aprueba para que aparezcan en el sitio público.</p>

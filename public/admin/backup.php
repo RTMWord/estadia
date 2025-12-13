@@ -4,9 +4,18 @@ require_once '../../app/config/db.php';
 require_once '../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
 
+// Verificar si se solicitó generar el backup
+$generateBackup = isset($_GET['generate']) && $_GET['generate'] === '1';
+
 // Nombre del archivo de respaldo
 $db_name = $db ?? 'database';
 $filename = $db_name . '_' . date('Y-m-d_His') . '.sql';
+
+// Si no se solicitó generar, mostrar la interfaz
+if (!$generateBackup) {
+    include __DIR__ . '/partials/backup_interface.php';
+    exit;
+}
 
 // Intentar usar mysqldump si está disponible; si no, fallback a PHP puro
 set_time_limit(0);

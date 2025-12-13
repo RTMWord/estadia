@@ -2,7 +2,7 @@
 // app/models/Contenido.php
 class Contenido {
     public static function getAll($pdo) {
-        $stmt = $pdo->query('SELECT idContenido, Tipo, Titulo, Cuerpo, FechaPublicacion, Activo FROM contenido ORDER BY FechaPublicacion DESC');
+        $stmt = $pdo->query('SELECT idContenido, Tipo, Titulo, Cuerpo, ImagenPrincipalRuta, FechaPublicacion, Activo FROM contenido ORDER BY FechaPublicacion DESC');
         return $stmt->fetchAll();
     }
 
@@ -13,24 +13,26 @@ class Contenido {
     }
 
     public static function crear($pdo, $data) {
-        $stmt = $pdo->prepare('INSERT INTO contenido (Tipo, Titulo, Cuerpo, AutorUsuario_id, FechaPublicacion, Activo) VALUES (?, ?, ?, ?, NOW(), ?)');
+        $stmt = $pdo->prepare('INSERT INTO contenido (Tipo, Titulo, Cuerpo, AutorUsuario_id, ImagenPrincipalRuta, FechaPublicacion, Activo) VALUES (?, ?, ?, ?, ?, NOW(), ?)');
         $stmt->execute([
             $data['tipo'] ?? 'ARTICULO',
             $data['titulo'] ?? '',
             $data['cuerpo'] ?? '',
             isset($data['autor']) ? (int)$data['autor'] : null,
+            $data['imagen_ruta'] ?? null,
             isset($data['activo']) ? (int)$data['activo'] : 0
         ]);
         return $pdo->lastInsertId();
     }
 
     public static function editar($pdo, $id, $data) {
-        $stmt = $pdo->prepare('UPDATE contenido SET Tipo = ?, Titulo = ?, Cuerpo = ?, AutorUsuario_id = ?, Activo = ? WHERE idContenido = ?');
+        $stmt = $pdo->prepare('UPDATE contenido SET Tipo = ?, Titulo = ?, Cuerpo = ?, AutorUsuario_id = ?, ImagenPrincipalRuta = COALESCE(?, ImagenPrincipalRuta), Activo = ? WHERE idContenido = ?');
         return $stmt->execute([
             $data['tipo'] ?? 'ARTICULO',
             $data['titulo'] ?? '',
             $data['cuerpo'] ?? '',
             isset($data['autor']) ? (int)$data['autor'] : null,
+            $data['imagen_ruta'] ?? null,
             isset($data['activo']) ? (int)$data['activo'] : 0,
             (int)$id
         ]);

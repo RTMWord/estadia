@@ -18,6 +18,16 @@ require_once __DIR__ . '/../app/helpers/auth.php';
         .project-badge { background: linear-gradient(180deg, #17466e 0%, #4b96c3 100%); color: white; display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; margin-bottom: 12px; }
         .progress-item { margin-bottom: 20px; }
     </style>
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body>
     <?php include __DIR__ . '/partials/bs-navbar.php'; ?>

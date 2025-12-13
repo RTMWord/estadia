@@ -85,6 +85,16 @@ require_once __DIR__ . '/../app/helpers/auth.php';
         }
         .btn-site:hover { opacity: 0.92; color: white; }
     </style>
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body>
     <?php include __DIR__ . '/partials/bs-navbar.php'; ?>

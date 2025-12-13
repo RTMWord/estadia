@@ -147,38 +147,121 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// --- Render simple HTML (ajusta markup para integrarlo con tus templates) ---
+// --- Render HTML ---
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
-    <title>Restaurar Base de Datos</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Restaurar Base de Datos - MetaHogar Admin</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="../assets/css/restore.css">
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
     <style>
-        body{font-family: Arial, sans-serif; padding:20px}
-        .msg-success{color:green}
-        .msg-error{color:red}
-        form{margin-top:20px}
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
     </style>
 </head>
 <body>
-    <h1>Restaurar Base de Datos</h1>
-    <p>Sube un archivo .sql para restaurar la base de datos. Esta acción reemplazará datos —asegúrate de tener un backup.</p>
+    <?php include __DIR__ . '/partials/admin_nav.php'; ?>
 
-    <?php foreach ($messages as $m): ?>
-        <div class="<?= $m['type'] === 'success' ? 'msg-success' : 'msg-error' ?>">
-            <?= htmlspecialchars($m['text']) ?>
+    <div class="container main-content">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="restore-card">
+                    <div class="card-header-custom">
+                        <h1><i class="fas fa-database"></i> Restaurar Base de Datos</h1>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="warning-box">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                            <strong>Advertencia:</strong> Esta acción reemplazará los datos actuales de la base de datos. Asegúrate de tener un respaldo reciente antes de continuar.
+                        </div>
+
+                        <div class="info-box">
+                            <i class="fas fa-info-circle text-info"></i>
+                            <strong>Instrucciones:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Selecciona un archivo SQL válido (máximo 50MB)</li>
+                                <li>El archivo debe contener la estructura y datos de la base de datos</li>
+                                <li>Puedes usar respaldos generados desde el <a href="backup.php">módulo de backup</a></li>
+                            </ul>
+                        </div>
+
+                        <form method="post" enctype="multipart/form-data" id="restoreForm">
+                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                            
+                            <div class="upload-area mb-4" onclick="document.getElementById('sqlfile').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h5>Haz clic para seleccionar archivo SQL</h5>
+                                <p class="text-muted mb-0">o arrastra y suelta aquí</p>
+                                <p class="text-muted small">Tamaño máximo: 50MB</p>
+                                <input type="file" name="sqlfile" id="sqlfile" accept=".sql" required style="display:none">
+                                <p id="fileName" class="mt-3 fw-bold text-primary"></p>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-restore btn-primary btn-lg">
+                                    <i class="fas fa-sync-alt me-2"></i>Restaurar Base de Datos
+                                </button>
+                                <a href="index.php" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Volver al Panel
+                                </a>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt"></i> Conexión segura | 
+                                <i class="fas fa-lock"></i> Protección CSRF activada
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    <?php endforeach; ?>
+    </div>
 
-    <form method="post" enctype="multipart/form-data" onsubmit="return confirm('¿Estás seguro de que quieres restaurar la base de datos? Esto sobrescribirá datos.');">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
-        <label>Archivo .sql (máx 50MB):</label><br>
-        <input type="file" name="sqlfile" accept=".sql" required><br><br>
-        <button type="submit">Restaurar</button>
-    </form>
+    <footer class="admin-footer">
+        <div class="container">
+            <p class="mb-0">&copy; <?= date('Y') ?> MetaHogar. Todos los derechos reservados.</p>
+            <small>Panel de Administración - Sistema de Restauración</small>
+        </div>
+    </footer>
 
-    <p><a href="index.php">Volver al panel</a></p>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- JavaScript Personalizado -->
+    <script src="../assets/css/js/restore.js"></script>
+    
+    <?php if (!empty($messages)): ?>
+    <script>
+        // Mostrar mensajes con SweetAlert2
+        <?php foreach ($messages as $m): ?>
+            mostrarAlerta(
+                '<?= $m['type'] === 'success' ? 'success' : 'error' ?>',
+                '<?= $m['type'] === 'success' ? '¡Éxito!' : 'Error' ?>',
+                '<?= addslashes($m['text']) ?>',
+                <?= $m['type'] === 'success' ? '3000' : 'null' ?>
+            );
+        <?php endforeach; ?>
+    </script>
+    <?php endif; ?>
 </body>
 </html>

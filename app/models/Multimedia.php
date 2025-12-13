@@ -27,5 +27,15 @@ class Multimedia {
         $stmt = $pdo->prepare('DELETE FROM multimedia WHERE idMedia = ?');
         return $stmt->execute([(int)$id]);
     }
+
+    public static function actualizar($pdo, $id, $data) {
+        $stmt = $pdo->prepare('UPDATE multimedia SET Tipo = ?, Ruta = ?, Descripcion = ? WHERE idMedia = ?');
+        return $stmt->execute([
+            $data['tipo'] ?? 'IMAGEN',
+            $data['ruta'] ?? '',
+            $data['descripcion'] ?? '',
+            (int)$id
+        ]);
+    }
 }
 ?>

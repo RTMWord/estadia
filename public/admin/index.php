@@ -18,9 +18,10 @@ requireRole($pdo, 'administrador');
     // multimedia y testimonios (testimonio tabla puede no existir aún)
     try { $counts['multimedia'] = (int)$pdo->query('SELECT COUNT(*) FROM multimedia')->fetchColumn(); } catch (Exception $e) { $counts['multimedia'] = 0; }
     try { $counts['testimonios'] = (int)$pdo->query('SELECT COUNT(*) FROM testimonio')->fetchColumn(); } catch (Exception $e) { $counts['testimonios'] = 0; }
+    try { $counts['incidencias'] = (int)$pdo->query('SELECT COUNT(*) FROM incidencia')->fetchColumn(); } catch (Exception $e) { $counts['incidencias'] = 0; }
 } catch (Exception $e) {
     // En caso de error, inicializar en 0
-    $counts = ['usuarios'=>0,'agencias'=>0,'servicios'=>0,'citas'=>0,'sugerencias'=>0,'productos'=>0,'contenidos'=>0,'multimedia'=>0,'testimonios'=>0];
+    $counts = ['usuarios'=>0,'agencias'=>0,'servicios'=>0,'citas'=>0,'sugerencias'=>0,'productos'=>0,'contenidos'=>0,'multimedia'=>0,'testimonios'=>0,'incidencias'=>0];
 }
 ?>
 <!DOCTYPE html>
@@ -36,6 +37,15 @@ requireRole($pdo, 'administrador');
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body>
 <?php include __DIR__ . '/partials/admin_nav.php'; ?>
@@ -126,6 +136,17 @@ requireRole($pdo, 'administrador');
                 </div>
             </div>
         </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Comunidad</h5>
+                    <p class="display-6 mb-0"><?= $counts['incidencias'] ?></p>
+                </div>
+                <div class="card-footer">
+                    <a href="comunidad.php" class="stretched-link">Gestionar comunidad</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -145,6 +166,7 @@ requireRole($pdo, 'administrador');
                     <a href="usuario_nuevo.php" class="btn btn-primary me-2">Crear usuario</a>
                     <a href="servicio_nuevo.php" class="btn btn-primary me-2">Crear servicio</a>
                     <a href="agencia_nueva.php" class="btn btn-primary me-2">Registrar agencia</a>
+                    <a href="comunidad.php" class="btn btn-primary me-2">Gestionar comunidad</a>
                     <a href="reportes.php" class="btn btn-info mt-2"> Generar Reportes...</a>
                     
                     <a href="backup.php" class="btn btn-success mt-2">Generar Respaldo (.sql)</a>
