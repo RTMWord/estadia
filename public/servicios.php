@@ -19,8 +19,18 @@ if ($q !== '') {
     <title>Catálogo de Servicios - MetaHogar</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/navbar.css">
+    <link rel="stylesheet" href="assets/css/bs-navbar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .service-img-wrapper {height:180px; background:#f8f9fa; display:flex; align-items:center; justify-content:center; border-radius:10px 10px 0 0; overflow:hidden;}
+        .service-img-wrapper img {max-width:100%; max-height:100%; object-fit:cover;}
+        .card-title {font-weight:600;}
+    </style>
 </head>
 <body>
+    <?php include __DIR__ . '/partials/bs-navbar.php'; ?>
     <?php
     // Mostrar botón al panel de admin solo si el usuario es administrador
     $isAdmin = false;
@@ -46,12 +56,19 @@ if ($q !== '') {
         <div class="row">
             <?php foreach ($servicios as $s): ?>
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 shadow-sm">
+                    <div class="service-img-wrapper">
+                        <?php if (!empty($s['Imagen'])): ?>
+                            <img src="assets/img/servicios/<?= htmlspecialchars($s['Imagen']) ?>" alt="<?= htmlspecialchars($s['Nombre']) ?>">
+                        <?php else: ?>
+                            <img src="assets/img/service-placeholder.png" alt="Sin imagen">
+                        <?php endif; ?>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title text-primary"><?= $s['Nombre'] ?></h5>
-                        <p class="card-text"><?= $s['Descripcion'] ?></p>
+                        <h5 class="card-title text-primary"><?= htmlspecialchars($s['Nombre']) ?></h5>
+                        <p class="card-text"><?= htmlspecialchars($s['Descripcion']) ?></p>
                         <p><strong>Costo:</strong> $<?= number_format($s['Costo'],2) ?></p>
-                        <p><strong>Agencia:</strong> <?= $s['Agencia'] ?></p>
+                        <p><strong>Agencia:</strong> <?= htmlspecialchars($s['Agencia']) ?></p>
                     </div>
                 </div>
             </div>

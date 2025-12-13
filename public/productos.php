@@ -57,7 +57,11 @@ if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
     </style>
 </head>
 <body>
-    <?php include __DIR__ . '/partials/bs-navbar.php'; ?>
+    <?php
+    // Forzar la navbar a azul sólido
+    $navbarSolid = true;
+    include __DIR__ . '/partials/bs-navbar.php';
+    ?>
 
     <div class="container py-5">
         <?php if ($isAdmin): ?>

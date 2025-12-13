@@ -146,92 +146,11 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer-section">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4">
-                    <div class="footer-brand">
-                        <img src="images/LogoMeta.png" alt="MetaHogar" height="40" class="mb-3">
-                        <h5 class="text-white">MetaHogar</h5>
-                        <p class="text-white-50">Soluciones para el hogar y servicios de confianza</p>
-                        <div class="social-links">
-                            <a href="https://www.facebook.com/MetaHogar" target="_blank" class="social-link">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-linkedin"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-2 col-md-6">
-                    <h6 class="text-white mb-3">Servicios</h6>
-                    <ul class="footer-links">
-                        <li><a href="servicios.php">Mantenimiento</a></li>
-                        <li><a href="servicios.php">Diagnóstico</a></li>
-                        <li><a href="servicios.php">Armado de PC</a></li>
-                        <li><a href="servicios.php">Soporte Técnico</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-2 col-md-6">
-                    <h6 class="text-white mb-3">Empresa</h6>
-                    <ul class="footer-links">
-                        <li><a href="sobre-nosotros.php">Sobre Nosotros</a></li>
-                        <li><a href="contacto.php">Contacto</a></li>
-                        <li><a href="blog.php">Blog</a></li>
-                        <li><a href="testimonios.php">Testimonios</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-lg-4">
-                    <h6 class="text-white mb-3">Contacto</h6>
-                    <ul class="footer-contact">
-                        <li>
-                            <i class="fas fa-envelope me-2"></i>
-                            <a href="mailto:contacto@metahogar.com">contacto@metahogar.com</a>
-                        </li>
-                        <li>
-                            <i class="fas fa-phone me-2"></i>
-                            <a href="tel:+525552223333">55 5222 3333</a>
-                        </li>
-                        <li>
-                            <i class="fas fa-map-marker-alt me-2"></i>
-                            <span>CDMX, México</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <hr class="my-4 border-white-50">
-            
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="text-white-50 mb-0">© 2025 TechSolutions. Todos los derechos reservados.</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-white-50 me-3">Política de Privacidad</a>
-                    <a href="#" class="text-white-50">Términos de Servicio</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Navbar sticky script (same as index.php) -->
-    <script src="assets/js/navbar-sticky.js"></script>
-    <!-- Custom JS -->
-    <script src="js/main.js"></script>
-    
+    <?php
+    // Incluye el footer estándar de includes/footer.php
+    if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
+    require_once __DIR__ . '/includes/footer.php';
+    ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             loadCarousel();
@@ -416,5 +335,7 @@
     </script>
     
     <!-- testimonios styles moved to public/assets/css/testimonios.css -->
-</body>
-</html>
+    <?php
+    if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
+    require_once __DIR__ . '/includes/footer.php';
+    ?>

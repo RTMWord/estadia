@@ -1,11 +1,25 @@
 <?php
 require_once '../app/config/db.php';
 require_once '../app/models/Cita.php';
+require_once '../app/helpers/auth.php';
+requireLogin();
 $id = $_GET['id'] ?? null;
-if (!$id) { header('Location: citas.php'); exit; }
+if (!$id) { header('Location: index.php'); exit; }
 $stmt = $pdo->prepare('SELECT * FROM Cita WHERE idCita = ?');
 $stmt->execute([$id]);
 $cita = $stmt->fetch();
+if (!$cita) { header('Location: index.php'); exit; }
+// Solo permitir editar si es admin o dueño de la cita
+$userId = getUserId();
+$rol = null;
+if ($userId) {
+    $stm = $pdo->prepare('SELECT r.Nombre FROM UsuarioRol ur JOIN Rol r ON ur.Rol_idRol = r.idRol WHERE ur.Usuario_idUsuario = ? LIMIT 1');
+    $stm->execute([$userId]);
+    $rol = $stm->fetchColumn();
+}
+if (!($rol === 'administrador' || $rol === 'admin' || $cita['Usuario_idUsuario'] == $userId)) {
+    header('Location: index.php'); exit;
+}
 $servicios = $pdo->query('SELECT idServicio, Nombre FROM Servicio WHERE Activo=1')->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -47,7 +61,11 @@ $servicios = $pdo->query('SELECT idServicio, Nombre FROM Servicio WHERE Activo=1
                 <textarea name="notas" class="form-control" rows="3"><?= $cita['Notas'] ?></textarea>
             </div>
             <button type="submit" name="editar" class="btn btn-warning">Guardar Cambios</button>
-            <a href="citas.php" class="btn btn-secondary">Cancelar</a>
+            <?php if ($rol === 'administrador' || $rol === 'admin'): ?>
+                <a href="admin/citas.php" class="btn btn-secondary">Cancelar</a>
+            <?php else: ?>
+                <a href="index.php" class="btn btn-secondary">Cancelar</a>
+            <?php endif; ?>
         </form>
     </div>
     <?php require_once __DIR__ . '/includes/footer.php'; ?>

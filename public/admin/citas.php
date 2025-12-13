@@ -3,6 +3,11 @@ require_once '../../app/config/db.php';
 require_once '../../app/models/Cita.php';
 require_once '../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
+if (isset($_GET['eliminar'])) {
+    Cita::eliminar($pdo, $_GET['eliminar']);
+    header('Location: citas.php');
+    exit;
+}
 $citas = Cita::getAll($pdo);
 ?>
 <!DOCTYPE html>
