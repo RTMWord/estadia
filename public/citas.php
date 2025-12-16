@@ -1,7 +1,5 @@
 <?php
-require_once '../app/config/db.php';
-require_once '../app/models/Cita.php';
-$citas = Cita::getAll($pdo);
+// Archivo vacío, funcionalidad movida a cita_nueva.php
 ?>
 <!DOCTYPE html>
 <html lang="es">

@@ -33,6 +33,7 @@ if ($q !== '') {
     </style>
 </head>
 <body>
+    <?php include __DIR__ . '/partials/bs-navbar.php'; ?>
     <?php
     // Mostrar botón al panel de admin solo si el usuario es administrador
     $isAdmin = false;
@@ -58,12 +59,19 @@ if ($q !== '') {
         <div class="row">
             <?php foreach ($servicios as $s): ?>
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
+                <div class="card h-100 shadow-sm">
+                    <div class="service-img-wrapper">
+                        <?php if (!empty($s['Imagen'])): ?>
+                            <img src="assets/img/servicios/<?= htmlspecialchars($s['Imagen']) ?>" alt="<?= htmlspecialchars($s['Nombre']) ?>">
+                        <?php else: ?>
+                            <img src="assets/img/service-placeholder.png" alt="Sin imagen">
+                        <?php endif; ?>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title text-primary"><?= $s['Nombre'] ?></h5>
-                        <p class="card-text"><?= $s['Descripcion'] ?></p>
+                        <h5 class="card-title text-primary"><?= htmlspecialchars($s['Nombre']) ?></h5>
+                        <p class="card-text"><?= htmlspecialchars($s['Descripcion']) ?></p>
                         <p><strong>Costo:</strong> $<?= number_format($s['Costo'],2) ?></p>
-                        <p><strong>Agencia:</strong> <?= $s['Agencia'] ?></p>
+                        <p><strong>Agencia:</strong> <?= htmlspecialchars($s['Agencia']) ?></p>
                     </div>
                 </div>
             </div>

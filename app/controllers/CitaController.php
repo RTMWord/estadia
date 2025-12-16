@@ -27,8 +27,27 @@ if (isset($_POST['crear'])) {
         $_POST['fechahora'] = $fh;
     }
     Cita::crear($pdo, $_POST);
-    header('Location: ../../public/citas.php');
-    exit;
+    // Redirección según tipo de usuario y parámetro redir
+    if (isset($_GET['redir']) && $_GET['redir'] == '1') {
+        // Comprobar rol
+        $userId = getUserId();
+        $rol = null;
+        if ($userId) {
+            $stmt = $pdo->prepare('SELECT r.Nombre FROM UsuarioRol ur JOIN Rol r ON ur.Rol_idRol = r.idRol WHERE ur.Usuario_idUsuario = ? LIMIT 1');
+            $stmt->execute([$userId]);
+            $rol = $stmt->fetchColumn();
+        }
+        if ($rol === 'administrador' || $rol === 'admin') {
+            header('Location: ../../public/admin/citas.php');
+            exit;
+        } else {
+            header('Location: ../../public/index.php');
+            exit;
+        }
+    } else {
+        header('Location: ../../public/citas.php');
+        exit;
+    }
 }
 if (isset($_POST['editar'])) {
     Cita::editar($pdo, $_POST);

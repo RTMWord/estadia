@@ -22,6 +22,7 @@ require_once '../app/config/db.php';
     </style>
 </head>
 <body>
+    <?php include __DIR__ . '/partials/bs-navbar.php'; ?>
     <div class="container py-5">
         <h2 class="text-primary mb-4">Buzón de Sugerencias</h2>
         <?php if (isset($_GET['sent'])): ?>
