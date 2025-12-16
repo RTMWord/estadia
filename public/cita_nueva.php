@@ -33,6 +33,18 @@ $servicios = $pdo->query('SELECT idServicio, Nombre FROM servicio WHERE Activo=1
             .appointment-card { margin: 0 0.5rem; }
         }
     </style>
+    
+    <!-- Widget de Accesibilidad -->
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body>
     <?php include __DIR__ . '/partials/bs-navbar.php'; ?>

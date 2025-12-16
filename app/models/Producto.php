@@ -2,7 +2,7 @@
 // app/models/Producto.php
 class Producto {
     public static function getAll($pdo) {
-        $stmt = $pdo->query('SELECT idProducto, Nombre, Descripcion, Precio, Existencia, Activo FROM producto ORDER BY idProducto DESC');
+        $stmt = $pdo->query('SELECT idProducto, Nombre, Descripcion, Precio, Existencia, Activo, RutaImagen FROM producto ORDER BY idProducto DESC');
         return $stmt->fetchAll();
     }
 
@@ -13,25 +13,28 @@ class Producto {
     }
 
     public static function crear($pdo, $data) {
-        $stmt = $pdo->prepare('INSERT INTO producto (Nombre, Descripcion, Precio, Existencia, Activo) VALUES (?, ?, ?, ?, ?)');
+        $stmt = $pdo->prepare('INSERT INTO producto (Nombre, Descripcion, Precio, Existencia, Activo, RutaImagen) VALUES (?, ?, ?, ?, ?, ?)');
         $stmt->execute([
             $data['nombre'] ?? '',
             $data['descripcion'] ?? '',
             isset($data['precio']) ? (float)$data['precio'] : 0.0,
             isset($data['existencia']) ? (int)$data['existencia'] : 0,
-            isset($data['activo']) ? (int)$data['activo'] : 0
+            isset($data['activo']) ? (int)$data['activo'] : 0,
+            $data['ruta_imagen'] ?? null
         ]);
         return $pdo->lastInsertId();
     }
 
     public static function editar($pdo, $id, $data) {
-        $stmt = $pdo->prepare('UPDATE producto SET Nombre = ?, Descripcion = ?, Precio = ?, Existencia = ?, Activo = ? WHERE idProducto = ?');
+        // Si no se proporciona ruta_imagen, mantener la existente
+        $stmt = $pdo->prepare('UPDATE producto SET Nombre = ?, Descripcion = ?, Precio = ?, Existencia = ?, Activo = ?, RutaImagen = COALESCE(?, RutaImagen) WHERE idProducto = ?');
         return $stmt->execute([
             $data['nombre'] ?? '',
             $data['descripcion'] ?? '',
             isset($data['precio']) ? (float)$data['precio'] : 0.0,
             isset($data['existencia']) ? (int)$data['existencia'] : 0,
             isset($data['activo']) ? (int)$data['activo'] : 0,
+            $data['ruta_imagen'] ?? null,
             (int)$id
         ]);
     }

@@ -79,10 +79,10 @@ $htmlTabla = '';
 
 if ($is_analitico) {
     foreach ($analitico_data as $seccion_nombre => $datos_seccion) {
-        $htmlTabla .= '<h3 style="color:#0056b3; margin-top:15px; border-bottom: 1px solid #eee;">' . htmlspecialchars(str_replace('_', ' ', $seccion_nombre)) . '</h3>';
+        $htmlTabla .= '<h3>' . htmlspecialchars(str_replace('_', ' ', $seccion_nombre)) . '</h3>';
 
         if (empty($datos_seccion)) {
-            $htmlTabla .= '<p>No hay datos disponibles para esta sección.</p>';
+            $htmlTabla .= '<p><em>No hay datos disponibles para esta sección.</em></p>';
             continue;
         }
 
@@ -91,8 +91,7 @@ if ($is_analitico) {
             $total_registros += count($datos_seccion);
             $keys = array_keys($datos_seccion[0]);
 
-            $htmlTabla .= '<table border="1" width="100%" cellspacing="0" cellpadding="5">';
-            $htmlTabla .= '<thead><tr>';
+            $htmlTabla .= '<table><thead><tr>';
             foreach ($keys as $k) {
                 $htmlTabla .= '<th>' . htmlspecialchars(str_replace('_', ' ', $k)) . '</th>';
             }
@@ -109,8 +108,7 @@ if ($is_analitico) {
 
         } else {
             // Es un array asociativo simple (resumen de métricas)
-            $htmlTabla .= '<table border="1" width="50%" cellspacing="0" cellpadding="5">';
-            $htmlTabla .= '<tbody>';
+            $htmlTabla .= '<table class="metric-table"><tbody>';
             foreach ($datos_seccion as $key => $val) {
                 $htmlTabla .= '<tr><td style="font-weight:bold;">' . htmlspecialchars($key) . '</td><td>' . htmlspecialchars($val) . '</td></tr>';
             }
@@ -125,7 +123,7 @@ if ($is_analitico) {
         $columnas_labels = array_keys($resultados[0]);
     }
 
-    $htmlTabla .= '<table border="1" width="100%" cellspacing="0" cellpadding="5"><thead><tr>';
+    $htmlTabla .= '<table><thead><tr>';
     foreach ($columnas_labels as $k) {
         $htmlTabla .= '<th>' . htmlspecialchars($k) . '</th>';
     }
@@ -156,36 +154,182 @@ foreach ($filtros as $key => $value) {
 }
 $filtrosStr = empty($filtrosAplicados) ? 'Ninguno' : implode(', ', $filtrosAplicados);
 
+// Generar ruta del logo para Dompdf
+// Usar ruta relativa al chroot establecido en Dompdf
+$canRenderImages = (extension_loaded('gd') || extension_loaded('imagick') || class_exists('Imagick'));
+$logoPath = '../assets/css/images/LogoMeta.png';
+$logoFileExists = file_exists(__DIR__ . '/../assets/css/images/LogoMeta.png');
+$logoHtml = '';
+
+if ($canRenderImages && $logoFileExists) {
+    $logoHtml = '<img src="' . $logoPath . '" alt="MetaHogar Logo" style="max-width: 120px; height: auto;">';
+} elseif (!$canRenderImages) {
+    $logoHtml = '<div class="logo-placeholder"><strong>MetaHogar</strong><div class="logo-note">Habilita GD o Imagick para mostrar el logo</div></div>';
+} else {
+    $logoHtml = '<div class="logo-placeholder"><strong>MetaHogar</strong><div class="logo-note">Logo no disponible</div></div>';
+}
+
 $html = '<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>' . htmlspecialchars($tituloReporte) . '</title>
     <style>
-        body { font-family: sans-serif; }
-        h1 { color: #007bff; }
-        h3 { color: #0056b3; }
-        table { border-collapse: collapse; width: 100%; margin-top: 5px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 10pt; }
-        th { background-color: #f8f9fa; }
-        .info { margin-bottom: 20px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            color: #333; 
+            margin: 20px;
+            padding: 0;
+        }
+        .header {
+            display: table; 
+            width: 100%; 
+            margin-bottom: 30px; 
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 15px;
+            table-layout: fixed;
+        }
+        .logo-section { 
+            display: table-cell; 
+            vertical-align: top; 
+            width: 120px;
+            padding-right: 20px;
+        }
+        .logo-section img { 
+            max-width: 120px; 
+            height: auto; 
+            display: block;
+        }
+        .logo-placeholder {
+            width: 120px;
+            padding: 8px;
+            border: 1px dashed #bbb;
+            text-align: center;
+            font-size: 9pt;
+            color: #555;
+        }
+        .logo-note {
+            margin-top: 4px;
+            font-size: 7pt;
+            color: #999;
+        }
+        .date-section { 
+            display: table-cell; 
+            vertical-align: top; 
+            text-align: right;
+            width: auto;
+        }
+        .date-section div { 
+            margin: 5px 0; 
+            font-size: 10pt; 
+        }
+        .date-label { 
+            font-weight: bold; 
+            color: #0056b3; 
+        }
+        h1 { 
+            color: #007bff; 
+            font-size: 20pt; 
+            margin: 15px 0 10px 0; 
+        }
+        .info-box {
+            background-color: #f8f9fa; 
+            border-left: 4px solid #007bff; 
+            padding: 12px;
+            margin-bottom: 20px; 
+            page-break-inside: avoid;
+        }
+        .info-box p { 
+            margin: 6px 0; 
+            font-size: 9pt; 
+        }
+        .info-box strong { 
+            color: #0056b3; 
+        }
+        h3 { 
+            color: #0056b3; 
+            margin-top: 20px; 
+            margin-bottom: 8px; 
+            border-bottom: 1px solid #dee2e6; 
+            padding-bottom: 5px;
+            font-size: 12pt;
+            page-break-inside: avoid;
+        }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin-top: 8px; 
+            font-size: 8pt;
+            page-break-inside: auto;
+        }
+        tr { page-break-inside: avoid; }
+        th { 
+            background-color: #007bff; 
+            color: white; 
+            padding: 8px; 
+            text-align: left; 
+            font-weight: bold;
+        }
+        td { 
+            border: 1px solid #dee2e6; 
+            padding: 6px; 
+        }
+        tr:nth-child(even) { 
+            background-color: #f8f9fa; 
+        }
+        .footer { 
+            margin-top: 30px; 
+            text-align: center; 
+            border-top: 1px solid #dee2e6; 
+            padding-top: 10px; 
+            font-size: 7pt; 
+            color: #666; 
+        }
+        .metric-table th { 
+            background-color: #f8f9fa; 
+            color: #333; 
+            font-weight: bold; 
+        }
+        .charts-section { 
+            margin-top: 20px; 
+            page-break-inside: avoid;
+        }
+        .charts-section img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
-    <h1>' . htmlspecialchars($tituloReporte) . ' de MetaHogar</h1>
-    <div class="info">
-        <p><strong>Fecha de Generación:</strong> ' . date('Y-m-d H:i:s') . '</p>
-        <p><strong>Filtros Aplicados:</strong> ' . $filtrosStr . '</p>';
+    <div class="header">
+        <div class="logo-section">
+            ' . $logoHtml . '
+        </div>
+        <div class="date-section">
+            <div><span class="date-label">Fecha de Reporte:</span></div>
+            <div>' . date('d/m/Y') . '</div>
+            <div><span class="date-label">Hora:</span></div>
+            <div>' . date('H:i:s') . '</div>
+        </div>
+    </div>
+
+    <h1>' . htmlspecialchars($tituloReporte) . '</h1>
+    
+    <div class="info-box">
+        <p><strong>Empresa:</strong> MetaHogar</p>
+        <p><strong>Filtros Aplicados:</strong> ' . ($filtrosStr === 'Ninguno' ? '<em>' . $filtrosStr . '</em>' : $filtrosStr) . '</p>';
+
 
 if (!$is_analitico) {
     $html .= '<p><strong>Total de Registros:</strong> ' . $total_registros . '</p>';
 }
 
-$html .= '</div>';
+$html .= '    </div>';
 
 // Charts handling (pueden venir por POST o REQUEST)
 $chartHtml = '';
-$canRenderImages = (extension_loaded('gd') || extension_loaded('imagick') || class_exists('Imagick'));
 
 if (!$canRenderImages) {
     // Si enviaron imágenes pero el servidor no puede procesarlas, avisar en el PDF
@@ -212,8 +356,12 @@ if (!$canRenderImages) {
 }
 
 // Añadir charts (si existen) y la tabla generada
-$html .= $chartHtml;
+if (!empty($chartHtml)) {
+    $html .= '<div class="charts-section">' . $chartHtml . '</div>';
+}
 $html .= $htmlTabla;
+
+$html .= '<div class="footer"><p>Documento generado automáticamente por MetaHogar Admin | © ' . date('Y') . ' - Todos los derechos reservados</p></div>';
 
 // Cerrar documento HTML
 $html .= "\n</body>\n</html>";
@@ -242,10 +390,16 @@ $options = new Options();
 $options->setDefaultFont('Helvetica');
 $options->setIsHtml5ParserEnabled(true);
 $options->setIsRemoteEnabled(true);
+$options->setChroot(__DIR__ . '/../../'); // Raíz en raíz del proyecto para resolver rutas correctamente
 
 $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'landscape');
+// Establecer márgenes en milímetros
+$dompdf->set_option('margin_top', 15);
+$dompdf->set_option('margin_right', 10);
+$dompdf->set_option('margin_bottom', 15);
+$dompdf->set_option('margin_left', 10);
 $dompdf->render();
 
 // 5. Enviar el PDF al navegador

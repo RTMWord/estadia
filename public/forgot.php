@@ -8,6 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/auth.css">
+    
+    <!-- Widget de Accesibilidad -->
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body class="bg-gradient-primary">
     <div class="container py-5">

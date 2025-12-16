@@ -98,6 +98,16 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
             border-color: #dee2e6 #dee2e6 #fff;
         }
     </style>
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body>
 <?php include __DIR__ . '/partials/admin_nav.php'; ?>

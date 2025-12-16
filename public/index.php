@@ -55,8 +55,17 @@ if (!defined('ESTADIA_INIT')) {
 
     <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
     <style>
+        /* Posicionar widget de accesibilidad en el medio derecho */
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+
         /* Hero image styling to match provided reference */
-        .hero-section { background: linear-gradient(180deg,#17466e 0%,#4b96c3 100%); padding: 80px 0; position: relative; overflow: hidden; }
+        .hero-section { background: linear-gradient(180deg,#17466e 0%,#4b96c3 100%); padding: 0.25rem 0 1.25rem 0; margin-top: -2.25rem; position: relative; overflow: hidden; }
         .hero-title { font-size: 2.25rem; line-height: 1.05; font-weight: 700; }
         .hero-image-col { display:flex; align-items:center; justify-content:center; }
         .hero-image-container { position: relative; width:100%; max-width:700px; }

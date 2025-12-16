@@ -23,6 +23,18 @@ if (!defined('ESTADIA_INIT')) {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Widget de Accesibilidad UserWay -->
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body class="font-inter">
     <?php 

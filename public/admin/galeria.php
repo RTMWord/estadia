@@ -21,13 +21,21 @@ $items = Multimedia::getAll($pdo);
 <!doctype html>
 <html lang="es">
 <head>
-<body>
-<?php include __DIR__ . '/partials/admin_nav.php'; ?>
-    <div class="container py-5">
     <title>Galería - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body class="p-4">
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
 <div class="container">
     <div class="d-flex justify-content-between mb-3">
         <h1>Galería</h1>
@@ -42,9 +50,12 @@ $items = Multimedia::getAll($pdo);
                     <?php else: ?>
                         <div class="card-body">Tipo: <?= htmlspecialchars($it['Tipo']) ?></div>
                     <?php endif; ?>
-                    <div class="card-footer d-flex justify-content-between">
-                        <small><?= htmlspecialchars($it['Descripcion']) ?></small>
-                        <a class="btn btn-sm btn-danger" href="?eliminar=<?= $it['idMedia'] ?>" onclick="return confirm('Eliminar?')">Eliminar</a>
+                    <div class="card-footer d-flex justify-content-between align-items-center gap-2">
+                        <small class="text-truncate" style="max-width:60%"><?= htmlspecialchars($it['Descripcion']) ?></small>
+                        <div class="d-flex gap-1">
+                            <a class="btn btn-sm btn-secondary" href="galeria_editar.php?id=<?= $it['idMedia'] ?>">Editar</a>
+                            <a class="btn btn-sm btn-danger" href="?eliminar=<?= $it['idMedia'] ?>" onclick="return confirm('Eliminar?')">Eliminar</a>
+                        </div>
                     </div>
                 </div>
             </div>

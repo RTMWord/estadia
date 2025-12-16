@@ -5,12 +5,13 @@ require_once '../app/helpers/auth.php';
 
 $q = trim($_GET['q'] ?? '');
 if ($q !== '') {
-    $stmt = $pdo->prepare("SELECT idProducto, Nombre, Descripcion, Precio, Existencia, Activo FROM producto WHERE Activo=1 AND (Nombre LIKE ? OR Descripcion LIKE ?) ORDER BY Nombre");
+    $stmt = $pdo->prepare("SELECT idProducto, Nombre, Descripcion, Precio, Existencia, Activo, RutaImagen FROM producto WHERE Activo=1 AND (Nombre LIKE ? OR Descripcion LIKE ?) ORDER BY Nombre");
     $like = "%" . $q . "%";
     $stmt->execute([$like, $like]);
     $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
-    $productos = Producto::getAll($pdo);
+    $stmt = $pdo->query("SELECT idProducto, Nombre, Descripcion, Precio, Existencia, Activo, RutaImagen FROM producto WHERE Activo=1 ORDER BY idProducto DESC");
+    $productos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // Verificar si el usuario es administrador (para mostrar botón al panel)
@@ -41,11 +42,23 @@ if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pbVj8K9QkM+6v6b1K0qzQe8hVYqvZl+Q0Yb1uR2r6dQeXo1Kjv0oJq2FJXr6g3bKXJ3y0KqO1s0V3QZb4+5Qmw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/catalogo.css">
+    <link rel="stylesheet" href="assets/css/bs-navbar.css">
+    
+    <!-- Widget de Accesibilidad -->
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    
     <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
         body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
         .product-card { border: none; overflow: hidden; border-radius: 12px; transition: transform .18s ease, box-shadow .18s ease; }
         .product-card:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(0,0,0,0.12); }
-        .product-img-wrapper { position: relative; background: #f8f9fa; display:flex; align-items:center; justify-content:center; height:220px; overflow:hidden; }
+        .product-img-wrapper { position: relative; background: #ffffffff; display:flex; align-items:center; justify-content:center; height:220px; overflow:hidden; }
         .product-img-wrapper img { max-width:100%; max-height:100%; object-fit:cover; display:block; }
         .price-badge { position: absolute; top: 10px; right: 10px; background: linear-gradient(180deg,#ff8b00,#ff5a00); color: #fff; padding:6px 10px; border-radius:8px; font-weight:700; font-size:0.95rem; box-shadow: 0 6px 18px rgba(255,90,0,0.18); }
         .product-title { font-size:1.05rem; color:#0d6efd; margin-bottom:6px; font-weight:600; }
@@ -86,8 +99,21 @@ if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
                     <div class="col">
                         <div class="card product-card h-100 shadow-sm">
                             <div class="product-img-wrapper">
-                                <img src="assets/img/product-placeholder.png" alt="<?= htmlspecialchars($p['Nombre']) ?>" onerror="this.onerror=null;this.src='assets/img/product-placeholder.png'">
-                                <div class="price-badge">$<?= number_format((float)$p['Precio'], 2) ?></div>
+                                <?php
+                                    $ruta = $p['RutaImagen'] ?? '';
+                                    // Normalizar ruta: si viene como 'assets/...', prefijar 'admin/' para acceder desde public
+                                    if ($ruta) {
+                                        if (str_starts_with($ruta, 'assets/')) {
+                                            $rutaWeb = 'admin/' . $ruta;
+                                        } else {
+                                            $rutaWeb = $ruta;
+                                        }
+                                    } else {
+                                        $rutaWeb = 'assets/img/product-placeholder.png';
+                                    }
+                                ?>
+                                <img src="<?= htmlspecialchars($rutaWeb) ?>" alt="<?= htmlspecialchars($p['Nombre']) ?>" onerror="this.onerror=null;this.src='assets/img/product-placeholder.png'">
+                                <div class="price-badge">$<?= number_format((float)$p['Precio'], 2) ?> MXN</div>
                                 <?php if (!(int)$p['Activo']): ?>
                                     <div class="badge-inactive">Inactivo</div>
                                 <?php endif; ?>

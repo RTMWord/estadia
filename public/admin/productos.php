@@ -5,6 +5,10 @@ require_once __DIR__ . '/../../app/models/Producto.php';
 require_once __DIR__ . '/../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
 
+$flashSuccess = $_SESSION['flash_success'] ?? null;
+$flashError   = $_SESSION['flash_error'] ?? null;
+unset($_SESSION['flash_success'], $_SESSION['flash_error']);
+
 // Eliminar (lógico)
 // Procesar acciones por POST para evitar side-effects vía GET
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,14 +32,26 @@ $items = Producto::getAll($pdo);
 <!doctype html>
 <html lang="es">
 <head>
-<body>
-<?php include __DIR__ . '/partials/admin_nav.php'; ?>
-    <div class="container py-5">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Productos - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <style>
+        .userway-icon {
+            position: fixed !important;
+            right: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 9999 !important;
+        }
+    </style>
 </head>
 <body class="p-4">
-<div class="container">
+<?php include __DIR__ . '/partials/admin_nav.php'; ?>
+<div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Productos</h1>
         <a href="producto_nuevo.php" class="btn btn-primary">Agregar producto</a>
@@ -74,5 +90,28 @@ $items = Producto::getAll($pdo);
 
     <a href="index.php" class="btn btn-secondary">Volver</a>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<?php if ($flashSuccess): ?>
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Éxito',
+    text: '<?= addslashes($flashSuccess) ?>',
+    confirmButtonColor: '#3085d6',
+});
+</script>
+<?php endif; ?>
+<?php if ($flashError): ?>
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: '<?= addslashes($flashError) ?>',
+    confirmButtonColor: '#d33',
+});
+</script>
+<?php endif; ?>
 </body>
 </html>

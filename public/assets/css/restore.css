@@ -1,0 +1,101 @@
+/* restore.css - Estilos para el módulo de restauración de base de datos */
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #17466e 0%, #4b96c3 100%); 
+    min-height: 100vh;
+}
+
+.main-content {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.restore-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.card-header-custom {
+    background: linear-gradient(180deg, #17466e 0%, #4b96c3 100%); 
+    color: white;
+    padding: 25px;
+    border: none;
+}
+
+.card-header-custom h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.upload-area {
+    border: 3px dashed #667eea;
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: #f8f9ff;
+}
+
+.upload-area:hover {
+    border-color: #764ba2;
+    background: #f0f1ff;
+}
+
+.upload-area i {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.btn-restore {
+    background: linear-gradient(180deg, #17466e 0%, #4b96c3 100%); 
+    border: none;
+    padding: 12px 40px;
+    font-weight: 600;
+    transition: transform 0.3s ease;
+}
+
+.btn-restore:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.warning-box {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.info-box {
+    background: #d1ecf1;
+    border-left: 4px solid #17a2b8;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.admin-footer {
+    background: rgba(0,0,0,0.1);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+.admin-footer p {
+    margin-bottom: 0;
+}
+
+.admin-footer small {
+    opacity: 0.9;
+}
