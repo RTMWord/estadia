@@ -10,6 +10,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
     <title>Sitios de Interés - MetaHogar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/bs-navbar.css">
     <style>
         :root {
             --azul-1: #17466e;
@@ -128,8 +129,8 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                     [
                         'title' => 'Centro de Diagnóstico',
                         'desc'  => 'Servicios especializados y soporte técnico.',
-                        'img'   => 'assets/images/serv_1764193090_8603.png',
-                        'url'   => 'diagnostico.php',
+                        'img'   => 'assets/images/serv_1765343390_3850.jpg',
+                        'url'   => 'servicios.php',
                         'tag'   => 'Servicios'
                     ],
                     [
@@ -138,27 +139,6 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                         'img'   => 'https://placehold.co/500x300/17466e/ffffff?text=Comunidad',
                         'url'   => 'comunidad.php',
                         'tag'   => 'Comunidad'
-                    ],
-                    [
-                        'title' => 'Soporte 24/7',
-                        'desc'  => 'Mesas de ayuda y documentación técnica.',
-                        'img'   => 'https://placehold.co/500x300/4b96c3/ffffff?text=Soporte',
-                        'url'   => 'soporte.php',
-                        'tag'   => 'Soporte'
-                    ],
-                    [
-                        'title' => 'Portal de Innovación',
-                        'desc'  => 'Tendencias, investigación y proyectos estratégicos.',
-                        'img'   => 'https://placehold.co/500x300/2d6a8f/ffffff?text=Innovacion',
-                        'url'   => 'innovacion.php',
-                        'tag'   => 'Innovación'
-                    ],
-                    [
-                        'title' => 'Capacitación',
-                        'desc'  => 'Cursos, webinars y materiales de formación.',
-                        'img'   => 'https://placehold.co/500x300/3d7aa0/ffffff?text=Capacitacion',
-                        'url'   => 'capacitacion.php',
-                        'tag'   => 'Aprendizaje'
                     ],
                 ];
 
@@ -201,42 +181,42 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                     [
                         'title' => 'Ayuntamiento de Jiutepec',
                         'desc'  => 'Información municipal y trámites del ayuntamiento de Jiutepec.',
-                        'img'   => 'https://placehold.co/500x300/1a5a8f/ffffff?text=Ayuntamiento',
+                        'img'   => 'assets/images/logo-jiutepec.jpeg',
                         'url'   => 'https://www.jiutepec.gob.mx',
                         'tag'   => 'Gobierno'
                     ],
                     [
                         'title' => 'IMSS',
                         'desc'  => 'Instituto Mexicano del Seguro Social - Servicios de salud y prestaciones.',
-                        'img'   => 'https://placehold.co/500x300/0d47a1/ffffff?text=IMSS',
+                        'img'   => 'assets/images/logo-imss.jpg',
                         'url'   => 'https://www.imss.gob.mx',
                         'tag'   => 'Salud'
                     ],
                     [
                         'title' => 'ISSSTE',
                         'desc'  => 'Instituto de Seguridad y Servicios Sociales de Trabajadores del Estado.',
-                        'img'   => 'https://placehold.co/500x300/1565c0/ffffff?text=ISSSTE',
+                        'img'   => 'assets/images/issste-logo.png',
                         'url'   => 'https://www.gob.mx/issste',
                         'tag'   => 'Salud'
                     ],
                     [
                         'title' => 'INEGI',
                         'desc'  => 'Instituto Nacional de Estadística y Geografía - Información demográfica.',
-                        'img'   => 'https://placehold.co/500x300/1976d2/ffffff?text=INEGI',
+                        'img'   => 'assets/images/inegi-logo.png',
                         'url'   => 'https://www.inegi.org.mx',
                         'tag'   => 'Información'
                     ],
                     [
                         'title' => 'Secretaría de Bienestar',
                         'desc'  => 'Programas y servicios para personas adultas mayores en México.',
-                        'img'   => 'https://placehold.co/500x300/1e88e5/ffffff?text=Bienestar',
+                        'img'   => 'assets/images/logo-bienestar.jpeg',
                         'url'   => 'https://www.gob.mx/bienestar',
                         'tag'   => 'Social'
                     ],
                     [
                         'title' => 'CONAPO',
                         'desc'  => 'Consejo Nacional de Población - Análisis demográfico de adultos mayores.',
-                        'img'   => 'https://placehold.co/500x300/2196f3/ffffff?text=CONAPO',
+                        'img'   => 'assets/images/Conapo-logo-2025.jpeg',
                         'url'   => 'https://www.gob.mx/conapo',
                         'tag'   => 'Demográfico'
                     ],

@@ -146,11 +146,15 @@
         </div>
     </section>
 
-    <?php
-    // Incluye el footer estándar de includes/footer.php
-    if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
-    require_once __DIR__ . '/includes/footer.php';
-    ?>
+    <!-- Footer incluido desde public/includes/footer.php -->
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Navbar sticky script (same as index.php) -->
+    <script src="assets/js/navbar-sticky.js"></script>
+    <!-- Custom JS -->
+    <script src="js/main.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             loadCarousel();
@@ -335,7 +339,4 @@
     </script>
     
     <!-- testimonios styles moved to public/assets/css/testimonios.css -->
-    <?php
-    if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
-    require_once __DIR__ . '/includes/footer.php';
-    ?>
+    <?php require_once __DIR__ . '/includes/footer.php'; ?>

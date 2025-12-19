@@ -91,8 +91,25 @@ if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
             </form>
         </div>
 
+        <div class="alert alert-info d-flex align-items-center justify-content-between" role="note">
+            <div>
+                <strong>¿Buscas otra cosa?</strong> Te pueden interesar nuestros servicios especializados.
+            </div>
+            <a href="servicios.php" class="btn btn-sm btn-primary">Ver servicios</a>
+        </div>
+
         <?php if (empty($productos)): ?>
-            <div class="alert alert-warning">No hay productos registrados.</div>
+            <div class="alert alert-warning">
+                <?php if ($q !== ''): ?>
+                    No encontramos productos que coincidan con "<?= htmlspecialchars($q) ?>".
+                <?php else: ?>
+                    No hay productos disponibles por el momento.
+                <?php endif; ?>
+            </div>
+            <div class="text-center mb-4">
+                <p class="mb-2">¿Necesitas soporte o una solución distinta?</p>
+                <a href="servicios.php" class="btn btn-primary">Explorar servicios</a>
+            </div>
         <?php else: ?>
             <div class="row row-cols-1 row-cols-md-3 g-4">
                 <?php foreach ($productos as $p): ?>

@@ -31,8 +31,8 @@ function requireRole($pdo, $roleName) {
     $stmt->execute([$userId]);
     $rol = $stmt->fetchColumn();
     if ($rol !== $roleName) {
-        header('HTTP/1.1 403 Forbidden');
-        echo 'Acceso denegado';
+        // Redirigir a página 404 personalizada por permisos insuficientes
+        header('Location: /estadia/public/404.php?reason=insufficient_privileges&page=' . urlencode($_SERVER['REQUEST_URI'] ?? 'desconocida'));
         exit;
     }
 }

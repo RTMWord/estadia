@@ -10,6 +10,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
     <title>Soporte 24/7 - MetaHogar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/bs-navbar.css">
     <style>
         body { background: #f5f7fb; font-family: 'Segoe UI', sans-serif; }
         .hero { background: linear-gradient(180deg, #17466e 0%, #4b96c3 100%); color: white; padding: 80px 0 60px; }
@@ -63,16 +64,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                     <p class="fw-bold text-primary">soporte@metahogar.mx</p>
                 </div>
             </div>
-
-            <div class="col-md-6 col-lg-3">
-                <div class="support-card p-4 text-center h-100">
-                    <div class="support-icon">💬</div>
-                    <h5 class="card-title mb-3">Chat en Vivo</h5>
-                    <p class="card-text text-muted mb-3">Disponible ahora</p>
-                    <a href="#" class="btn btn-sm" style="background: #17466e; color: white;">Iniciar Chat</a>
-                </div>
-            </div>
-
+            
             <div class="col-md-6 col-lg-3">
                 <div class="support-card p-4 text-center h-100">
                     <div class="support-icon">🎫</div>

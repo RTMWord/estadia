@@ -18,6 +18,7 @@ if ($q !== '') {
     <meta charset="UTF-8">
     <title>Catálogo de Servicios - MetaHogar</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/bs-navbar.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Widget de Accesibilidad -->
@@ -29,6 +30,22 @@ if ($q !== '') {
             top: 50% !important;
             transform: translateY(-50%) !important;
             z-index: 9999 !important;
+        }
+        .future-service-card { 
+            border: none; 
+            border-radius: 15px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            transition: all 0.3s; 
+            background: white; 
+            border-left: 4px solid #17466e;
+        }
+        .future-service-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15); 
+        }
+        .service-icon { 
+            font-size: 2rem; 
+            margin-bottom: 10px; 
         }
     </style>
 </head>
@@ -76,6 +93,82 @@ if ($q !== '') {
                 </div>
             </div>
             <?php endforeach; ?>
+        </div>
+
+        <!-- Sección de Servicios Futuros -->
+        <div class="mt-5 pt-4 border-top">
+            <div class="text-center mb-5">
+                <h3 class="text-primary mb-2">Próximamente</h3>
+                <p class="text-muted">Servicios especializados que estarán disponibles pronto</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="future-service-card p-4 text-center h-100">
+                        <div class="service-icon">🔍</div>
+                        <h5 class="card-title mb-3">Diagnóstico de Sistemas</h5>
+                        <p class="card-text text-muted">Análisis profundo de tu hogar inteligente y detección de problemas.</p>
+                        <span class="badge bg-secondary">Próximamente</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="future-service-card p-4 text-center h-100">
+                        <div class="service-icon">🛠️</div>
+                        <h5 class="card-title mb-3">Mantenimiento Preventivo</h5>
+                        <p class="card-text text-muted">Servicios de mantenimiento para optimizar rendimiento.</p>
+                        <span class="badge bg-secondary">Próximamente</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="future-service-card p-4 text-center h-100">
+                        <div class="service-icon">⚙️</div>
+                        <h5 class="card-title mb-3">Instalación y Configuración</h5>
+                        <p class="card-text text-muted">Instalamos y configuramos tus dispositivos MetaHogar.</p>
+                        <span class="badge bg-secondary">Próximamente</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="future-service-card p-4 text-center h-100">
+                        <div class="service-icon">📊</div>
+                        <h5 class="card-title mb-3">Reportes Detallados</h5>
+                        <p class="card-text text-muted">Reportes completos del estado y desempeño de tu sistema.</p>
+                        <span class="badge bg-secondary">Próximamente</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="future-service-card p-4 text-center h-100">
+                        <div class="service-icon">💡</div>
+                        <h5 class="card-title mb-3">Optimización de Consumo</h5>
+                        <p class="card-text text-muted">Recomendaciones para reducir consumo energético.</p>
+                        <span class="badge bg-secondary">Próximamente</span>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="future-service-card p-4 text-center h-100">
+                        <div class="service-icon">🔐</div>
+                        <h5 class="card-title mb-3">Auditoría de Seguridad</h5>
+                        <p class="card-text text-muted">Verificamos la seguridad de tu hogar y datos.</p>
+                        <span class="badge bg-secondary">Próximamente</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card" style="border-radius: 15px; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.1);">
+                        <div class="card-body p-4 text-center">
+                            <h5 class="card-title mb-3 text-primary">¿Te interesa alguno de estos servicios?</h5>
+                            <p class="card-text text-muted mb-4">Contáctanos para conocer más sobre nuestra próxima oferta de servicios especializados.</p>
+                            <a href="cita_nueva.php" class="btn btn-primary">Contactar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <?php require_once __DIR__ . '/includes/footer.php'; ?>
