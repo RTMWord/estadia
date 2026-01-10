@@ -119,6 +119,7 @@ $estadisticas = $pdo->query("
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
+    <link rel="stylesheet" href="assets/css/bs-navbar.css">
     <style>
         .userway-icon {
             position: fixed !important;
@@ -141,6 +142,8 @@ $estadisticas = $pdo->query("
         .badge-cerrada { background: #6c757d; color: #fff; }
         .btn-ask { background: #17466e; color: white; padding: 12px 30px; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-block; border: none; cursor: pointer; }
         .btn-ask:hover { background: #4b96c3; color: white; text-decoration: none; }
+        .modal .form-hint { font-size: 0.9rem; color: #6c757d; }
+        .info-box { background: #f0f7ff; border-left: 4px solid #17466e; padding: 12px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -344,16 +347,24 @@ $estadisticas = $pdo->query("
                     <form method="POST">
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Título</label>
-                                <input type="text" name="titulo" class="form-control" required 
-                                       placeholder="¿Cuál es tu pregunta?" minlength="5" maxlength="150">
-                                <small class="text-muted">Mínimo 5 caracteres</small>
+                                <label class="form-label fw-bold">Título de la Pregunta <span class="text-danger">*</span></label>
+                                <input type="text" name="titulo" class="form-control form-control-lg" required 
+                                       placeholder="Ej: ¿Cómo configurar sensores de movimiento?" minlength="10" maxlength="200">
+                                <div class="form-hint">Mínimo 10 caracteres. Sé específico y claro.</div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Descripción</label>
-                                <textarea name="descripcion" class="form-control" rows="6" required
-                                          placeholder="Describe tu pregunta con detalle..." minlength="10" maxlength="5000"></textarea>
-                                <small class="text-muted">Mínimo 10 caracteres</small>
+                                <label class="form-label fw-bold">Descripción Detallada <span class="text-danger">*</span></label>
+                                <textarea name="descripcion" class="form-control" rows="8" required
+                                          placeholder="Describe tu pregunta con detalle...&#10;- ¿Qué problema tienes?&#10;- ¿Qué has intentado?&#10;- ¿Qué resultados obtuviste?" minlength="20" maxlength="5000"></textarea>
+                                <div class="form-hint">Mínimo 20 caracteres. Cuanto más detalle, mejor.</div>
+                            </div>
+                            <div class="info-box small">
+                                <strong>Consejos rápidos:</strong>
+                                <ul class="mb-0 ps-3">
+                                    <li>Título claro y concreto.</li>
+                                    <li>Explica el contexto y lo que probaste.</li>
+                                    <li>Incluye datos o capturas si aplica.</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="modal-footer">

@@ -6,8 +6,8 @@ $nombre = 'Admin';
 $apellidoP = 'Meta';
 $apellidoM = 'Hogar';
 $email = 'admin@example.com';
-$password = 'Admin123!'; // Cambia esta contraseña después
-$telefono = '';
+$password = 'Admin123!'; // Se va a cambiar esta contraseña después
+$telefono = '7777777777';
 $tipo = 'interno';
 
 // Crear rol administrador si no existe

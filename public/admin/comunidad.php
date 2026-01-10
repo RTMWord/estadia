@@ -2,6 +2,7 @@
 require_once '../../app/config/db.php';
 require_once '../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
+require_once __DIR__ . '/_security_check.php';
 
 // Procesar eliminación
 if (isset($_POST['eliminar']) && isset($_POST['id'])) {
@@ -129,7 +130,7 @@ function getBadgeClass($estado) {
     </style>
 </head>
 <body>
-<?php include __DIR__ . '/partials/admin_nav.php'; ?>
+<?php include __DIR__ . '/../partials/bs-navbar.php'; ?>
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -279,7 +280,7 @@ function getBadgeClass($estado) {
                                             <h5 class="modal-title">Editar Estado - #<?= $inc['idIncidencia'] ?></h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
-                                        <form method="post">
+                                        <form method="post" id="formEditar<?= $inc['idIncidencia'] ?>">
                                             <div class="modal-body">
                                                 <input type="hidden" name="id" value="<?= $inc['idIncidencia'] ?>">
                                                 <input type="hidden" name="actualizar_estado" value="1">

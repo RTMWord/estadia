@@ -1,8 +1,6 @@
 <?php
 
-require_once '../../app/config/db.php';
-require_once '../../app/helpers/auth.php';
-requireRole($pdo, 'administrador');
+require_once __DIR__ . '/_security_check.php';
 
 // Obtener métricas rápidas
     try {
