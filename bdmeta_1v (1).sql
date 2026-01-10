@@ -54,6 +54,33 @@ CREATE TABLE IF NOT EXISTS `incidencia` (
   FOREIGN KEY (`Usuario_idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Tabla para respuestas a incidencias (comunidad Q/A)
+CREATE TABLE IF NOT EXISTS `respuesta_incidencia` (
+  `idRespuestaIncidencia` INT(11) NOT NULL AUTO_INCREMENT,
+  `Incidencia_idIncidencia` INT(11) NOT NULL,
+  `Usuario_idUsuario` INT(11) NOT NULL,
+  `Cuerpo` TEXT NOT NULL,
+  `Aceptada` TINYINT(1) DEFAULT 0,
+  `Puntos` INT(11) DEFAULT 0,
+  `FechaCreacion` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  `FechaActualizacion` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`idRespuestaIncidencia`),
+  FOREIGN KEY (`Incidencia_idIncidencia`) REFERENCES `incidencia` (`idIncidencia`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`Usuario_idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Tabla de votos para respuestas
+CREATE TABLE IF NOT EXISTS `voto_respuesta_incidencia` (
+  `idVoto` INT(11) NOT NULL AUTO_INCREMENT,
+  `RespuestaIncidencia_idRespuestaIncidencia` INT(11) NOT NULL,
+  `Usuario_idUsuario` INT(11) NOT NULL,
+  `Valor` TINYINT(1) NOT NULL,
+  PRIMARY KEY (`idVoto`),
+  UNIQUE KEY `uq_respuesta_usuario` (`RespuestaIncidencia_idRespuestaIncidencia`, `Usuario_idUsuario`),
+  FOREIGN KEY (`RespuestaIncidencia_idRespuestaIncidencia`) REFERENCES `respuesta_incidencia` (`idRespuestaIncidencia`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`Usuario_idUsuario`) REFERENCES `usuario` (`idUsuario`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- CORRECCIÓN: Sugerencia siempre debe tener un autor. ON DELETE RESTRICT.
 CREATE TABLE IF NOT EXISTS `sugerencia` (
   `idSugerencia` INT(11) NOT NULL AUTO_INCREMENT,
