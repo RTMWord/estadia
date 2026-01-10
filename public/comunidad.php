@@ -2,6 +2,15 @@
 require_once __DIR__ . '/../app/config/db.php';
 require_once __DIR__ . '/../app/helpers/auth.php';
 
+// Comprobar si el usuario actual es administrador (para controlar permisos en la vista)
+$isAdmin = false;
+if (isLogged()) {
+    $stmtRole = $pdo->prepare('SELECT r.Nombre FROM UsuarioRol ur JOIN Rol r ON ur.Rol_idRol = r.idRol WHERE ur.Usuario_idUsuario = ? LIMIT 1');
+    $stmtRole->execute([getUserId()]);
+    $roleName = $stmtRole->fetchColumn();
+    $isAdmin = ($roleName === 'administrador');
+}
+
 // Procesar nueva incidencia (comentario/pregunta simple)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isLogged()) {
     $titulo = trim($_POST['titulo'] ?? '');
@@ -32,7 +41,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isLogged()) {
 }
 
 // Procesar actualización de estado (solo admin)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_estado']) && isLogged()) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_estado'])) {
+    // Verificar a nivel servidor que el usuario es administrador
+    requireRole($pdo, 'administrador');
+    // si requireRole no sale, el usuario es admin
     $idIncidencia = intval($_POST['idIncidencia'] ?? 0);
     $estado = $_POST['estado'] ?? '';
     
@@ -48,6 +60,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['actualizar_estado']) 
         }
     }
 }
+
+// Procesar nueva respuesta a una incidencia
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nueva_respuesta']) && isLogged()) {
+    $idIncidencia = intval($_POST['incidencia_id'] ?? 0);
+    $cuerpo = trim($_POST['cuerpo_respuesta'] ?? '');
+    $usuarioId = getUserId();
+
+    if ($idIncidencia > 0 && !empty($cuerpo)) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO respuesta_incidencia (Incidencia_idIncidencia, Usuario_idUsuario, Cuerpo) VALUES (:incidencia, :usuario, :cuerpo)");
+            $stmt->execute([
+                ':incidencia' => $idIncidencia,
+                ':usuario' => $usuarioId,
+                ':cuerpo' => $cuerpo
+            ]);
+
+            $_SESSION['mensaje'] = 'Respuesta publicada correctamente';
+            header('Location: comunidad.php');
+            exit;
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al publicar respuesta: ' . $e->getMessage();
+        }
+    } else {
+        $_SESSION['error'] = 'Respuesta vacía o incidencia inválida';
+    }
+}
+
+// Nota: la funcionalidad de votos ha sido deshabilitada — no hay procesamiento aquí.
 
 // Obtener todas las incidencias (preguntas/comentarios)
 $stmt = $pdo->query("
@@ -214,8 +254,7 @@ $estadisticas = $pdo->query("
                             </div>
                             
                             <!-- Botones de admin para cambiar estado -->
-                            <?php if (isLogged()): // Simplificar: permitir a usuarios cambiar estado
-                            ?>
+                            <?php if ($isAdmin): ?>
                                 <div class="mt-3 pt-3 border-top">
                                     <form method="post" style="display: inline;">
                                         <input type="hidden" name="idIncidencia" value="<?= $inc['idIncidencia'] ?>">
@@ -229,7 +268,50 @@ $estadisticas = $pdo->query("
                                     </form>
                                 </div>
                             <?php endif; ?>
-                        </div>
+
+                                <?php
+                                // Obtener respuestas para esta incidencia
+                                $stmtR = $pdo->prepare("SELECT r.*, u.Nombre, u.ApellidoP, u.Email,
+                                    (SELECT COUNT(*) FROM usuariorol ur JOIN rol ro ON ur.Rol_idRol = ro.idRol WHERE ur.Usuario_idUsuario = r.Usuario_idUsuario AND ro.Nombre = 'administrador') AS es_admin
+                                    FROM respuesta_incidencia r
+                                    LEFT JOIN usuario u ON r.Usuario_idUsuario = u.idUsuario
+                                    WHERE r.Incidencia_idIncidencia = :id
+                                    ORDER BY r.Aceptada DESC, r.Puntos DESC, r.FechaCreacion ASC");
+                                $stmtR->execute([':id' => $inc['idIncidencia']]);
+                                $respuestas = $stmtR->fetchAll(PDO::FETCH_ASSOC);
+                                ?>
+
+                                <?php if (!empty($respuestas)): ?>
+                                    <div class="mt-3">
+                                        <?php foreach ($respuestas as $res): ?>
+                                            <div style="background:#f8f9fb; border-radius:8px; padding:12px; margin-bottom:10px;">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <strong><?= htmlspecialchars($res['Nombre'] . ' ' . ($res['ApellidoP'] ?? '')) ?></strong>
+                                                        <?php if (!empty($res['es_admin'])): ?>
+                                                            <span class="badge bg-success ms-2">Admin</span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-2" style="color:#333;"><?= nl2br(htmlspecialchars($res['Cuerpo'])) ?></div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (isLogged()): ?>
+                                    <div class="mt-3">
+                                        <form method="post">
+                                            <input type="hidden" name="incidencia_id" value="<?= $inc['idIncidencia'] ?>">
+                                            <div class="mb-2">
+                                                <textarea name="cuerpo_respuesta" class="form-control form-control-sm" rows="3" placeholder="Escribe tu respuesta..." required minlength="2"></textarea>
+                                            </div>
+                                            <button type="submit" name="nueva_respuesta" class="btn btn-sm btn-outline-primary">Responder</button>
+                                        </form>
+                                    </div>
+                                <?php endif; ?>
+
+					</div>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
