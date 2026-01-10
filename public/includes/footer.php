@@ -48,9 +48,10 @@ if (!defined('ESTADIA_INIT')) {
                 <p>¡Mantente informado con nuestro boletín!</p>
                 <div class="footer-newsletter">
                     <div class="newsletter-pill">
-                        <input type="email" placeholder="Ingresa tu Email" aria-label="Ingresa tu Email" />
-                        <button class="send-btn btn btn-sm btn-light" aria-label="Enviar boletín"><i class="fas fa-paper-plane"></i></button>
+                        <input type="email" id="newsletter-email" placeholder="Ingresa tu Email" aria-label="Ingresa tu Email" />
+                        <button class="send-btn btn btn-sm btn-light" onclick="subscribeNewsletter()" aria-label="Enviar boletín"><i class="fas fa-paper-plane"></i></button>
                     </div>
+                    <small id="newsletter-message" style="display: block; margin-top: 10px;"></small>
                 </div>
             </div>
 
@@ -66,7 +67,7 @@ if (!defined('ESTADIA_INIT')) {
                     <a href="#">Home</a>
                     <a href="#">Cookies</a>
                     <a href="#">Help</a>
-                    <a href="#">FAQs</a>
+                    <a href="soporte.php#faqs">FAQs</a>
                 </div>
             </div>
         </div>
@@ -74,6 +75,67 @@ if (!defined('ESTADIA_INIT')) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/navbar-sticky.js"></script>
+    <script>
+        function subscribeNewsletter() {
+            const emailInput = document.getElementById('newsletter-email');
+            const messageDiv = document.getElementById('newsletter-message');
+            const email = emailInput.value.trim();
+            
+            // Validación básica
+            if (!email) {
+                messageDiv.style.color = '#dc3545';
+                messageDiv.textContent = 'Por favor, ingresa tu correo electrónico.';
+                return;
+            }
+            
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                messageDiv.style.color = '#dc3545';
+                messageDiv.textContent = 'Por favor, ingresa un correo válido.';
+                return;
+            }
+            
+            // Enviar solicitud
+            messageDiv.style.color = '#17466e';
+            messageDiv.textContent = 'Enviando...';
+            
+            fetch('php/newsletter_subscribe.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'email=' + encodeURIComponent(email)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.style.color = '#28a745';
+                    messageDiv.textContent = data.message;
+                    emailInput.value = '';
+                } else {
+                    messageDiv.style.color = '#dc3545';
+                    messageDiv.textContent = data.message;
+                }
+            })
+            .catch(error => {
+                messageDiv.style.color = '#dc3545';
+                messageDiv.textContent = 'Error al procesar la solicitud. Intenta más tarde.';
+                console.error('Error:', error);
+            });
+        }
+        
+        // Permitir enviar con Enter
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('newsletter-email');
+            if (emailInput) {
+                emailInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        subscribeNewsletter();
+                    }
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>
