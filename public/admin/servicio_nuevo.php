@@ -3,17 +3,61 @@
 require_once __DIR__ . '/../../app/config/db.php';
 require_once __DIR__ . '/../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
-require_once __DIR__ . '/../../app/controllers/ServicioController.php';
-$ctrl = new ServicioController();
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $res = $ctrl->crear($_POST, $_FILES, $_SESSION);
-    if (!empty($res) && !empty($res['ok'])) {
-        header('Location: ../servicios.php');
-        exit;
-    } else {
-        $errors[] = $res['error'] ?? 'Error al crear servicio';
+    $nombre = trim($_POST['Nombre'] ?? '');
+    $descripcion = trim($_POST['Descripcion'] ?? '');
+    $costo = isset($_POST['Costo']) && $_POST['Costo'] !== '' ? (float)$_POST['Costo'] : 0.0;
+    $agencia = !empty($_POST['Agencia_idAgencia']) ? (int)$_POST['Agencia_idAgencia'] : null;
+    $activo = isset($_POST['Activo']) ? 1 : 0;
+
+    if ($nombre === '') {
+        $errors[] = 'El nombre es obligatorio';
+    }
+
+    // Procesar imagen
+    $imagenNombre = null;
+    if (!empty($_FILES['Imagen']) && !empty($_FILES['Imagen']['name'])) {
+        $f = $_FILES['Imagen'];
+        if ($f['error'] === UPLOAD_ERR_OK) {
+            $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
+            $allowed = ['jpg','jpeg','png','gif','webp'];
+            if (!in_array($ext, $allowed)) {
+                $errors[] = 'Formato de imagen no permitido. Usa jpg, jpeg, png, gif o webp.';
+            } else {
+                $imagenNombre = uniqid('srv_') . '.' . $ext;
+                $destDir = __DIR__ . '/../assets/img/servicios/';
+                if (!is_dir($destDir)) mkdir($destDir, 0755, true);
+                $destPath = $destDir . $imagenNombre;
+                if (!move_uploaded_file($f['tmp_name'], $destPath)) {
+                    $errors[] = 'No se pudo mover la imagen al directorio destino.';
+                    $imagenNombre = null;
+                }
+            }
+        } else {
+            $errors[] = 'Error al subir la imagen (código ' . $f['error'] . ')';
+        }
+    }
+
+    if (empty($errors)) {
+        try {
+            $stmt = $pdo->prepare('INSERT INTO Servicio (Nombre, Descripcion, Costo, Agencia_idAgencia, Imagen, Activo) VALUES (:nombre, :descripcion, :costo, :agencia, :imagen, :activo)');
+            $stmt->execute([
+                ':nombre' => $nombre,
+                ':descripcion' => $descripcion,
+                ':costo' => $costo,
+                ':agencia' => $agencia,
+                ':imagen' => $imagenNombre,
+                ':activo' => $activo
+            ]);
+            $_SESSION['flash_success'] = 'Servicio registrado exitosamente';
+            header('Location: servicios.php');
+            exit;
+        } catch (Exception $e) {
+            $errors[] = 'Error al guardar en la base de datos: ' . $e->getMessage();
+            if ($imagenNombre) @unlink(__DIR__ . '/../assets/img/servicios/' . $imagenNombre);
+        }
     }
 }
 // Obtener lista de agencias para el select
@@ -52,50 +96,35 @@ try {
 
     <form method="post" enctype="multipart/form-data">
         <div class="mb-3">
-            <label class="form-label">Título</label>
-            <input class="form-control" name="titulo" required value="<?php echo htmlspecialchars($_POST['titulo'] ?? ''); ?>">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Descripción corta</label>
-            <input class="form-control" name="descripcion_corta" value="<?php echo htmlspecialchars($_POST['descripcion_corta'] ?? ''); ?>">
+            <label class="form-label">Nombre</label>
+            <input class="form-control" name="Nombre" required value="<?php echo htmlspecialchars($_POST['Nombre'] ?? ''); ?>">
         </div>
         <div class="mb-3">
             <label class="form-label">Descripción</label>
-            <textarea class="form-control" name="descripcion" rows="6"><?php echo htmlspecialchars($_POST['descripcion'] ?? ''); ?></textarea>
+            <textarea class="form-control" name="Descripcion" rows="6"><?php echo htmlspecialchars($_POST['Descripcion'] ?? ''); ?></textarea>
         </div>
         <div class="row g-2">
             <div class="col-md-4 mb-3">
-                <label class="form-label">Categoría</label>
-                <input class="form-control" name="categoria" value="<?php echo htmlspecialchars($_POST['categoria'] ?? ''); ?>">
+                <label class="form-label">Costo</label>
+                <input class="form-control" name="Costo" type="number" step="0.01" value="<?php echo htmlspecialchars($_POST['Costo'] ?? '0.00'); ?>">
             </div>
             <div class="col-md-4 mb-3">
-                <label class="form-label">Ubicación</label>
-                <input class="form-control" name="ubicacion" value="<?php echo htmlspecialchars($_POST['ubicacion'] ?? ''); ?>">
+                <label class="form-label">Agencia</label>
+                <select name="Agencia_idAgencia" class="form-select">
+                    <option value="">-- Seleccionar agencia --</option>
+                    <?php foreach ($agencias as $a): ?>
+                        <option value="<?= $a['idAgencia'] ?>" <?= (isset($_POST['Agencia_idAgencia']) && $_POST['Agencia_idAgencia'] == $a['idAgencia']) ? 'selected' : ''?>><?= htmlspecialchars($a['Nombre']) ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Contacto</label>
-                <input class="form-control" name="contacto" value="<?php echo htmlspecialchars($_POST['contacto'] ?? ''); ?>">
-            </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Agencia</label>
-            <select name="agencia" class="form-select">
-                <option value="">-- Seleccionar agencia --</option>
-                <?php foreach ($agencias as $a): ?>
-                    <option value="<?= $a['idAgencia'] ?>" <?= (isset($_POST['agencia']) && $_POST['agencia'] == $a['idAgencia']) ? 'selected' : ''?>><?= htmlspecialchars($a['Nombre']) ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Precio</label>
-            <input class="form-control" name="precio" type="number" step="0.01" value="<?php echo htmlspecialchars($_POST['precio'] ?? ''); ?>">
+            <div class="col-md-4 mb-3"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Imagen</label>
-            <input class="form-control" name="imagen" type="file" accept="image/*">
+            <input class="form-control" name="Imagen" type="file" accept="image/*">
         </div>
         <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="status" id="status" checked>
+            <input class="form-check-input" type="checkbox" name="Activo" id="status" <?= isset($_POST['Activo']) || !isset($_POST['Activo']) ? 'checked' : '' ?>>
             <label class="form-check-label" for="status">Activo</label>
         </div>
         <div class="d-flex gap-2">

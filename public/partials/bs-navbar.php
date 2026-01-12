@@ -21,7 +21,7 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
                     <a class="nav-link active" href="index.php">Inicio</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="quienes_somos.php" id="quienesSomosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="quienesSomosDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         ¿Quiénes Somos?
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="quienesSomosDropdown">
@@ -34,7 +34,7 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
                     <a class="nav-link" href="productos.php">Productos</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="blog.php" id="blogDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Contenido Informativo
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="blogDropdown">
@@ -44,7 +44,7 @@ require_once __DIR__ . '/../../app/helpers/auth.php';
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="sitios_interes.php" id="sitiosInteresDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="sitiosInteresDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Sitios de Interés
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="sitiosInteresDropdown">

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../app/config/db.php';
 require_once __DIR__ . '/../app/models/Contenido.php';
+require_once __DIR__ . '/partials/bs-navbar.php';
 ?>
 <!doctype html>
 <html lang="es">
@@ -26,8 +27,7 @@ require_once __DIR__ . '/../app/models/Contenido.php';
     </style>
 </head>
 <body>
-<?php include __DIR__ . '/partials/bs-navbar.php'; ?>
-
+    <?php include __DIR__ . '/partials/bs-navbar.php'; ?>
 <main class="container py-5 mt-4">
     <div class="row">
         <div class="col-lg-8">

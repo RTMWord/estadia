@@ -2,7 +2,8 @@
 // app/models/Contenido.php
 class Contenido {
     public static function getAll($pdo) {
-        $stmt = $pdo->query('SELECT idContenido, Tipo, Titulo, Cuerpo, ImagenPrincipalRuta, FechaPublicacion, Activo FROM contenido ORDER BY FechaPublicacion DESC');
+        // Evitar seleccionar columnas que pueden no existir en algunas instalaciones.
+        $stmt = $pdo->query('SELECT idContenido, Tipo, Titulo, Cuerpo, FechaPublicacion, Activo FROM contenido ORDER BY FechaPublicacion DESC');
         return $stmt->fetchAll();
     }
 
