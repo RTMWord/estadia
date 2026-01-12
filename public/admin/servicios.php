@@ -4,6 +4,10 @@ require_once '../../app/models/Servicio.php';
 require_once '../../app/helpers/auth.php';
 requireRole($pdo, 'administrador');
 
+$flashSuccess = $_SESSION['flash_success'] ?? null;
+$flashError   = $_SESSION['flash_error'] ?? null;
+unset($_SESSION['flash_success'], $_SESSION['flash_error']);
+
 // Usar PDO directamente para listar servicios (evita llamar a métodos inexistentes)
 try {
     $sql = "SELECT s.idServicio, s.Nombre, s.Descripcion, s.Costo, a.Nombre AS Agencia, s.Activo
@@ -23,6 +27,7 @@ try {
     <title>Administrar Servicios - MetaHogar</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.userway.org/widget.js" data-account="kjnkkEfZy1"></script>
     <style>
         .userway-icon {
@@ -62,7 +67,7 @@ try {
                     <td><?= $s['Activo'] ? 'Sí' : 'No' ?></td>
                     <td>
                         <a href="servicio_editar.php?id=<?= $s['idServicio'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="../../app/controllers/ServicioController.php?eliminar=<?= $s['idServicio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar servicio?')">Eliminar</a>
+                        <a href="servicio_eliminar.php?id=<?= $s['idServicio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar servicio?')">Eliminar</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -71,4 +76,26 @@ try {
     </div>
 </body>
 </html>
+<?php if ($flashSuccess): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Éxito',
+    text: '<?= addslashes($flashSuccess) ?>',
+    confirmButtonColor: '#3085d6',
+});
+</script>
+<?php endif; ?>
+<?php if ($flashError): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+Swal.fire({
+    icon: 'error',
+    title: 'Error',
+    text: '<?= addslashes($flashError) ?>',
+    confirmButtonColor: '#d33',
+});
+</script>
+<?php endif; ?>
 

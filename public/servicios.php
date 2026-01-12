@@ -47,6 +47,43 @@ if ($q !== '') {
             font-size: 2rem; 
             margin-bottom: 10px; 
         }
+
+        /* Contenedor de imagen: fija la altura y evita que la imagen se salga del card */
+        .service-img-wrapper {
+            width: 100%;
+            height: 220px; /* ajuste inicial, cambia según diseño */
+            overflow: hidden;
+            border-top-left-radius: 0.375rem;
+            border-top-right-radius: 0.375rem;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* La imagen ocupa el contenedor y se recorta manteniendo proporción
+           - max-* evita que imágenes muy altas/anchas escapen del layout
+           - object-fit: cover recorta manteniendo el aspecto; cambiar a contain si
+             prefieres que la imagen completa se muestre (con letterbox)
+        */
+        .service-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover; /* use 'contain' si prefieres sin recorte */
+            object-position: center center;
+            display: block;
+        }
+
+        /* Evita que la imagen u otros contenidos sobresalgan del card */
+        .card {
+            overflow: hidden;
+        }
+
+        @media (max-width: 576px) {
+            .service-img-wrapper { height: 160px; }
+        }
     </style>
 </head>
 <body>

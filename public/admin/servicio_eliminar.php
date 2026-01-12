@@ -1,13 +1,13 @@
 <?php
 // public/admin/servicio_eliminar.php
-session_start();
+require_once __DIR__ . '/../../app/config/db.php';
+require_once __DIR__ . '/../../app/helpers/auth.php';
 require_once __DIR__ . '/../../app/controllers/ServicioController.php';
-$ctrl = new ServicioController();
 
-if (empty($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header('Location: ../login.php');
-    exit;
-}
+// Verificar sesión/rol utilizando el helper centralizado
+requireRole($pdo, 'administrador');
+
+$ctrl = new ServicioController();
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) {
@@ -16,7 +16,7 @@ if ($id <= 0) {
 }
 
 $res = $ctrl->eliminar($id, $_SESSION);
-if ($res['ok']) {
+if (!empty($res['ok'])) {
     header('Location: ../servicios.php');
     exit;
 } else {

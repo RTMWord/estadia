@@ -44,7 +44,7 @@ require_once __DIR__ . '/../app/models/Contenido.php';
             ?>
             <article class="card mb-4">
                 <div class="card-body">
-                    <h3 class="card-title"><a href="blog_post.php?id=<?= $it['idContenido'] ?>"><?= htmlspecialchars($it['Titulo']) ?></a></h3>
+                    <h3 class="card-title"><a href="noticia_post.php?id=<?= $it['idContenido'] ?>"><?= htmlspecialchars($it['Titulo']) ?></a></h3>
                     <div class="text-muted small mb-2"><?= htmlspecialchars($it['FechaPublicacion']) ?></div>
                     <p class="card-text">
                         <?php
@@ -56,7 +56,7 @@ require_once __DIR__ . '/../app/models/Contenido.php';
                         }
                         ?>
                     </p>
-                    <a href="blog_post.php?id=<?= $it['idContenido'] ?>" class="btn btn-sm btn-primary">Leer más</a>
+                    <a href="noticia_post.php?id=<?= $it['idContenido'] ?>" class="btn btn-sm btn-primary">Leer más</a>
                 </div>
             </article>
             <?php endforeach; ?>
@@ -79,7 +79,7 @@ require_once __DIR__ . '/../app/models/Contenido.php';
                             if ($itemTipo !== 'NOTICIA') continue;
                             $count++;
                             if ($count > 5) break;
-                            echo '<li><a href="blog_post.php?id=' . $it['idContenido'] . '">' . htmlspecialchars($it['Titulo']) . '</a></li>';
+                            echo '<li><a href="noticia_post.php?id=' . $it['idContenido'] . '">' . htmlspecialchars($it['Titulo']) . '</a></li>';
                         }
                         if ($count === 0) echo '<li class="text-muted">Sin noticias</li>';
                         ?>
