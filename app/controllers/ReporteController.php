@@ -248,31 +248,115 @@ class ReporteController {
     
     // --- Reporte Analítico 3 y 4 (Marcadores de Posición) ---
     public function getUsuarioPerfilRiesgoReport($filters = []) {
-        $data = [
-            'Nota_Metodologia' => [
-                'Propósito' => 'Identificar usuarios con alta necesidad de accesibilidad y/o bajo engagement.',
-                'Dependencia' => 'Requiere la tabla `accesibilidad` (no implementada en el flujo actual) y lógica compleja.',
-            ],
-            'Marcador_de_Posicion' => [
-                'Estatus' => 'No implementado.',
-                'Sugerencia' => 'Para implementarlo, necesitaría agregar lógica de consulta a la tabla `accesibilidad` y cruzarla con `cita`/`sugerencia`.'
-            ]
-        ];
-        return $data;
+        // Implementación básica basada en los diagnósticos (data/diagnosticos.json)
+        $dataFile = __DIR__ . '/../../data/diagnosticos.json';
+        $entries = [];
+        if (is_file($dataFile)) {
+            $raw = @file_get_contents($dataFile);
+            $entries = $raw ? json_decode($raw, true) : [];
+            if (!is_array($entries)) $entries = [];
+        }
+
+        $perfilCounts = [];
+        $cityCounts = [];
+        $difficultyCounts = [];
+        $scored = [];
+
+        foreach ($entries as $e) {
+            $perfil = $e['perfil'] ?? 'desconocido';
+            $perfilCounts[$perfil] = ($perfilCounts[$perfil] ?? 0) + 1;
+
+            $ciudad = $e['contact']['ciudad'] ?? 'desconocida';
+            $cityCounts[$ciudad] = ($cityCounts[$ciudad] ?? 0) + 1;
+
+            $difs = $e['dificultades'] ?? [];
+            foreach ($difs as $d) $difficultyCounts[$d] = ($difficultyCounts[$d] ?? 0) + 1;
+
+            // Score heuristic: perfil weight + number of dificultades
+            $weight = 0;
+            if (stripos($perfil, 'adulto') !== false || stripos($perfil, 'adulto_mayor') !== false) $weight += 2;
+            if (stripos($perfil, 'otro') !== false) $weight += 1;
+            $score = $weight + count($difs);
+
+            $scored[] = [
+                'id' => $e['id'] ?? '',
+                'nombre' => $e['contact']['nombre'] ?? '',
+                'email' => $e['contact']['email'] ?? '',
+                'ciudad' => $ciudad,
+                'perfil' => $perfil,
+                'dificultades' => implode(', ', $difs),
+                'score' => $score,
+                'created_at' => $e['created_at'] ?? '',
+            ];
+        }
+
+        // ordenar por score descendente
+        usort($scored, function($a, $b){ return ($b['score'] <=> $a['score']); });
+
+        // preparar secciones retorno
+        $results = [];
+        $results['Resumen_Por_Perfil'] = $perfilCounts;
+        $results['Usuarios_Por_Ciudad'] = $cityCounts;
+        // top dificultades
+        arsort($difficultyCounts);
+        $topDiff = [];
+        foreach ($difficultyCounts as $k => $v) $topDiff[] = ['dificultad' => $k, 'cantidad' => $v];
+        $results['Top_Dificultades'] = array_slice($topDiff, 0, 20);
+        // usuarios alto riesgo (top 20)
+        $results['Usuarios_Alto_Riesgo'] = array_slice($scored, 0, 20);
+
+        return $results;
     }
     
     public function getTemasCriticosReport($filters = []) {
-        $data = [
-            'Nota_Metodologia' => [
-                'Propósito' => 'Analizar texto libre de sugerencias e incidencias para priorizar problemas.',
-                'Dependencia' => 'Requiere análisis de texto (NLP) y, preferiblemente, campos de auditoría de tiempo de resolución para calcular el tiempo de cierre.',
-            ],
-            'Marcador_de_Posicion' => [
-                'Estatus' => 'No implementado.',
-                'Sugerencia' => 'Para implementarlo, necesitaría usar lógica de conteo de palabras clave y calcular diferencias de tiempo entre estados de `Sugerencia` e `Incidencia`.'
-            ]
+        // Análisis simple de frecuencia de palabras en sugerencias
+        $sql = 'SELECT s.Titulo, s.Descripcion, u.Nombre AS UsuarioNombre FROM Sugerencia s LEFT JOIN Usuario u ON s.Usuario_idUsuario = u.idUsuario';
+        try {
+            $stmt = $this->pdo->query($sql);
+            $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+        } catch (\PDOException $e) {
+            $rows = [];
+        }
+
+        $text = '';
+        foreach ($rows as $r) {
+            $text .= ' ' . ($r['Titulo'] ?? '') . ' ' . ($r['Descripcion'] ?? '');
+        }
+
+        // Normalizar y tokenizar
+        $text = mb_strtolower($text, 'UTF-8');
+        // quitar signos y números
+        $text = preg_replace('/[^\p{L}\s]/u', ' ', $text);
+        $tokens = preg_split('/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY);
+
+        $stopwords = [
+            'de','la','que','el','en','y','a','los','se','del','las','por','con','para','es','un','una','su','al','como','más','pero','no','si','porque','sus','le','lo','ya','o','este','esta','está','son','fue','ha','han','tener'
         ];
-        return $data;
+        $freq = [];
+        foreach ($tokens as $t) {
+            if (mb_strlen($t) < 4) continue;
+            if (in_array($t, $stopwords)) continue;
+            $freq[$t] = ($freq[$t] ?? 0) + 1;
+        }
+
+        arsort($freq);
+        $top = [];
+        $count = 0;
+        foreach ($freq as $k => $v) {
+            $top[] = ['term' => $k, 'count' => $v];
+            $count++;
+            if ($count >= 30) break;
+        }
+
+        $results = [];
+        $results['Nota_Metodologia'] = [
+            'Propósito' => 'Analizar texto libre de sugerencias para priorizar temas críticos.',
+            'Método' => 'Conteo de términos tras normalización y eliminación de stopwords (heurístico).'
+        ];
+        $results['Top_Temas'] = $top;
+        $results['Total_Sugerencias'] = count($rows);
+
+        return $results;
     }
 
 

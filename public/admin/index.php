@@ -137,6 +137,26 @@ require_once __DIR__ . '/_security_check.php';
         <div class="col-6 col-md-3">
             <div class="card text-center">
                 <div class="card-body">
+                    <h5 class="card-title">Solicitudes para Diagnósticos</h5>
+                    <?php
+                    $diagFile = __DIR__ . '/../../data/diagnosticos.json';
+                    $diagCount = 0;
+                    if (is_file($diagFile)) {
+                        $raw = @file_get_contents($diagFile);
+                        $arr = $raw ? json_decode($raw, true) : [];
+                        if (is_array($arr)) $diagCount = count($arr);
+                    }
+                    ?>
+                    <p class="display-6 mb-0"><?= $diagCount ?></p>
+                </div>
+                <div class="card-footer">
+                    <a href="solicitudes_diagnostico.php" class="stretched-link">Ver solicitudes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
                     <h5 class="card-title">Comunidad</h5>
                     <p class="display-6 mb-0"><?= $counts['incidencias'] ?></p>
                 </div>

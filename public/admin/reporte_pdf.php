@@ -4,6 +4,12 @@ require_once '../../app/helpers/auth.php';
 require_once '../../app/controllers/ReporteController.php';
 requireRole($pdo, 'administrador');
 
+// Fijar zona horaria explícita para evitar inconsistencias (override si existe)
+date_default_timezone_set('America/Mexico_City');
+
+// Timestamp de generación para el PDF (en zona horaria fija)
+$now = new DateTime('now', new DateTimeZone('America/Mexico_City'));
+
 // Usar REQUEST porque el export analítico puede enviar imágenes por POST
 $reporteCtrl = new ReporteController($pdo);
 $reporteActual = $_REQUEST['reporte'] ?? 'citas';
@@ -68,6 +74,76 @@ switch ($reporteActual) {
         $is_analitico = true;
         $tituloReporte = "Análisis de Detección de Temas Críticos";
         $analitico_data = $reporteCtrl->getTemasCriticosReport($filtros);
+        break;
+    case 'diagnosticos':
+        // Cargar desde data/diagnosticos.json y aplicar filtros similares a la UI
+        $dataFile = __DIR__ . '/../../data/diagnosticos.json';
+        $diagnosticos = [];
+        if (is_file($dataFile)) {
+            $raw = @file_get_contents($dataFile);
+            $diagnosticos = $raw ? json_decode($raw, true) : [];
+            if (!is_array($diagnosticos)) $diagnosticos = [];
+        }
+
+        $resultados = [];
+        foreach ($diagnosticos as $d) {
+            // filtros por fecha
+            $createdTs = isset($d['created_at']) ? strtotime($d['created_at']) : null;
+            if (!empty($filtros['fecha_inicio'])) {
+                $startTs = strtotime($filtros['fecha_inicio'] . ' 00:00:00');
+                if ($createdTs === null || $createdTs < $startTs) continue;
+            }
+            if (!empty($filtros['fecha_fin'])) {
+                $endTs = strtotime($filtros['fecha_fin'] . ' 23:59:59');
+                if ($createdTs === null || $createdTs > $endTs) continue;
+            }
+            // filtro por ciudad
+            if (!empty($_REQUEST['ciudad'])) {
+                $ciudadFilter = mb_strtolower(trim($_REQUEST['ciudad']));
+                $ciudadVal = mb_strtolower(trim($d['contact']['ciudad'] ?? ''));
+                if ($ciudadFilter !== '' && strpos($ciudadVal, $ciudadFilter) === false) continue;
+            }
+            // filtro por perfil
+            if (!empty($_REQUEST['perfil'])) {
+                if (trim($d['perfil'] ?? '') !== trim($_REQUEST['perfil'])) continue;
+            }
+            // filtro por dificultad (buscar en array)
+            if (!empty($_REQUEST['dificultad'])) {
+                $dif = trim($_REQUEST['dificultad']);
+                $has = false;
+                if (!empty($d['dificultades']) && is_array($d['dificultades'])) {
+                    foreach ($d['dificultades'] as $dd) {
+                        if (trim($dd) === $dif) { $has = true; break; }
+                    }
+                }
+                if (!$has) continue;
+            }
+
+            // Formatear created_at usando DateTime y la zona horaria objetivo
+            $created_formatted = '';
+            if (!empty($d['created_at'])) {
+                try {
+                    $dt = new DateTime($d['created_at']);
+                    $dt->setTimezone(new DateTimeZone('America/Mexico_City'));
+                    $created_formatted = $dt->format('d/m/Y H:i:s');
+                } catch (Exception $e) {
+                    $created_formatted = $d['created_at'];
+                }
+            }
+
+            $resultados[] = [
+                'id' => $d['id'] ?? '',
+                'created_at' => $created_formatted,
+                'perfil' => $d['perfil'] ?? '',
+                'nombre' => $d['contact']['nombre'] ?? '',
+                'email' => $d['contact']['email'] ?? '',
+                'ciudad' => $d['contact']['ciudad'] ?? '',
+                'dificultades' => !empty($d['dificultades']) ? implode(', ', $d['dificultades']) : '',
+                'intereses' => !empty($d['intereses']) ? implode(', ', $d['intereses']) : '',
+            ];
+        }
+
+        $tituloReporte = "Reporte de Diagnósticos (CRUD)";
         break;
     default:
         // deja $resultados vacío y título por defecto
@@ -150,6 +226,12 @@ $filtrosAplicados = [];
 foreach ($filtros as $key => $value) {
     if ($value !== '' && !in_array($key, ['reporte', 'pdf'])) {
         $filtrosAplicados[] = htmlspecialchars(ucfirst($key) . ': ' . $value);
+    }
+}
+$extraFilterKeys = ['ciudad','perfil','dificultad'];
+foreach ($extraFilterKeys as $k) {
+    if (isset($_REQUEST[$k]) && $_REQUEST[$k] !== '') {
+        $filtrosAplicados[] = htmlspecialchars(ucfirst($k) . ': ' . $_REQUEST[$k]);
     }
 }
 $filtrosStr = empty($filtrosAplicados) ? 'Ninguno' : implode(', ', $filtrosAplicados);
@@ -309,9 +391,9 @@ $html = '<!DOCTYPE html>
         </div>
         <div class="date-section">
             <div><span class="date-label">Fecha de Reporte:</span></div>
-            <div>' . date('d/m/Y') . '</div>
+            <div>' . $now->format('d/m/Y') . '</div>
             <div><span class="date-label">Hora:</span></div>
-            <div>' . date('H:i:s') . '</div>
+            <div>' . $now->format('H:i:s') . '</div>
         </div>
     </div>
 
@@ -361,7 +443,7 @@ if (!empty($chartHtml)) {
 }
 $html .= $htmlTabla;
 
-$html .= '<div class="footer"><p>Documento generado automáticamente por MetaHogar Admin | © ' . date('Y') . ' - Todos los derechos reservados</p></div>';
+$html .= '<div class="footer"><p>Documento generado automáticamente por MetaHogar Admin | © ' . $now->format('Y') . ' - Todos los derechos reservados</p></div>';
 
 // Cerrar documento HTML
 $html .= "\n</body>\n</html>";
