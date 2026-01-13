@@ -54,7 +54,7 @@ $citas = Cita::getAll($pdo);
                     <td><?= $c['Estado'] ?></td>
                     <td><?= $c['Notas'] ?></td>
                     <td>
-                        <a href="../cita_editar.php?id=<?= $c['idCita'] ?>" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="../admin/cita_editar.php?id=<?= $c['idCita'] ?>" class="btn btn-sm btn-warning">Editar</a>
                         <a href="citas.php?eliminar=<?= $c['idCita'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar cita?')">Eliminar</a>
                     </td>
                 </tr>

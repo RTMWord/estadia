@@ -71,6 +71,72 @@ switch ($reporteActual) {
         $titulo_reporte = "Detección de Temas Críticos (Analítico)";
         $analitico_data = $reporteCtrl->getTemasCriticosReport($filtros);
         break;
+    case 'diagnosticos':
+        // Leer JSON de diagnosticos y preparar resultados y filtros
+        $diagFile = __DIR__ . '/../../data/diagnosticos.json';
+        $diagEntries = [];
+        if (is_file($diagFile)) {
+            $raw = @file_get_contents($diagFile);
+            $diagEntries = $raw ? json_decode($raw, true) : [];
+            if (!is_array($diagEntries)) $diagEntries = [];
+        }
+
+        // Prepare filter sets
+        $cities = [];
+        $perfiles = [];
+        $dificultades = [];
+        foreach ($diagEntries as $d) {
+            if (!empty($d['contact']['ciudad'])) $cities[] = $d['contact']['ciudad'];
+            if (!empty($d['perfil'])) $perfiles[] = $d['perfil'];
+            foreach ($d['dificultades'] ?? [] as $dd) $dificultades[] = $dd;
+        }
+        $filtros_data['cities'] = array_values(array_unique($cities));
+        $filtros_data['perfiles'] = array_values(array_unique($perfiles));
+        $filtros_data['dificultades'] = array_values(array_unique($dificultades));
+
+        // Apply filters from $filtros: fecha range, ciudad, perfil, dificultad
+        $res = [];
+        $start = !empty($filtros['fecha_inicio']) ? strtotime($filtros['fecha_inicio']) : null;
+        $end = !empty($filtros['fecha_fin']) ? strtotime($filtros['fecha_fin'].' 23:59:59') : null;
+        foreach ($diagEntries as $d) {
+            $created = isset($d['created_at']) ? strtotime($d['created_at']) : null;
+            if ($start && $created !== false && $created < $start) continue;
+            if ($end && $created !== false && $created > $end) continue;
+            if (!empty($_GET['ciudad']) && (!isset($d['contact']['ciudad']) || stripos($d['contact']['ciudad'], $_GET['ciudad']) === false)) continue;
+            if (!empty($_GET['perfil']) && ($d['perfil'] ?? '') !== $_GET['perfil']) continue;
+            if (!empty($_GET['dificultad'])) {
+                if (empty($d['dificultades']) || !in_array($_GET['dificultad'], $d['dificultades'])) continue;
+            }
+
+            // Convert to readable row
+            $row = [];
+            $row['ID'] = $d['id'] ?? '';
+            $row['Fecha'] = $d['created_at'] ?? '';
+            $row['Nombre'] = $d['contact']['nombre'] ?? '';
+            $row['Email'] = $d['contact']['email'] ?? '';
+            $row['Ciudad'] = $d['contact']['ciudad'] ?? '';
+            $row['Vivienda'] = $d['tipo_vivienda'] ?? '';
+            $row['Dificultades'] = implode(', ', $d['dificultades'] ?? []);
+            $row['Intereses'] = implode(', ', $d['intereses'] ?? []);
+            $row['Perfil'] = $d['perfil'] ?? '';
+            $row['Edad'] = $d['edad'] ?? '';
+            $row['Plazo'] = $d['plazo'] ?? '';
+            // detalle html
+            $det = [];
+            $det[] = '<p><strong>ID:</strong> '.htmlspecialchars($row['ID']).'</p>';
+            $det[] = '<p><strong>Fecha:</strong> '.htmlspecialchars($row['Fecha']).'</p>';
+            $det[] = '<p><strong>Contacto:</strong> '.htmlspecialchars($row['Nombre'].' — '.$row['Email'].' — '.$row['Ciudad']).'</p>';
+            $det[] = '<p><strong>Perfil / Edad:</strong> '.htmlspecialchars(($row['Perfil'] ?? '').' / '.($row['Edad'] ?? '')).'</p>';
+            $det[] = '<p><strong>Tipo de vivienda:</strong> '.htmlspecialchars($row['Vivienda']).'</p>';
+            $det[] = '<p><strong>Dificultades:</strong> '.htmlspecialchars($row['Dificultades']?:'-').'</p>';
+            $det[] = '<p><strong>Intereses:</strong> '.htmlspecialchars($row['Intereses']?:'-').'</p>';
+            $row['detalle_html'] = implode("\n", $det);
+
+            $res[] = $row;
+        }
+        $resultados = $res;
+        $titulo_reporte = 'Solicitudes de Diagnóstico';
+        break;
     default:
         $titulo_reporte = "Reporte Desconocido";
         break;
@@ -120,10 +186,13 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'servicios' ? 'active' : '' ?>" href="?reporte=servicios">Servicios (CRUD)</a></li>
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'productos' ? 'active' : '' ?>" href="?reporte=productos">Productos (CRUD)</a></li>
             
+            <!--
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'capacidad_operativa' ? 'active' : '' ?> text-success" href="?reporte=capacidad_operativa">Capacidad Operativa</a></li>
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'inventario_rendimiento' ? 'active' : '' ?> text-success" href="?reporte=inventario_rendimiento">Rendimiento Inventario</a></li>
-             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'usuario_riesgo' ? 'active' : '' ?> text-info" href="?reporte=usuario_riesgo">Perfil de Riesgo</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'usuario_riesgo' ? 'active' : '' ?> text-info" href="?reporte=usuario_riesgo">Perfil de Riesgo</a></li>
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'temas_criticos' ? 'active' : '' ?> text-info" href="?reporte=temas_criticos">Temas Críticos</a></li>
+            -->
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'diagnosticos' ? 'active' : '' ?> text-warning" href="?reporte=diagnosticos">Diagnósticos</a></li>
         </ul>
 
         <div class="card mb-4">
@@ -228,6 +297,35 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
                             </div>
                         </div>
                     <?php endif; ?>
+                    <?php if ($reporteActual == 'diagnosticos'): ?>
+                        <div class="col-md-3">
+                            <label class="form-label">Ciudad</label>
+                            <select name="ciudad" class="form-select">
+                                <option value="">Todas</option>
+                                <?php foreach ($filtros_data['cities'] ?? [] as $c): ?>
+                                    <option value="<?= htmlspecialchars($c) ?>" <?= (isset($_GET['ciudad']) && $_GET['ciudad'] === $c) ? 'selected' : '' ?>><?= htmlspecialchars($c) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Perfil</label>
+                            <select name="perfil" class="form-select">
+                                <option value="">Todos</option>
+                                <?php foreach ($filtros_data['perfiles'] ?? [] as $p): ?>
+                                    <option value="<?= htmlspecialchars($p) ?>" <?= (isset($_GET['perfil']) && $_GET['perfil'] === $p) ? 'selected' : '' ?>><?= htmlspecialchars($p) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Dificultad</label>
+                            <select name="dificultad" class="form-select">
+                                <option value="">Todas</option>
+                                <?php foreach ($filtros_data['dificultades'] ?? [] as $d): ?>
+                                    <option value="<?= htmlspecialchars($d) ?>" <?= (isset($_GET['dificultad']) && $_GET['dificultad'] === $d) ? 'selected' : '' ?>><?= htmlspecialchars($d) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
                     
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary me-2">Aplicar Filtros</button>
@@ -313,36 +411,84 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
                     </div>
                 <?php endif; ?>
             <?php else: ?>
-                <?php 
-                    // Renderizado de tablas CRUD (existente)
-                    $keys = !empty($resultados) ? array_keys($resultados[0]) : [];
-                ?>
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <?php foreach ($keys as $k) echo '<th>' . htmlspecialchars($k) . '</th>'; ?>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($resultados as $r): ?>
-                        <tr>
-                            <?php foreach ($r as $key => $val): ?>
-                                <td>
-                                    <?php
-                                        if ($key === 'Activo') {
-                                            echo $val ? 'Sí' : 'No';
-                                        } elseif (in_array($key, ['Costo', 'Precio'])) {
-                                            echo '$' . number_format((float)$val, 2);
-                                        } else {
-                                            echo htmlspecialchars($val);
-                                        }
-                                    ?>
-                                </td>
+                <?php if ($reporteActual === 'diagnosticos'): ?>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Fecha</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Ciudad</th>
+                                    <th>Vivienda</th>
+                                    <th>Dificultades</th>
+                                    <th>Intereses</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($resultados as $r): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($r['ID']) ?></td>
+                                        <td><?= htmlspecialchars($r['Fecha']) ?></td>
+                                        <td><?= htmlspecialchars($r['Nombre']) ?></td>
+                                        <td><?= htmlspecialchars($r['Email']) ?></td>
+                                        <td><?= htmlspecialchars($r['Ciudad']) ?></td>
+                                        <td><?= htmlspecialchars($r['Vivienda']) ?></td>
+                                        <td><?= htmlspecialchars($r['Dificultades']) ?></td>
+                                        <td><?= htmlspecialchars($r['Intereses']) ?></td>
+                                        <td><button class="btn btn-sm btn-outline-secondary btn-view-detail" data-detail='<?= htmlspecialchars($r['detalle_html'], ENT_QUOTES) ?>'>Ver</button></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Modal for detail -->
+                    <div class="modal fade" id="diagDetailModal" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Detalle de la Solicitud</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                          </div>
+                          <div class="modal-body"><div id="diagDetailHtml">Cargando...</div></div>
+                          <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button></div>
+                        </div>
+                      </div>
+                    </div>
+                <?php else: ?>
+                    <?php 
+                        // Renderizado de tablas CRUD (existente)
+                        $keys = !empty($resultados) ? array_keys($resultados[0]) : [];
+                    ?>
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <?php foreach ($keys as $k) echo '<th>' . htmlspecialchars($k) . '</th>'; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($resultados as $r): ?>
+                            <tr>
+                                <?php foreach ($r as $key => $val): ?>
+                                    <td>
+                                        <?php
+                                            if ($key === 'Activo') {
+                                                echo $val ? 'Sí' : 'No';
+                                            } elseif (in_array($key, ['Costo', 'Precio'])) {
+                                                echo '$' . number_format((float)$val, 2);
+                                            } else {
+                                                echo htmlspecialchars($val);
+                                            }
+                                        ?>
+                                    </td>
+                                <?php endforeach; ?>
+                            </tr>
                             <?php endforeach; ?>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
             <?php endif; ?>
         <?php else: ?>
             <div class="alert alert-warning">No hay resultados para los filtros seleccionados.</div>

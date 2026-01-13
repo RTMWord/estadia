@@ -114,15 +114,15 @@ if (!defined('ESTADIA_INIT')) {
     <section class="hero-section">
     <div class="container hero-split-bg"> <div class="row align-items-center h-100">
             
-            <div class="col-lg-7 text-center text-lg-start hero-text-area"> <h2 class="hero-title text-white">
-                    Diseñamos hogares para que tus adultos mayores vivan una longevidad segura e independiente en el hogar que atesoran.
-                </h2>
+            <div class="col-lg-7 text-center text-lg-start hero-text-area"> <h1 class="hero-title text-white">
+                    Da el primer paso hacia una longevidad segura, confortable e independiente en casa
+                </h1>
                 <p class="lead text-white-75 mb-4">
                     Tecnología que transforma tu hogar, seguridad que transforma tu vida.
                 </p>
                 <div class="d-flex justify-content-center justify-content-lg-start mt-4 gap-3">
-                    <a href="#nosotros" class="btn btn-lg btn-custom-blue">
-                        Leer Más
+                    <a href="#diagnostico" id="cta-diagnostico" class="btn btn-lg btn-primary" aria-label="Quiero evaluar mi hogar - iniciar diagnóstico del hogar">
+                        Quiero evaluar mi hogar
                     </a>
                     <a href="#contacto" class="btn btn-lg btn-custom-outline">
                         Contáctanos
@@ -147,76 +147,127 @@ if (!defined('ESTADIA_INIT')) {
 
     </section>
     <main class="container my-5">
-        <section id="nosotros" class="mb-5">
-            <h2 class="text-primary">Nosotros</h2>
 
-            <div class="row align-items-center">
-            
-            <div class="col-md-6 order-md-1">
-                <h3>MetaHogar</h3>
-                <p class="fs-4">Vivir más, Vivir mejor.</p>
-                <p>Es una empresa dedicada a brindar soluciones tecnológicas inteligentes para el hogar, con un enfoque especial en los adultos mayores. Nuestro objetivo principal es mejorar la seguridad, la comodidad y la eficiencia en la vida diaria de esta población. Nos enfocamos en transformar los hogares en espacios inteligentes, donde la tecnología se integra de manera intuitiva y fácil de usar, especialmente diseñada para satisfacer las necesidades y preferencias de los adultos mayores.</p>
-                <a href="#servicios" class="btn btn-lg btn-custom-blue">Leer Más</a>
-            </div>
+    <!-- SweetAlert2: modal feedback for diagnóstico -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            <div class="col-md-6 order-md-2 text-center mt-4 mt-md-0">
-                <img src="assets/css/images/LogoMeta.png" class="img-fluid rounded shadow-lg" alt="Hogar inteligente para adultos mayores" style="max-height: 400px; object-fit: cover;">
-                </div>
-        </div>
+    <script>
+    // Diagnóstico: client-side validation and AJAX submit (with SweetAlert2 feedback)
+    document.addEventListener('DOMContentLoaded', function(){
+        const form = document.getElementById('diagnosticoForm');
+        const alertBox = document.getElementById('diagnostico-alert');
+        if (!form) return;
 
-            </section>
+        form.addEventListener('submit', async function(e){
+            e.preventDefault();
+            alertBox.innerHTML = '';
 
-        <section id="servicios" class="mb-5 services-container">
-            <div class="container">
-                <h2 class="text-primary text-center">Servicios</h2>
-                <h4 class="text-center mb-5">Asesoría</h4>
-                
-                <p class="text-center lead mb-5 px-lg-5">
-                    MetaHogar es una iniciativa vinculada con la Asociación Americana de Personas Retiradas (AARP) y con la Asociación Civil Desarrollo Aplicativo para la Movilidad (DAM A.C.) y nuestro personal está capacitado para ayudarle a que usted tome las decisiones correctas en el momento adecuado si es que ha decidido brindarle a sus adultos mayores una vivienda funcional, confortable y segura para una longevidad digna.
-                </p>
+            // Basic client validation (usuario): ensure required groups have selection
+            const errors = [];
+            if (!document.querySelector('input[name="perfil_role"]:checked')) errors.push('Selecciona quién eres respecto al hogar.');
+            if (!document.querySelector('input[name="edad_persona"]:checked')) errors.push('Selecciona la edad de la persona.');
+            if (!document.querySelector('input[name="tipo_vivienda"]:checked')) errors.push('Selecciona el tipo de vivienda.');
+            if (!document.querySelector('input[name="plazo"]:checked')) errors.push('Selecciona el plazo.');
+            const nombre = form.querySelector('[name="contact_nombre"]').value.trim();
+            const email = form.querySelector('[name="contact_email"]').value.trim();
+            const whatsapp = form.querySelector('[name="contact_whatsapp"]').value.trim();
+            const ciudad = form.querySelector('[name="contact_ciudad"]') ? form.querySelector('[name="contact_ciudad"]').value.trim() : '';
+            const acepto = form.querySelector('[name="acepto"]');
 
-                <div id="servicesCarousel" class="carousel slide" data-bs-ride="false" data-bs-interval="false">
-                    <div class="carousel-inner">
-                        
-                        <div class="carousel-item active">
-                            <div class="row g-4 justify-content-center">
-                                
-                                <div class="col-lg-4 col-md-6 d-flex"> 
-                                    <div class="service-step-card">
-                                        <div class="service-icon-circle">
-                                            <i class="fas fa-file-alt"></i> 
-                                        </div>
-                                        <h4>Proceso</h4>
-                                        <p><strong>Valoración y diagnóstico</strong></p>
-                                        <p>
-                                            Realizamos un análisis integral del hogar a intervenir para identificar los puntos críticos que pudieran representar un eventual riesgo que vulnere la integridad física de sus queridos adultos mayores. Elaboramos una matriz de riesgos para calcular la posibilidad de que ocurra un accidente contra el impacto que pueda tener en el adulto mayor.
-                                        </p>
-                                    </div>
-                                </div>
+            // Name: only letters, accents, spaces, hyphens and apostrophes (2-100 chars)
+            const namePattern = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-]{2,100}$/u;
+            if (!nombre) errors.push('Ingresa tu nombre.');
+            else if (!namePattern.test(nombre)) errors.push('El nombre sólo puede contener letras, espacios, guiones o apóstrofos.');
 
-                                <div class="col-lg-4 col-md-6 d-flex"> 
-                                    <div class="service-step-card">
-                                        <div class="service-icon-circle">
-                                            <i class="fas fa-chart-bar"></i>
-                                        </div>
-                                        <h4>Propuesta técnica y económica</h4>
-                                        <p>
-                                            Teniendo ese resultado se proponen una serie de adaptaciones físicas y soluciones tecnológicas (específicas o complementarias) que convertirán su hogar en una vivienda segura, funcional y confortable para una longevidad digna. Tanto las adaptaciones físicas como las soluciones tecnológicas se orientan a lograr funcionalidad y confort, pero también brindan independencia a los adultos mayores así como a los familiares cercanos al poder tener monitoreo remoto de distintas actividades.
-                                        </p>
-                                        <p><strong>Trabajamos sobre 4 ejes:</strong></p>
-                                        <ul>
-                                            <li>Riesgo</li>
-                                            <li>Funcionalidad</li>
-                                            <li>Confort</li>
-                                            <li>Independencia / Monitoreo / Tranquilidad.</li>
-                                        </ul>
-                                    </div>
-                                </div>
+            // Email basic check
+            if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push('Ingresa un correo válido.');
 
-                                <div class="col-lg-4 col-md-6 d-flex"> 
-                                    <div class="service-step-card">
-                                        <div class="service-icon-circle">
-                                            <i class="fas fa-tools"></i>
+            // WhatsApp/phone: optional but if present, validate digits, +, spaces, parentheses and hyphens
+            const phonePattern = /^[0-9+\s()\-]{7,25}$/;
+            if (whatsapp && !phonePattern.test(whatsapp)) errors.push('Ingresa un teléfono/WhatsApp válido (sólo números, +, espacios, paréntesis o guiones).');
+
+            // City: only letters and spaces (2-60 chars)
+            const cityPattern = /^[A-Za-zÀ-ÖØ-öø-ÿ\s\-]{2,60}$/u;
+            if (!ciudad) errors.push('Ingresa la ciudad.');
+            else if (!cityPattern.test(ciudad)) errors.push('La ciudad sólo puede contener letras y espacios.');
+
+            if (!acepto || !acepto.checked) errors.push('Debes aceptar ser contactado.');
+
+            if (errors.length) {
+                alertBox.innerHTML = '<div class="alert alert-danger" role="alert">' + errors.map(e=>'<div>'+e+'</div>').join('') + '</div>';
+                window.scrollTo({ top: form.offsetTop - 80, behavior: 'smooth' });
+                return;
+            }
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            try {
+                const resp = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+                const text = await resp.text();
+                let data = null;
+                try {
+                    data = JSON.parse(text);
+                } catch (parseErr) {
+                    // server returned non-JSON (PHP error, warning, or HTML) -> show raw response in modal
+                    console.warn('Non-JSON response for diagnóstico submit:', text);
+                    Swal.fire({
+                        title: 'Respuesta del servidor',
+                        html: '<pre style="text-align:left; white-space:pre-wrap;">' + Swal.escapeHtml(text) + '</pre>',
+                        icon: 'error',
+                        width: '800px'
+                    });
+                    return;
+                }
+
+                if (data && data.success) {
+                    // If mail_error present (debug), inform the user it's received but email failed
+                    if (data.mail_error) {
+                        Swal.fire({
+                            title: 'Recibido (sin notificación por correo)',
+                            html: 'Tu diagnóstico fue guardado correctamente, pero hubo un problema enviando el correo al administrador.<br><small class="text-muted">Detalle: ' + Swal.escapeHtml(data.mail_error) + '</small>',
+                            icon: 'warning',
+                            confirmButtonText: 'Cerrar'
+                        });
+                    } else {
+                        await Swal.fire({
+                            title: 'Gracias',
+                            text: 'Tu diagnóstico ha sido recibido. Te contactaremos pronto.',
+                            icon: 'success',
+                            confirmButtonText: 'Cerrar'
+                        });
+                    }
+                    form.reset();
+                    // optional: focus first field
+                    const first = form.querySelector('[name="contact_nombre"]');
+                    if (first) first.focus();
+                } else {
+                    const msg = (data && data.message) ? data.message : 'Ocurrió un error al procesar tu solicitud.';
+                    const details = (data && data.mail_error) ? ('\n' + data.mail_error) : '';
+                    Swal.fire({
+                        title: 'No se pudo enviar',
+                        text: msg + details,
+                        icon: 'error',
+                        confirmButtonText: 'Cerrar'
+                    });
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+                Swal.fire({
+                    title: 'Error de comunicación',
+                    text: 'No se pudo enviar la solicitud. Revisa la consola o intenta más tarde.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    });
+    </script>
                                         </div>
                                         <h4>Ejecución</h4>
                                         <p>
@@ -616,21 +667,254 @@ if (!defined('ESTADIA_INIT')) {
         </section>
         
         <section id="contacto" class="mb-5">
-            <h2 class="text-primary">Contáctanos</h2>
-            <p>¡DESCUBRE COMO, JUNTOS, PODEMOS HACER LA DIFERENCIA EN TU HOGAR. ...PARA UNA LONGEVIDAD MÁS SEGURA Y CONFORTABLE!!!!</p>
-            <p>Uno de nuestros agentes se comunicará contigo para agendar una cita.</p>
-            <form class="row g-3">
+            <div id="diagnostico"></div>
+            <h3 class="text-primary">Diagnóstico Metahogar de Longevidad Segura</h3>
+            <p class="lead">Completa este breve cuestionario para recibir un diagnóstico personalizado.</p>
+
+            <form id="diagnosticoForm" class="row g-3" method="post" action="../php/diagnostico/submit.php" novalidate>
+                <div id="diagnostico-alert"></div>
+                <!-- Perfil -->
+                <fieldset class="col-12">
+                    <legend class="h6">Perfil</legend>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="perfil_role" id="perfil_adulto" value="adulto_mayor" required>
+                                <label class="form-check-label fs-5" for="perfil_adulto">Adulto mayor</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="perfil_role" id="perfil_hijo" value="hijo_a">
+                                <label class="form-check-label fs-5" for="perfil_hijo">Hijo/a</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="perfil_role" id="perfil_nieto" value="nieto_a">
+                                <label class="form-check-label fs-5" for="perfil_nieto">Nieto/a</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="perfil_role" id="perfil_otro" value="otro_familiar">
+                                <label class="form-check-label fs-5" for="perfil_otro">Otro familiar</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label fs-5">Edad de la persona</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="edad_persona" id="edad_55_60" value="age_55_60" required>
+                                <label class="form-check-label fs-5" for="edad_55_60">55-60</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="edad_persona" id="edad_60_65" value="age_60_65">
+                                <label class="form-check-label fs-5" for="edad_60_65">60-65</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="edad_persona" id="edad_66_75" value="age_66_75">
+                                <label class="form-check-label fs-5" for="edad_66_75">66-75</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="edad_persona" id="edad_76_plus" value="age_76_plus">
+                                <label class="form-check-label fs-5" for="edad_76_plus">76 o más</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Situación del Hogar -->
+                <fieldset class="col-12">
+                    <legend class="h6">Situación del Hogar</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label fs-5">Tipo de vivienda</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_vivienda" id="vivienda_casa1" value="casa_1_nivel" required>
+                                <label class="form-check-label fs-5" for="vivienda_casa1">Casa 1 nivel</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_vivienda" id="vivienda_casa2" value="casa_2_mas">
+                                <label class="form-check-label fs-5" for="vivienda_casa2">Casa 2+ niveles</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo_vivienda" id="vivienda_depto" value="departamento">
+                                <label class="form-check-label fs-5" for="vivienda_depto">Departamento</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fs-5">¿La persona presenta alguna dificultad? (marca las que apliquen)</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_movilidad" value="movilidad">
+                                <label class="form-check-label fs-5" for="dif_movilidad">Movilidad</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_caidas" value="caidas">
+                                <label class="form-check-label fs-5" for="dif_caidas">Caídas</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_vista" value="vista">
+                                <label class="form-check-label fs-5" for="dif_vista">Vista</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_audicion" value="audicion">
+                                <label class="form-check-label fs-5" for="dif_audicion">Audición</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_prev" value="preventivo">
+                                <label class="form-check-label fs-5" for="dif_prev">Prevenir / Ninguna</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Intereses -->
+                <fieldset class="col-12">
+                    <legend class="h6">Intereses</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label fs-5">¿Qué te gustaría mejorar? (marca las que apliquen)</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="intereses[]" id="int_caidas" value="mejorar_caidas">
+                                <label class="form-check-label fs-5" for="int_caidas">Caídas</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="intereses[]" id="int_mov" value="mejorar_movilidad">
+                                <label class="form-check-label fs-5" for="int_mov">Facilidad de movimiento</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="intereses[]" id="int_confort" value="mejorar_confort">
+                                <label class="form-check-label fs-5" for="int_confort">Confort</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="intereses[]" id="int_monitoreo" value="mejorar_monitoreo">
+                                <label class="form-check-label fs-5" for="int_monitoreo">Monitoreo</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="intereses[]" id="int_independencia" value="mejorar_independencia">
+                                <label class="form-check-label fs-5" for="int_independencia">Independencia</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fs-5">¿En qué espacios te interesa empezar? (marca los que apliquen)</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="espacios[]" id="esp_bano" value="esp_bano">
+                                <label class="form-check-label fs-5" for="esp_bano">Baño</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="espacios[]" id="esp_rec" value="esp_recamara">
+                                <label class="form-check-label fs-5" for="esp_rec">Recámara</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="espacios[]" id="esp_cocina" value="esp_cocina">
+                                <label class="form-check-label fs-5" for="esp_cocina">Cocina</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="espacios[]" id="esp_escaleras" value="esp_escaleras">
+                                <label class="form-check-label fs-5" for="esp_escaleras">Escaleras</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="espacios[]" id="esp_toda" value="esp_toda">
+                                <label class="form-check-label fs-5" for="esp_toda">Toda la vivienda</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Tecnología -->
+                <fieldset class="col-12">
+                    <legend class="h6">Tecnología</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label fs-5">Nivel de apertura tecnológica</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tec_nivel" id="tec_baja" value="tec_baja" required>
+                                <label class="form-check-label fs-5" for="tec_baja">No estoy familiarizado(a)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tec_nivel" id="tec_media" value="tec_media">
+                                <label class="form-check-label fs-5" for="tec_media">Algo familiarizado(a)</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tec_nivel" id="tec_alta" value="tec_alta">
+                                <label class="form-check-label fs-5" for="tec_alta">Cómodo(a) con tecnología</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fs-5">¿Qué te daría más tranquilidad? (elige una)</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tranquilidad" id="tranq_seg" value="tranq_seguridad" required>
+                                <label class="form-check-label fs-5" for="tranq_seg">Seguridad</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tranquilidad" id="tranq_ind" value="tranq_independencia">
+                                <label class="form-check-label fs-5" for="tranq_ind">Independencia</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tranquilidad" id="tranq_fam" value="tranq_familia_informada">
+                                <label class="form-check-label fs-5" for="tranq_fam">Familia informada</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Plazo -->
+                <fieldset class="col-12">
+                    <legend class="h6">Plazo</legend>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="plazo" id="plazo_inmediato" value="plazo_inmediato" required>
+                        <label class="form-check-label fs-5" for="plazo_inmediato">Inmediato</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="plazo" id="plazo_3meses" value="plazo_3_meses">
+                        <label class="form-check-label fs-5" for="plazo_3meses">3 meses</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="plazo" id="plazo_6_12" value="plazo_6_12">
+                        <label class="form-check-label fs-5" for="plazo_6_12">6-12 meses</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="plazo" id="plazo_explorando" value="plazo_explorando">
+                        <label class="form-check-label fs-5" for="plazo_explorando">Explorando</label>
+                    </div>
+                </fieldset>
+
+                <!-- Datos personales -->
                 <div class="col-md-6">
-                    <input type="text" class="form-control" placeholder="Nombre" required>
+                    <label for="nombre" class="form-label fs-5">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="contact_nombre" placeholder="Nombre completo" required>
                 </div>
                 <div class="col-md-6">
-                    <input type="email" class="form-control" placeholder="Correo electrónico" required>
+                    <label for="email" class="form-label fs-5">Email</label>
+                    <input type="email" class="form-control" id="email" name="contact_email" placeholder="correo@ejemplo.com" required>
                 </div>
-                <div class="col-12">
-                    <textarea class="form-control" rows="3" placeholder="Mensaje" required></textarea>
+                <div class="col-md-6">
+                    <label for="whatsapp" class="form-label fs-5">Teléfono / WhatsApp</label>
+                    <input type="tel" class="form-control" id="whatsapp" name="contact_whatsapp" placeholder="+52 1 55..." aria-label="WhatsApp">
                 </div>
+                <div class="col-md-6">
+                    <label for="ciudad" class="form-label fs-5">Ciudad</label>
+                    <input type="text" class="form-control" id="ciudad" name="contact_ciudad" placeholder="Ciudad" required>
+                </div>
+
+                <!-- Aceptación -->
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Enviar</button>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="acepto" name="acepto" value="si_acepto" required>
+                        <label class="form-check-label fs-5" for="acepto">Acepto ser contactado para recibir mi diagnóstico personalizado Metahogar</label>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-lg btn-primary" aria-label="Quiero evaluar mi hogar">Quiero evaluar mi hogar</button>
+                </div>
+
+                <!-- Microcopy de confianza (iconos/bullets) -->
+                <div class="col-12 mt-3">
+                    <div class="d-flex flex-column align-items-start">
+                        <small class="text-muted d-block">🔒 Tu información es confidencial</small>
+                        <small class="text-muted d-block">✅ Diagnóstico sin compromiso</small>
+                        <small class="text-muted d-block">🏠 Soluciones pensadas para adultos mayores y sus familias</small>
+                    </div>
                 </div>
             </form>
         </section>
@@ -733,6 +1017,77 @@ if (!defined('ESTADIA_INIT')) {
             } finally {
                 submit.disabled = false;
                 submit.innerHTML = 'Solicitar cita';
+            }
+        });
+    });
+    </script>
+
+    <script>
+    // Diagnóstico: client-side validation and AJAX submit
+    document.addEventListener('DOMContentLoaded', function(){
+        const form = document.getElementById('diagnosticoForm');
+        const alertBox = document.getElementById('diagnostico-alert');
+        if (!form) return;
+
+        form.addEventListener('submit', async function(e){
+            e.preventDefault();
+            alertBox.innerHTML = '';
+
+            // Basic client validation (usuario): ensure required groups have selection
+            const errors = [];
+            if (!document.querySelector('input[name="perfil_role"]:checked')) errors.push('Selecciona quién eres respecto al hogar.');
+            if (!document.querySelector('input[name="edad_persona"]:checked')) errors.push('Selecciona la edad de la persona.');
+            if (!document.querySelector('input[name="tipo_vivienda"]:checked')) errors.push('Selecciona el tipo de vivienda.');
+            if (!document.querySelector('input[name="plazo"]:checked')) errors.push('Selecciona el plazo.');
+            const nombre = form.querySelector('[name="contact_nombre"]').value.trim();
+            const email = form.querySelector('[name="contact_email"]').value.trim();
+            const ciudad = form.querySelector('[name="contact_ciudad"]').value.trim();
+            const acepto = form.querySelector('[name="acepto"]');
+            if (!nombre) errors.push('Ingresa tu nombre.');
+            if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push('Ingresa un correo válido.');
+            if (!ciudad) errors.push('Ingresa la ciudad.');
+            if (!acepto || !acepto.checked) errors.push('Debes aceptar ser contactado.');
+
+            if (errors.length) {
+                alertBox.innerHTML = '<div class="alert alert-danger" role="alert">' + errors.map(e=>'<div>'+e+'</div>').join('') + '</div>';
+                window.scrollTo({ top: form.offsetTop - 80, behavior: 'smooth' });
+                return;
+            }
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            try {
+                const resp = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+                const text = await resp.text();
+                let data = null;
+                try {
+                    data = JSON.parse(text);
+                } catch (parseErr) {
+                    // server returned non-JSON (PHP error, warning, or HTML)
+                    alertBox.innerHTML = '<div class="alert alert-danger" role="alert">Error en la respuesta del servidor. Revisa el servidor. <pre style="white-space:pre-wrap;">' + text.replace(/</g,'&lt;') + '</pre></div>';
+                    console.error('Respuesta inválida del servidor:', text);
+                    return;
+                }
+
+                if (data.success) {
+                    alertBox.innerHTML = '<div class="alert alert-success" role="alert">' + (data.message || 'Enviado correctamente') + '</div>';
+                    form.reset();
+                    submitBtn.focus();
+                } else {
+                    // if debug info available, show it
+                    let msg = data.message || 'Error en el envío';
+                    if (data.mail_error) msg += ' — ' + data.mail_error;
+                    alertBox.innerHTML = '<div class="alert alert-danger" role="alert">' + msg + '</div>';
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+                alertBox.innerHTML = '<div class="alert alert-danger" role="alert">Error enviando la solicitud. Intenta más tarde. Revisa la consola para más detalles.</div>';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
         });
     });

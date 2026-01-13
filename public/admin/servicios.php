@@ -67,7 +67,7 @@ try {
                     <td><?= $s['Activo'] ? 'Sí' : 'No' ?></td>
                     <td>
                         <a href="servicio_editar.php?id=<?= $s['idServicio'] ?>" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="servicio_eliminar.php?id=<?= $s['idServicio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar servicio?')">Eliminar</a>
+                        <a href="servicio_eliminar.php?id=<?= $s['idServicio'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar servicio?')">Deshabilitar</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

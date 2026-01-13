@@ -11,6 +11,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/bs-navbar.css">
+    
     <style>
         body { background: #f5f7fb; font-family: 'Segoe UI', sans-serif; }
         .hero { background: linear-gradient(180deg, #17466e 0%, #4b96c3 100%); color: white; padding: 80px 0 60px; }
@@ -52,7 +53,8 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                     <div class="support-icon">📞</div>
                     <h5 class="card-title mb-3">Teléfono</h5>
                     <p class="card-text text-muted mb-3">Llamadas de lunes a domingo</p>
-                    <p class="fw-bold text-primary">(555) 123-4567</p>
+                    <p class="fw-bold text-primary">(777) 129-4253</p>
+                    <p class="fw-bold text-primary">(777) 804-0747</p>
                 </div>
             </div>
 
@@ -64,18 +66,9 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                     <p class="fw-bold text-primary">soporte@metahogar.mx</p>
                 </div>
             </div>
-            
-            <div class="col-md-6 col-lg-3">
-                <div class="support-card p-4 text-center h-100">
-                    <div class="support-icon">🎫</div>
-                    <h5 class="card-title mb-3">Ticket de Soporte</h5>
-                    <p class="card-text text-muted mb-3">Reporta un problema</p>
-                    <a href="#" class="btn btn-sm" style="background: #17466e; color: white;">Crear Ticket</a>
-                </div>
-            </div>
         </div>
 
-        <h2 class="mb-5" style="color: #17466e;">Preguntas Frecuentes (FAQ)</h2>
+        <h2 id="faqs" class="mb-5" style="color: #17466e;">Preguntas Frecuentes (FAQ)</h2>
 
         <div class="row">
             <div class="col-lg-8 mx-auto">
@@ -85,7 +78,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                         <span>➕</span>
                     </div>
                     <div class="faq-answer">
-                        Nuestro equipo de soporte está disponible 24/7 (24 horas, 7 días a la semana). Puedes contactarnos a través de teléfono, email o chat en vivo en cualquier momento.
+                        Nuestro equipo de soporte está disponible 24/7 (24 horas, 7 días a la semana). Puedes contactarnos a través de teléfono o vía email en cualquier momento.
                     </div>
                 </div>
 
@@ -95,7 +88,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                         <span>➕</span>
                     </div>
                     <div class="faq-answer">
-                        Puedes reportar un problema de varias formas: llamando al teléfono de soporte, enviando un email, iniciando un chat en vivo o creando un ticket de soporte en nuestro portal. Elige el canal que prefieras.
+                        Puedes reportar un problema de dos formas: llamando al teléfono de soporte o enviando un email.
                     </div>
                 </div>
 
@@ -105,7 +98,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                         <span>➕</span>
                     </div>
                     <div class="faq-answer">
-                        Las respuestas por email generalmente se envían en 24 horas. Para problemas críticos, llamar o usar chat en vivo garantiza una respuesta inmediata. Los tickets de soporte se revisan en orden de prioridad.
+                        Las respuestas por email generalmente se envían en 24 horas. Para problemas críticos, llamar garantiza una respuesta inmediata. 
                     </div>
                 </div>
 
@@ -125,7 +118,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                         <span>➕</span>
                     </div>
                     <div class="faq-answer">
-                        Sí, nuestro equipo puede acceder a tu sistema de forma remota (con tu consentimiento) para diagnosticar y resolver problemas técnicos de manera más eficiente.
+                        No. Ese servicio no está disponible actualmente.
                     </div>
                 </div>
             </div>
