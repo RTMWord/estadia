@@ -193,8 +193,28 @@ $total_resultados = $is_analitico
 </head>
 <body>
 <?php include __DIR__ . '/partials/admin_nav.php'; ?>
+<<<<<<< HEAD
 <div class="container py-5">
     <h2 class="text-primary mb-4">Generador de Reportes Dinámicos</h2>
+=======
+    <div class="container py-5">
+        <h2 class="text-primary mb-4">Generador de Reportes Dinámicos</h2>
+        
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'citas' ? 'active' : '' ?>" href="?reporte=citas">Citas (CRUD)</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'usuarios' ? 'active' : '' ?>" href="?reporte=usuarios">Usuarios (CRUD)</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'servicios' ? 'active' : '' ?>" href="?reporte=servicios">Servicios (CRUD)</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'productos' ? 'active' : '' ?>" href="?reporte=productos">Productos (CRUD)</a></li>
+            
+            
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'capacidad_operativa' ? 'active' : '' ?> text-success" href="?reporte=capacidad_operativa">Capacidad Operativa</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'inventario_rendimiento' ? 'active' : '' ?> text-success" href="?reporte=inventario_rendimiento">Rendimiento Inventario</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'usuario_riesgo' ? 'active' : '' ?> text-info" href="?reporte=usuario_riesgo">Perfil de Riesgo</a></li>
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'temas_criticos' ? 'active' : '' ?> text-info" href="?reporte=temas_criticos">Temas Críticos</a></li>
+            
+            <li class="nav-item"><a class="nav-link <?= $reporteActual == 'diagnosticos' ? 'active' : '' ?> text-warning" href="?reporte=diagnosticos">Diagnósticos</a></li>
+        </ul>
+>>>>>>> 0e14ba81545d64a74b8afec77948313128a00816
 
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item"><a class="nav-link <?= $reporteActual == 'citas' ? 'active' : '' ?>" href="?reporte=citas">Citas (CRUD)</a></li>
