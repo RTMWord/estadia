@@ -14,26 +14,27 @@ class Contenido {
     }
 
     public static function crear($pdo, $data) {
-        $stmt = $pdo->prepare('INSERT INTO contenido (Tipo, Titulo, Cuerpo, AutorUsuario_id, ImagenPrincipalRuta, FechaPublicacion, Activo) VALUES (?, ?, ?, ?, ?, NOW(), ?)');
+        // La tabla `contenido` no tiene columna para ruta de imagen en esta instalación.
+        // Insertar sólo las columnas existentes.
+        $stmt = $pdo->prepare('INSERT INTO contenido (Tipo, Titulo, Cuerpo, AutorUsuario_id, FechaPublicacion, Activo) VALUES (?, ?, ?, ?, NOW(), ?)');
         $stmt->execute([
             $data['tipo'] ?? 'ARTICULO',
             $data['titulo'] ?? '',
             $data['cuerpo'] ?? '',
             isset($data['autor']) ? (int)$data['autor'] : null,
-            $data['imagen_ruta'] ?? null,
             isset($data['activo']) ? (int)$data['activo'] : 0
         ]);
         return $pdo->lastInsertId();
     }
 
     public static function editar($pdo, $id, $data) {
-        $stmt = $pdo->prepare('UPDATE contenido SET Tipo = ?, Titulo = ?, Cuerpo = ?, AutorUsuario_id = ?, ImagenPrincipalRuta = COALESCE(?, ImagenPrincipalRuta), Activo = ? WHERE idContenido = ?');
+        // Actualizar sólo columnas existentes en la tabla `contenido`.
+        $stmt = $pdo->prepare('UPDATE contenido SET Tipo = ?, Titulo = ?, Cuerpo = ?, AutorUsuario_id = ?, Activo = ? WHERE idContenido = ?');
         return $stmt->execute([
             $data['tipo'] ?? 'ARTICULO',
             $data['titulo'] ?? '',
             $data['cuerpo'] ?? '',
             isset($data['autor']) ? (int)$data['autor'] : null,
-            $data['imagen_ruta'] ?? null,
             isset($data['activo']) ? (int)$data['activo'] : 0,
             (int)$id
         ]);

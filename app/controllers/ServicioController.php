@@ -69,9 +69,47 @@ class ServicioController {
     // Detalle público
     public function detalle($id) {
         if ($this->model && method_exists($this->model, 'obtenerPorId')) {
-            return $this->model->obtenerPorId((int)$id);
+            echo "<!-- detalle(): model present -->\n";
+            try {
+                $res = $this->model->obtenerPorId((int)$id);
+                if (!empty($res)) {
+                    echo "<!-- detalle(): model returned row -->\n";
+                    return $res;
+                } else {
+                    echo "<!-- detalle(): model returned empty -->\n";
+                }
+            } catch (Throwable $e) {
+                error_log('ServicioController::detalle model call failed: ' . $e->getMessage());
+                echo "<!-- detalle(): model threw exception: " . htmlspecialchars($e->getMessage()) . " -->\n";
+            }
+        } else {
+            echo "<!-- detalle(): model NOT present -->\n";
         }
-        error_log('ServicioController::detalle - modelo no inicializado o método obtenerPorId no disponible');
+
+        // Fallback: intentar consulta directa con PDO (ayuda diagnóstico y compatibilidad)
+        try {
+            echo "<!-- detalle(): attempting PDO fallback -->\n";
+            global $pdo;
+            if (!empty($pdo)) {
+                $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Categoria AS categoria, Ubicacion AS ubicacion, Contacto AS contacto, Imagen AS imagen, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status FROM servicio WHERE idServicio = ? LIMIT 1";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([(int)$id]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($row) {
+                    echo "<!-- detalle(): PDO fallback returned row -->\n";
+                    return $row;
+                } else {
+                    echo "<!-- detalle(): PDO fallback returned empty -->\n";
+                }
+            } else {
+                echo "<!-- detalle(): PDO not available -->\n";
+            }
+        } catch (Throwable $e) {
+            error_log('ServicioController::detalle fallback PDO error: ' . $e->getMessage());
+            echo "<!-- detalle(): PDO fallback exception: " . htmlspecialchars($e->getMessage()) . " -->\n";
+        }
+
+        error_log('ServicioController::detalle - servicio no encontrado o modelo no inicializado');
         return null;
     }
 
@@ -82,7 +120,6 @@ class ServicioController {
         }
         $titulo = trim($post['titulo'] ?? '');
         $descripcion = trim($post['descripcion'] ?? '');
-        $descripcion_corta = trim($post['descripcion_corta'] ?? '');
         $categoria = trim($post['categoria'] ?? '');
         $ubicacion = trim($post['ubicacion'] ?? '');
         $contacto = trim($post['contacto'] ?? '');
@@ -90,22 +127,22 @@ class ServicioController {
         $precio = isset($post['precio']) ? floatval($post['precio']) : 0;
         $status = isset($post['status']) ? 1 : 0;
 
-        $imagen_ruta = '';
+        $imagen_ruta = null;
         if (!empty($files['imagen']['name'])) {
-            $upload_dir = __DIR__ . '/../../public/assets/images';
+            $upload_dir = __DIR__ . '/../../public/assets/img/servicios';
             if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
             $ext = pathinfo($files['imagen']['name'], PATHINFO_EXTENSION);
             $new = 'serv_' . time() . '_' . rand(1000,9999) . '.' . $ext;
             $dest = $upload_dir . '/' . $new;
             if (move_uploaded_file($files['imagen']['tmp_name'], $dest)) {
-                $imagen_ruta = 'assets/images/' . $new; // ruta relativa a public/
+                // Guardamos solo el nombre de archivo para compatibilidad con admin UI
+                $imagen_ruta = $new;
             }
         }
 
         $data = [
             'titulo' => $titulo,
             'descripcion' => $descripcion,
-            'descripcion_corta' => $descripcion_corta,
             'categoria' => $categoria,
             'ubicacion' => $ubicacion,
             'contacto' => $contacto,
@@ -131,7 +168,6 @@ class ServicioController {
         $data = [
             'titulo' => trim($post['titulo'] ?? ''),
             'descripcion' => trim($post['descripcion'] ?? ''),
-            'descripcion_corta' => trim($post['descripcion_corta'] ?? ''),
             'categoria' => trim($post['categoria'] ?? ''),
             'ubicacion' => trim($post['ubicacion'] ?? ''),
             'contacto' => trim($post['contacto'] ?? ''),
@@ -140,14 +176,46 @@ class ServicioController {
             'status' => isset($post['status']) ? 1 : 0
         ];
 
+        // Obtener imagen existente (si el modelo la devuelve)
+        $oldImage = null;
+        if ($this->model && method_exists($this->model, 'obtenerPorId')) {
+            $existing = $this->model->obtenerPorId((int)$id);
+            $oldImage = !empty($existing['imagen']) ? $existing['imagen'] : null;
+        }
+
+        // Eliminar imagen existente si el admin lo solicitó
+        if (!empty($post['remove_image'])) {
+            $data['imagen'] = '';
+            if ($oldImage) {
+                // soportar rutas previas como 'assets/images/...' o nombres en 'assets/img/servicios/'
+                if (strpos($oldImage, 'assets/images/') === 0) {
+                    $filePath = __DIR__ . '/../../public/' . $oldImage;
+                } else {
+                    $filePath = __DIR__ . '/../../public/assets/img/servicios/' . $oldImage;
+                }
+                if (is_file($filePath)) @unlink($filePath);
+            }
+        }
+
+        // Subir nueva imagen si se proporcionó
         if (!empty($files['imagen']['name'])) {
-            $upload_dir = __DIR__ . '/../../public/assets/images';
+            $upload_dir = __DIR__ . '/../../public/assets/img/servicios';
             if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
             $ext = pathinfo($files['imagen']['name'], PATHINFO_EXTENSION);
             $new = 'serv_' . time() . '_' . rand(1000,9999) . '.' . $ext;
             $dest = $upload_dir . '/' . $new;
             if (move_uploaded_file($files['imagen']['tmp_name'], $dest)) {
-                $data['imagen'] = 'assets/images/' . $new;
+                // Guardar solo el nombre de archivo
+                $data['imagen'] = $new;
+                // borrar imagen anterior si existe
+                if ($oldImage) {
+                    if (strpos($oldImage, 'assets/images/') === 0) {
+                        $oldPath = __DIR__ . '/../../public/' . $oldImage;
+                    } else {
+                        $oldPath = __DIR__ . '/../../public/assets/img/servicios/' . $oldImage;
+                    }
+                    if (is_file($oldPath)) @unlink($oldPath);
+                }
             }
         }
 
