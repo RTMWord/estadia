@@ -126,8 +126,8 @@ class ReporteController {
     // --- Reporte Analítico 1: Capacidad Operativa y Eficiencia (Citas y Servicios) ---
     public function getCapacidadOperativaReport($filters = []) {
         // Por defecto, se analiza el último mes
-        $fecha_inicio = $filters['fecha_inicio'] ?? date('Y-m-d', strtotime('-30 days'));
-        $fecha_fin = $filters['fecha_fin'] ?? date('Y-m-d');
+        $fecha_inicio = !empty($filters['fecha_inicio']) ? $filters['fecha_inicio'] : date('Y-m-d', strtotime('-30 days'));
+        $fecha_fin = !empty($filters['fecha_fin']) ? $filters['fecha_fin'] : date('Y-m-d');
         
         $results = [];
 
@@ -138,9 +138,26 @@ class ReporteController {
             SUM(CASE WHEN Estado = 'REALIZADA' THEN 1 ELSE 0 END) AS TotalRealizadas
             FROM Cita
             WHERE FechaRegistro >= ? AND FechaRegistro <= ?";
-        $stmt_tasa = $this->pdo->prepare($sql_tasa);
-        $stmt_tasa->execute([$fecha_inicio . ' 00:00:00', $fecha_fin . ' 23:59:59']);
-        $tasa_data = $stmt_tasa->fetch(PDO::FETCH_ASSOC);
+        try {
+            $stmt_tasa = $this->pdo->prepare($sql_tasa);
+            $stmt_tasa->execute([$fecha_inicio . ' 00:00:00', $fecha_fin . ' 23:59:59']);
+            $tasa_data = $stmt_tasa->fetch(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            // Fallback para instalaciones con diferencias de esquema/columnas de fecha
+            $sql_tasa_fallback = "SELECT 
+                SUM(CASE WHEN Estado = 'AGENDADA' OR Estado = 'CONFIRMADA' THEN 1 ELSE 0 END) AS TotalAgendadas,
+                SUM(CASE WHEN Estado = 'CANCELADA' THEN 1 ELSE 0 END) AS TotalCanceladas,
+                SUM(CASE WHEN Estado = 'REALIZADA' THEN 1 ELSE 0 END) AS TotalRealizadas
+                FROM Cita
+                WHERE FechaHora >= ? AND FechaHora <= ?";
+            $stmt_tasa_fb = $this->pdo->prepare($sql_tasa_fallback);
+            $stmt_tasa_fb->execute([$fecha_inicio . ' 00:00:00', $fecha_fin . ' 23:59:59']);
+            $tasa_data = $stmt_tasa_fb->fetch(PDO::FETCH_ASSOC);
+        }
+
+        if (!is_array($tasa_data)) {
+            $tasa_data = ['TotalAgendadas' => 0, 'TotalCanceladas' => 0, 'TotalRealizadas' => 0];
+        }
         
         $total_evaluadas = (int)$tasa_data['TotalCanceladas'] + (int)$tasa_data['TotalRealizadas'];
         $tasa_cancelacion = ($tasa_data['TotalCanceladas'] > 0 && $total_evaluadas > 0) ? round(($tasa_data['TotalCanceladas'] / $total_evaluadas) * 100, 2) : 0;
@@ -154,17 +171,19 @@ class ReporteController {
             'Total Citas Realizadas' => $tasa_data['TotalRealizadas'],
         ];
 
-        // 2. Top 5 Agencias por Demanda Próxima (Próximos 30 días)
+        // 2. Top 5 Agencias por Demanda (periodo filtrado)
         $sql_demanda = "SELECT a.Nombre AS Agencia, COUNT(c.idCita) AS CitasProximas
             FROM Cita c
             INNER JOIN Servicio s ON c.Servicio_idServicio = s.idServicio
             LEFT JOIN Agencia a ON s.Agencia_idAgencia = a.idAgencia
-            WHERE c.Estado IN ('AGENDADA', 'CONFIRMADA') AND c.FechaHora >= NOW() AND c.FechaHora <= DATE_ADD(NOW(), INTERVAL 30 DAY)
+            WHERE c.Estado IN ('PENDIENTE', 'AGENDADA', 'CONFIRMADA')
+            AND c.FechaHora >= ? AND c.FechaHora <= ?
             GROUP BY a.Nombre
             ORDER BY CitasProximas DESC
             LIMIT 5";
         try {
-            $stmt_demanda = $this->pdo->query($sql_demanda);
+            $stmt_demanda = $this->pdo->prepare($sql_demanda);
+            $stmt_demanda->execute([$fecha_inicio . ' 00:00:00', $fecha_fin . ' 23:59:59']);
             $results['Demanda_Proxima_(Proximos_30_Dias)'] = $stmt_demanda ? $stmt_demanda->fetchAll(PDO::FETCH_ASSOC) : [];
         } catch (\PDOException $e) {
             $results['Demanda_Proxima_(Proximos_30_Dias)'] = [];
@@ -177,10 +196,12 @@ class ReporteController {
             FROM Cita c
             INNER JOIN Servicio s ON c.Servicio_idServicio = s.idServicio
             WHERE c.Estado IN ('AGENDADA', 'CONFIRMADA')
+            AND c.FechaHora >= ? AND c.FechaHora <= ?
             GROUP BY s.Nombre";
             
         try {
-            $stmt_latencia = $this->pdo->query($sql_latencia);
+            $stmt_latencia = $this->pdo->prepare($sql_latencia);
+            $stmt_latencia->execute([$fecha_inicio . ' 00:00:00', $fecha_fin . ' 23:59:59']);
             $results['Latencia_Promedio_de_Agendamiento'] = $stmt_latencia ? $stmt_latencia->fetchAll(PDO::FETCH_ASSOC) : [];
         } catch (\PDOException $e) {
             $results['Latencia_Promedio_de_Agendamiento'] = [];
@@ -192,6 +213,11 @@ class ReporteController {
     // --- Reporte Analítico 2: Análisis de Rendimiento de Inventario (Productos) ---
     public function getInventarioRendimientoReport($filters = []) {
         $results = [];
+        $results['Ventas_y_Rentabilidad'] = [];
+
+        $activoFilter = (isset($filters['activo']) && $filters['activo'] !== '') ? (int)$filters['activo'] : null;
+        $fecha_inicio = !empty($filters['fecha_inicio']) ? $filters['fecha_inicio'] : null;
+        $fecha_fin = !empty($filters['fecha_fin']) ? $filters['fecha_fin'] : null;
 
         // 1. Top 10 Productos más Vendidos y Rentables (Uso de SP o Fallback)
         try {
@@ -199,32 +225,103 @@ class ReporteController {
             $sql_ventas = "CALL sp_reporteVentasPorProducto()";
             $stmt_ventas = $this->pdo->query($sql_ventas);
             $results['Ventas_y_Rentabilidad'] = $stmt_ventas ? $stmt_ventas->fetchAll(PDO::FETCH_ASSOC) : [];
-            if ($stmt_ventas) { $stmt_ventas->closeCursor(); }
+            if ($stmt_ventas) {
+                while ($stmt_ventas->nextRowset()) {}
+                $stmt_ventas->closeCursor();
+            }
         } catch (\PDOException $e) {
-            // Fallback si hay problemas con el SP (lo más probable)
-            $sql_fallback = "SELECT p.Nombre AS Producto, SUM(d.Cantidad) AS TotalVendido, SUM(d.Cantidad * d.PrecioUnitario) AS Ingresos
-                FROM Producto p 
-                INNER JOIN DetallePedido d ON p.idProducto = d.Producto_idProducto
-                INNER JOIN Pedido pe ON d.Pedido_idPedido = pe.idPedido
-                WHERE pe.Estado IN ('PAGADO','ENVIADO','ENTREGADO')
-                GROUP BY p.idProducto
-                ORDER BY Ingresos DESC LIMIT 10";
-            try {
-                $stmt_fb = $this->pdo->query($sql_fallback);
-                $results['Ventas_y_Rentabilidad'] = $stmt_fb ? $stmt_fb->fetchAll(PDO::FETCH_ASSOC) : [];
-            } catch (\PDOException $e) {
-                $results['Ventas_y_Rentabilidad'] = [];
+            $results['Ventas_y_Rentabilidad'] = [];
+        }
+
+        // Fallback robusto si SP no existe/no devuelve datos
+        if (empty($results['Ventas_y_Rentabilidad'])) {
+            $fallbackQueries = [
+                "SELECT p.Nombre AS Producto, SUM(d.Cantidad) AS TotalVendido, SUM(d.Cantidad * d.PrecioUnitario) AS Ingresos
+                 FROM Producto p
+                 INNER JOIN DetallePedido d ON p.idProducto = d.Producto_idProducto
+                 INNER JOIN Pedido pe ON d.Pedido_idPedido = pe.idPedido
+                 WHERE pe.Estado IN ('PAGADO','ENVIADO','ENTREGADO')",
+                "SELECT p.Nombre AS Producto, SUM(d.Cantidad) AS TotalVendido, SUM(d.Cantidad * d.PrecioUnitario) AS Ingresos
+                 FROM producto p
+                 INNER JOIN detallepedido d ON p.idProducto = d.Producto_idProducto
+                 INNER JOIN pedido pe ON d.Pedido_idPedido = pe.idPedido
+                 WHERE pe.Estado IN ('PAGADO','ENVIADO','ENTREGADO')"
+            ];
+
+            if ($activoFilter !== null) {
+                foreach ($fallbackQueries as &$q) {
+                    $q .= " AND p.Activo = ?";
+                }
+                unset($q);
+            }
+
+            if ($fecha_inicio) {
+                foreach ($fallbackQueries as &$q) {
+                    $q .= " AND pe.FechaPedido >= ?";
+                }
+                unset($q);
+            }
+
+            if ($fecha_fin) {
+                foreach ($fallbackQueries as &$q) {
+                    $q .= " AND pe.FechaPedido <= ?";
+                }
+                unset($q);
+            }
+
+            foreach ($fallbackQueries as &$q) {
+                $q .= " GROUP BY p.idProducto, p.Nombre ORDER BY Ingresos DESC LIMIT 10";
+            }
+            unset($q);
+
+            foreach ($fallbackQueries as $query) {
+                try {
+                    $params = [];
+                    if ($activoFilter !== null) {
+                        $params[] = $activoFilter;
+                    }
+                    if ($fecha_inicio) {
+                        $params[] = $fecha_inicio . ' 00:00:00';
+                    }
+                    if ($fecha_fin) {
+                        $params[] = $fecha_fin . ' 23:59:59';
+                    }
+
+                    $stmt_fb = $this->pdo->prepare($query);
+                    $stmt_fb->execute($params);
+                    $rows = $stmt_fb->fetchAll(PDO::FETCH_ASSOC);
+                    if (!empty($rows)) {
+                        $results['Ventas_y_Rentabilidad'] = $rows;
+                        break;
+                    }
+                } catch (\PDOException $e) {
+                    // Intenta siguiente variante de consulta
+                }
             }
         }
 
         // 2. Valoración Total de Inventario y Resumen de Rotación
         $sql_valor = "SELECT SUM(Precio * Existencia) AS ValorTotalInventario, COUNT(idProducto) as TotalProductosUnicos, SUM(Existencia) AS TotalUnidadesStock
-            FROM Producto WHERE Activo = 1";
+            FROM Producto WHERE 1=1";
+        $valorParams = [];
+        if ($activoFilter !== null) {
+            $sql_valor .= " AND Activo = ?";
+            $valorParams[] = $activoFilter;
+        }
         try {
-            $stmt_valor = $this->pdo->query($sql_valor);
+            $stmt_valor = $this->pdo->prepare($sql_valor);
+            $stmt_valor->execute($valorParams);
             $valor_data = $stmt_valor ? $stmt_valor->fetch(PDO::FETCH_ASSOC) : [];
         } catch (\PDOException $e) {
-            $valor_data = [];
+            // Fallback por posible variación de mayúsculas/minúsculas en tabla
+            $sql_valor_fb = str_replace('FROM Producto', 'FROM producto', $sql_valor);
+            try {
+                $stmt_valor_fb = $this->pdo->prepare($sql_valor_fb);
+                $stmt_valor_fb->execute($valorParams);
+                $valor_data = $stmt_valor_fb ? $stmt_valor_fb->fetch(PDO::FETCH_ASSOC) : [];
+            } catch (\PDOException $e) {
+                $valor_data = [];
+            }
         }
         
         $total_vendido = array_sum(array_column($results['Ventas_y_Rentabilidad'], 'TotalVendido'));
@@ -248,14 +345,36 @@ class ReporteController {
     
     // --- Reporte Analítico 3 y 4 (Marcadores de Posición) ---
     public function getUsuarioPerfilRiesgoReport($filters = []) {
-        // Implementación básica basada en los diagnósticos (data/diagnosticos.json)
+        // Implementación basada en diagnósticos (data/diagnosticos.json)
         $dataFile = __DIR__ . '/../../data/diagnosticos.json';
         $entries = [];
         if (is_file($dataFile)) {
             $raw = @file_get_contents($dataFile);
             $entries = $raw ? json_decode($raw, true) : [];
-            if (!is_array($entries)) $entries = [];
+            if (!is_array($entries)) {
+                $entries = [];
+            }
+            // Soporte para formatos con contenedor (ej. {"items": [...]})
+            if (is_array($entries) && !array_is_list($entries)) {
+                foreach (['items', 'data', 'diagnosticos'] as $containerKey) {
+                    if (isset($entries[$containerKey]) && is_array($entries[$containerKey])) {
+                        $entries = $entries[$containerKey];
+                        break;
+                    }
+                }
+            }
         }
+
+        if (!is_array($entries)) {
+            $entries = [];
+        }
+
+        // Filtros opcionales (mismos campos que Diagnósticos)
+        $fecha_inicio = !empty($filters['fecha_inicio']) ? strtotime($filters['fecha_inicio'] . ' 00:00:00') : null;
+        $fecha_fin = !empty($filters['fecha_fin']) ? strtotime($filters['fecha_fin'] . ' 23:59:59') : null;
+        $filtro_ciudad = isset($filters['ciudad']) ? trim((string)$filters['ciudad']) : '';
+        $filtro_perfil = isset($filters['perfil']) ? trim((string)$filters['perfil']) : '';
+        $filtro_dificultad = isset($filters['dificultad']) ? trim((string)$filters['dificultad']) : '';
 
         $perfilCounts = [];
         $cityCounts = [];
@@ -263,13 +382,51 @@ class ReporteController {
         $scored = [];
 
         foreach ($entries as $e) {
-            $perfil = $e['perfil'] ?? 'desconocido';
-            $perfilCounts[$perfil] = ($perfilCounts[$perfil] ?? 0) + 1;
+            if (!is_array($e)) {
+                continue;
+            }
 
-            $ciudad = $e['contact']['ciudad'] ?? 'desconocida';
-            $cityCounts[$ciudad] = ($cityCounts[$ciudad] ?? 0) + 1;
+            $createdTs = isset($e['created_at']) ? strtotime((string)$e['created_at']) : null;
+            if ($fecha_inicio && ($createdTs === false || $createdTs < $fecha_inicio)) {
+                continue;
+            }
+            if ($fecha_fin && ($createdTs === false || $createdTs > $fecha_fin)) {
+                continue;
+            }
+
+            $perfil = trim((string)($e['perfil'] ?? 'desconocido'));
+            if ($perfil === '') {
+                $perfil = 'desconocido';
+            }
+
+            $ciudad = trim((string)($e['contact']['ciudad'] ?? 'desconocida'));
+            if ($ciudad === '') {
+                $ciudad = 'desconocida';
+            }
+
+            if ($filtro_ciudad !== '' && stripos($ciudad, $filtro_ciudad) === false) {
+                continue;
+            }
+            if ($filtro_perfil !== '' && $perfil !== $filtro_perfil) {
+                continue;
+            }
 
             $difs = $e['dificultades'] ?? [];
+            if (!is_array($difs)) {
+                $difs = [];
+            }
+            $difs = array_values(array_filter(array_map(function($d){
+                return trim((string)$d);
+            }, $difs), function($d){
+                return $d !== '';
+            }));
+
+            if ($filtro_dificultad !== '' && !in_array($filtro_dificultad, $difs, true)) {
+                continue;
+            }
+
+            $perfilCounts[$perfil] = ($perfilCounts[$perfil] ?? 0) + 1;
+            $cityCounts[$ciudad] = ($cityCounts[$ciudad] ?? 0) + 1;
             foreach ($difs as $d) $difficultyCounts[$d] = ($difficultyCounts[$d] ?? 0) + 1;
 
             // Score heuristic: perfil weight + number of dificultades
@@ -294,9 +451,22 @@ class ReporteController {
         usort($scored, function($a, $b){ return ($b['score'] <=> $a['score']); });
 
         // preparar secciones retorno
+        arsort($perfilCounts);
+        arsort($cityCounts);
+
+        $perfilRows = [];
+        foreach ($perfilCounts as $perfil => $cantidad) {
+            $perfilRows[] = ['perfil' => $perfil, 'cantidad' => $cantidad];
+        }
+
+        $cityRows = [];
+        foreach ($cityCounts as $ciudad => $cantidad) {
+            $cityRows[] = ['ciudad' => $ciudad, 'cantidad' => $cantidad];
+        }
+
         $results = [];
-        $results['Resumen_Por_Perfil'] = $perfilCounts;
-        $results['Usuarios_Por_Ciudad'] = $cityCounts;
+        $results['Resumen_Por_Perfil'] = $perfilRows;
+        $results['Usuarios_Por_Ciudad'] = $cityRows;
         // top dificultades
         arsort($difficultyCounts);
         $topDiff = [];
@@ -310,17 +480,62 @@ class ReporteController {
     
     public function getTemasCriticosReport($filters = []) {
         // Análisis simple de frecuencia de palabras en sugerencias
-        $sql = 'SELECT s.Titulo, s.Descripcion, u.Nombre AS UsuarioNombre FROM Sugerencia s LEFT JOIN Usuario u ON s.Usuario_idUsuario = u.idUsuario';
-        try {
-            $stmt = $this->pdo->query($sql);
-            $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
-        } catch (\PDOException $e) {
-            $rows = [];
+        $params = [];
+        $where = ' WHERE 1=1';
+        if (!empty($filters['estado'])) {
+            $where .= ' AND s.Estado = ?';
+            $params[] = $filters['estado'];
+        }
+        if (!empty($filters['fecha_inicio'])) {
+            $where .= ' AND s.FechaRegistro >= ?';
+            $params[] = $filters['fecha_inicio'] . ' 00:00:00';
+        }
+        if (!empty($filters['fecha_fin'])) {
+            $where .= ' AND s.FechaRegistro <= ?';
+            $params[] = $filters['fecha_fin'] . ' 23:59:59';
+        }
+
+        $rows = [];
+        $queries = [
+            'SELECT s.Titulo, s.Descripcion, u.Nombre AS UsuarioNombre FROM Sugerencia s LEFT JOIN Usuario u ON s.Usuario_idUsuario = u.idUsuario' . $where,
+            'SELECT s.Titulo, s.Descripcion, u.Nombre AS UsuarioNombre FROM sugerencia s LEFT JOIN usuario u ON s.Usuario_idUsuario = u.idUsuario' . $where
+        ];
+        foreach ($queries as $sql) {
+            try {
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute($params);
+                $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+                if (is_array($rows)) {
+                    break;
+                }
+            } catch (\PDOException $e) {
+                $rows = [];
+            }
         }
 
         $text = '';
         foreach ($rows as $r) {
+            if (!is_array($r)) continue;
             $text .= ' ' . ($r['Titulo'] ?? '') . ' ' . ($r['Descripcion'] ?? '');
+        }
+
+        // Fallback: si no hay sugerencias, usar señales textuales de diagnosticos.json
+        if (trim($text) === '') {
+            $diagFile = __DIR__ . '/../../data/diagnosticos.json';
+            if (is_file($diagFile)) {
+                $raw = @file_get_contents($diagFile);
+                $entries = $raw ? json_decode($raw, true) : [];
+                if (is_array($entries)) {
+                    foreach ($entries as $e) {
+                        if (!is_array($e)) continue;
+                        $text .= ' ' . ($e['perfil'] ?? '');
+                        $text .= ' ' . implode(' ', is_array($e['dificultades'] ?? null) ? $e['dificultades'] : []);
+                        $text .= ' ' . implode(' ', is_array($e['intereses'] ?? null) ? $e['intereses'] : []);
+                        $text .= ' ' . ($e['tipo_vivienda'] ?? '');
+                        $text .= ' ' . ($e['contact']['ciudad'] ?? '');
+                    }
+                }
+            }
         }
 
         // Normalizar y tokenizar
@@ -351,10 +566,14 @@ class ReporteController {
         $results = [];
         $results['Nota_Metodologia'] = [
             'Propósito' => 'Analizar texto libre de sugerencias para priorizar temas críticos.',
-            'Método' => 'Conteo de términos tras normalización y eliminación de stopwords (heurístico).'
+            'Método' => 'Conteo de términos tras normalización y eliminación de stopwords (heurístico).',
+            'Fuente' => !empty($rows) ? 'Sugerencias registradas' : 'Diagnósticos (fallback)'
         ];
         $results['Top_Temas'] = $top;
-        $results['Total_Sugerencias'] = count($rows);
+        $results['Resumen_Cobertura'] = [
+            'Total de sugerencias analizadas' => count($rows),
+            'Total de términos relevantes detectados' => count($top),
+        ];
 
         return $results;
     }
