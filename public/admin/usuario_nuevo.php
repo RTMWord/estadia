@@ -26,19 +26,27 @@ $roles = $pdo->query('SELECT * FROM Rol')->fetchAll();
 <?php include __DIR__ . '/partials/admin_nav.php'; ?>
     <div class="container py-5">
         <h2 class="text-primary mb-4">Crear Nuevo Usuario</h2>
-        <form method="POST" action="../../app/controllers/UserController.php">
+        <div class="alert alert-info">
+            <strong>Requisitos de campos:</strong>
+            <ul class="mb-0">
+                <li>Nombre y apellidos: solo letras, espacios, guiones o apóstrofes; máximo 50 caracteres.</li>
+                <li>Teléfono: solo números; exactamente 10 dígitos.</li>
+            </ul>
+        </div>
+        <form id="userCreateForm" method="POST" action="../../app/controllers/UserController.php">
+            <div id="userFormErrors" class="alert alert-danger d-none"></div>
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label class="form-label">Nombre</label>
-                    <input type="text" name="nombre" class="form-control" required>
+                    <input id="nombre" type="text" name="nombre" class="form-control" maxlength="50" required>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Apellido Paterno</label>
-                    <input type="text" name="apellidop" class="form-control" required>
+                    <input id="apellidop" type="text" name="apellidop" class="form-control" maxlength="50" required>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Apellido Materno</label>
-                    <input type="text" name="apellidom" class="form-control">
+                    <input id="apellidom" type="text" name="apellidom" class="form-control" maxlength="50">
                 </div>
             </div>
             <div class="mb-3">
@@ -51,7 +59,7 @@ $roles = $pdo->query('SELECT * FROM Rol')->fetchAll();
             </div>
             <div class="mb-3">
                 <label class="form-label">Teléfono</label>
-                <input type="text" name="telefono" class="form-control">
+                <input id="telefono" type="text" name="telefono" class="form-control" maxlength="10" pattern="\d{10}" inputmode="numeric">
             </div>
             <div class="mb-3">
                 <label class="form-label">Tipo</label>
@@ -79,5 +87,32 @@ $roles = $pdo->query('SELECT * FROM Rol')->fetchAll();
             <a href="usuarios.php" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
+    <script>
+    (function(){
+        var form = document.getElementById('userCreateForm');
+        if(!form) return;
+        var errorsDiv = document.getElementById('userFormErrors');
+        form.addEventListener('submit', function(e){
+            errorsDiv.classList.add('d-none'); errorsDiv.innerHTML = '';
+            var nombre = (document.getElementById('nombre').value || '').trim();
+            var apellidop = (document.getElementById('apellidop').value || '').trim();
+            var apellidom = (document.getElementById('apellidom').value || '').trim();
+            var telefono = (document.getElementById('telefono').value || '').trim();
+            var nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ'\-\s]+$/;
+            var phoneRegex = /^[0-9]{10}$/;
+            var errors = [];
+            if(!nameRegex.test(nombre)) errors.push('Nombre sólo debe contener letras, espacios, guiones o apóstrofes.');
+            if(!nameRegex.test(apellidop)) errors.push('Apellido Paterno sólo debe contener letras, espacios, guiones o apóstrofes.');
+            if(apellidom && !nameRegex.test(apellidom)) errors.push('Apellido Materno sólo debe contener letras, espacios, guiones o apóstrofes.');
+            if(telefono && !phoneRegex.test(telefono)) errors.push('Teléfono debe ser numérico y tener exactamente 10 dígitos.');
+            if(errors.length){
+                e.preventDefault();
+                errorsDiv.innerHTML = errors.map(function(x){ return '<div>' + x + '</div>'; }).join('');
+                errorsDiv.classList.remove('d-none');
+                window.scrollTo(0, errorsDiv.getBoundingClientRect().top + window.pageYOffset - 20);
+            }
+        });
+    })();
+    </script>
 </body>
 </html>

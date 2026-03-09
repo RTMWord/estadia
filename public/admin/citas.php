@@ -32,6 +32,21 @@ $citas = Cita::getAll($pdo);
 <?php include __DIR__ . '/partials/admin_nav.php'; ?>
     <div class="container py-5">
         <h2 class="text-primary mb-4">Panel de Citas</h2>
+        <?php $filter = isset($_GET['status']) ? $_GET['status'] : 'ALL'; ?>
+        <ul class="nav nav-tabs mb-3">
+            <?php
+            $tabs = ['ALL' => 'Todas', 'AGENDADA' => 'Agendada', 'CONFIRMADA' => 'Confirmada', 'REALIZADA' => 'Realizada', 'CANCELADA' => 'Cancelada'];
+            foreach ($tabs as $k => $label):
+                $active = ($filter === $k) ? 'active' : '';
+            ?>
+                <li class="nav-item"><a class="nav-link <?= $active ?>" href="?status=<?= $k ?>"><?= $label ?></a></li>
+            <?php endforeach; ?>
+        </ul>
+        <?php
+            if ($filter !== 'ALL') {
+                $citas = array_filter($citas, function($c) use ($filter){ return isset($c['Estado']) && $c['Estado'] === $filter; });
+            }
+        ?>
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>

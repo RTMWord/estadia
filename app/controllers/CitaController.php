@@ -51,6 +51,22 @@ if (isset($_POST['crear'])) {
 }
 if (isset($_POST['editar'])) {
     Cita::editar($pdo, $_POST);
+    // Si viene indicador de redirección (desde panel admin), redirigir al panel admin
+    $redir = (isset($_POST['redir']) && $_POST['redir'] == '1') || (isset($_GET['redir']) && $_GET['redir'] == '1');
+    if ($redir) {
+        // comprobar rol
+        $userId = getUserId();
+        $rol = null;
+        if ($userId) {
+            $stmt = $pdo->prepare('SELECT r.Nombre FROM UsuarioRol ur JOIN Rol r ON ur.Rol_idRol = r.idRol WHERE ur.Usuario_idUsuario = ? LIMIT 1');
+            $stmt->execute([$userId]);
+            $rol = $stmt->fetchColumn();
+        }
+        if ($rol === 'administrador' || $rol === 'admin') {
+            header('Location: ../../public/admin/citas.php');
+            exit;
+        }
+    }
     header('Location: ../../public/citas.php');
     exit;
 }

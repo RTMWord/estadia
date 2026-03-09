@@ -49,20 +49,15 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $res = $ctrl->editar($id, $_POST, $_FILES, $_SESSION);
     if (!empty($res) && !empty($res['ok'])) {
-        header('Location: ../detalle_servicio.php?id=' . $id);
+        header('Location: servicios.php');
         exit;
     } else {
         $errors[] = $res['error'] ?? 'Error actualizando servicio';
     }
 }
-// Prepare safe form values (avoid undefined index notices)
 $formVals = [];
 $formVals['titulo'] = $_POST['titulo'] ?? ($servicio['titulo'] ?? '');
-$formVals['descripcion_corta'] = $_POST['descripcion_corta'] ?? ($servicio['descripcion_corta'] ?? '');
 $formVals['descripcion'] = $_POST['descripcion'] ?? ($servicio['descripcion'] ?? '');
-$formVals['categoria'] = $_POST['categoria'] ?? ($servicio['categoria'] ?? '');
-$formVals['ubicacion'] = $_POST['ubicacion'] ?? ($servicio['ubicacion'] ?? '');
-$formVals['contacto'] = $_POST['contacto'] ?? ($servicio['contacto'] ?? '');
 $formVals['precio'] = $_POST['precio'] ?? ($servicio['precio'] ?? '');
 $formVals['agencia_id'] = $_POST['agencia'] ?? ($servicio['agencia_id'] ?? '');
 $formVals['status'] = isset($_POST['status']) ? 1 : (isset($servicio['status']) ? (int)$servicio['status'] : 0);
@@ -100,27 +95,10 @@ $formVals['imagen'] = $_POST['imagen'] ?? ($servicio['imagen'] ?? '');
             <input class="form-control" name="titulo" required value="<?php echo htmlspecialchars($formVals['titulo']); ?>">
         </div>
         <div class="mb-3">
-            <label class="form-label">Descripción corta</label>
-            <input class="form-control" name="descripcion_corta" value="<?php echo htmlspecialchars($formVals['descripcion_corta']); ?>">
-        </div>
-        <div class="mb-3">
             <label class="form-label">Descripción</label>
             <textarea class="form-control" name="descripcion" rows="6"><?php echo htmlspecialchars($formVals['descripcion']); ?></textarea>
         </div>
-        <div class="row g-2">
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Categoría</label>
-                <input class="form-control" name="categoria" value="<?php echo htmlspecialchars($formVals['categoria']); ?>">
-            </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Ubicación</label>
-                <input class="form-control" name="ubicacion" value="<?php echo htmlspecialchars($formVals['ubicacion']); ?>">
-            </div>
-            <div class="col-md-4 mb-3">
-                <label class="form-label">Contacto</label>
-                <input class="form-control" name="contacto" value="<?php echo htmlspecialchars($formVals['contacto']); ?>">
-            </div>
-        </div>
+        <!-- contacto eliminado -->
         <div class="mb-3">
             <label class="form-label">Precio</label>
             <input class="form-control" name="precio" type="number" step="0.01" value="<?php echo htmlspecialchars($formVals['precio']); ?>">
@@ -161,7 +139,7 @@ $formVals['imagen'] = $_POST['imagen'] ?? ($servicio['imagen'] ?? '');
 
         <div class="d-flex gap-2">
             <button class="btn btn-primary" type="submit">Actualizar</button>
-            <a href="../detalle_servicio.php?id=<?php echo $id; ?>" class="btn btn-secondary">Cancelar</a>
+            <a href="servicios.php" class="btn btn-secondary">Cancelar</a>
         </div>
     </form>
 </div>

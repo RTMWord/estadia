@@ -1,5 +1,13 @@
 <?php
-// Archivo vacío, funcionalidad movida a cita_nueva.php
+require_once __DIR__ . '/../app/config/db.php';
+require_once __DIR__ . '/../app/models/Cita.php';
+// Obtener todas las citas para la vista pública
+$citas = [];
+try {
+    $citas = Cita::getAll($pdo);
+} catch (Exception $e) {
+    $citas = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">

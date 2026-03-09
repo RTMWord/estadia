@@ -46,6 +46,7 @@ $servicios = $pdo->query('SELECT idServicio, Nombre FROM Servicio WHERE Activo=1
     <div class="container py-5">
         <h2 class="text-primary mb-4">Editar Cita</h2>
         <form method="POST" action="../../app/controllers/CitaController.php">
+            <input type="hidden" name="redir" value="1">
             <input type="hidden" name="id" value="<?= $cita['idCita'] ?>">
             <div class="mb-3">
                 <label class="form-label">Servicio</label>
