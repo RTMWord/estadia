@@ -25,7 +25,7 @@ if (!class_exists('Servicio')) {
         // Obtener servicios activos con filtros opcionales
         public function obtenerActivos($filters = [], $limit = 0, $offset = 0) {
             // Use PDO for queries
-                $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Imagen AS imagen, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status
+                $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status
                     FROM servicio WHERE Activo = 1";
             $params = [];
             if (!empty($filters['q'])) {
@@ -52,7 +52,7 @@ if (!class_exists('Servicio')) {
 
         // Obtener servicio por id (incluso inactivo)
         public function obtenerPorId($id) {
-            $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status, Imagen AS imagen FROM servicio WHERE idServicio = ? LIMIT 1";
+            $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status FROM servicio WHERE idServicio = ? LIMIT 1";
             try {
                 $stmt = $this->conn->prepare($sql);
                 $stmt->execute([$id]);
@@ -66,7 +66,7 @@ if (!class_exists('Servicio')) {
         // Agregar servicio
         public function crear($data) {
             // Adapt to existing `servicio` table (PDO)
-            $sql = "INSERT INTO servicio (Nombre, Descripcion, Costo, Agencia_idAgencia, Imagen, Activo) VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO servicio (Nombre, Descripcion, Costo, Agencia_idAgencia, Activo) VALUES (?, ?, ?, ?, ?)";
             try {
                 $status = isset($data['status']) ? (int)$data['status'] : 1;
                 $precio = isset($data['precio']) ? (float)$data['precio'] : 0.0;
@@ -74,7 +74,7 @@ if (!class_exists('Servicio')) {
                 $descripcion = $data['descripcion'] ?? '';
                 $agencia = !empty($data['agencia']) ? (int)$data['agencia'] : null;
                 $stmt = $this->conn->prepare($sql);
-                $stmt->execute([$nombre, $descripcion, $precio, $agencia, $data['imagen'] ?? null, $status]);
+                $stmt->execute([$nombre, $descripcion, $precio, $agencia, $status]);
                 $id = $this->conn->lastInsertId();
                 return ['ok' => true, 'id' => $id];
             } catch (Exception $e) {
@@ -87,28 +87,15 @@ if (!class_exists('Servicio')) {
             // Map to `servicio` table columns
             // Si incluye 'imagen' en $data, actualizarla; si no, mantener la imagen actual
             // Incluir los campos adicionales; si 'imagen' está presente actualizarla también
-            if (array_key_exists('imagen', $data)) {
-                $sql = "UPDATE servicio SET Nombre = ?, Descripcion = ?, Costo = ?, Agencia_idAgencia = ?, Imagen = ?, Activo = ? WHERE idServicio = ?";
-                $params = [
-                    $data['titulo'],
-                    $data['descripcion'],
-                    (float)$data['precio'],
-                    !empty($data['agencia']) ? (int)$data['agencia'] : null,
-                    $data['imagen'] ?: null,
-                    (int)$data['status'],
-                    (int)$id
-                ];
-            } else {
-                $sql = "UPDATE servicio SET Nombre = ?, Descripcion = ?, Costo = ?, Agencia_idAgencia = ?, Activo = ? WHERE idServicio = ?";
-                $params = [
-                    $data['titulo'],
-                    $data['descripcion'],
-                    (float)$data['precio'],
-                    !empty($data['agencia']) ? (int)$data['agencia'] : null,
-                    (int)$data['status'],
-                    (int)$id
-                ];
-            }
+            $sql = "UPDATE servicio SET Nombre = ?, Descripcion = ?, Costo = ?, Agencia_idAgencia = ?, Activo = ? WHERE idServicio = ?";
+            $params = [
+                $data['titulo'],
+                $data['descripcion'],
+                (float)$data['precio'],
+                !empty($data['agencia']) ? (int)$data['agencia'] : null,
+                (int)$data['status'],
+                (int)$id
+            ];
             try {
                 $stmt = $this->conn->prepare($sql);
                 $stmt->execute($params);

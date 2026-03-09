@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Listar servicios
 try {
-    $sql = "SELECT s.idServicio, s.Nombre, s.Descripcion, s.Costo, s.Imagen, a.Nombre AS Agencia, s.Activo
+    $sql = "SELECT s.idServicio, s.Nombre, s.Descripcion, s.Costo, a.Nombre AS Agencia, s.Activo
             FROM servicio s
             LEFT JOIN agencia a ON s.Agencia_idAgencia = a.idAgencia
             ORDER BY s.idServicio DESC";
@@ -93,9 +93,6 @@ $pendientes = array_filter($servicios, fn($r) => (int)$r['Activo'] === 0);
                         <tr>
                             <td><?= $s['idServicio'] ?></td>
                             <td>
-                                <?php if (!empty($s['Imagen'])): ?>
-                                    <img src="../assets/img/servicios/<?= htmlspecialchars($s['Imagen']) ?>" alt="thumb" style="height:48px; width:auto; margin-right:8px; vertical-align:middle; border-radius:4px;">
-                                <?php endif; ?>
                                 <?= htmlspecialchars($s['Nombre']) ?>
                             </td>
                             <td style="max-width:360px;"><?= htmlspecialchars($s['Descripcion']) ?></td>
@@ -135,12 +132,7 @@ $pendientes = array_filter($servicios, fn($r) => (int)$r['Activo'] === 0);
                         <?php foreach ($pendientes as $s): ?>
                         <tr class="table-secondary">
                             <td><?= $s['idServicio'] ?></td>
-                            <td>
-                                <?php if (!empty($s['Imagen'])): ?>
-                                    <img src="../assets/img/servicios/<?= htmlspecialchars($s['Imagen']) ?>" alt="thumb" style="height:48px; width:auto; margin-right:8px; vertical-align:middle; border-radius:4px;">
-                                <?php endif; ?>
-                                <?= htmlspecialchars($s['Nombre']) ?>
-                            </td>
+                            <td><?= htmlspecialchars($s['Nombre']) ?></td>
                             <td style="max-width:360px;"><?= htmlspecialchars($s['Descripcion']) ?></td>
                             <td>$<?= number_format($s['Costo'],2) ?></td>
                             <td><?= htmlspecialchars($s['Agencia']) ?></td>
@@ -163,28 +155,29 @@ $pendientes = array_filter($servicios, fn($r) => (int)$r['Activo'] === 0);
             </div>
         </div>
     </div>
+
+    <?php if ($flashSuccess): ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Éxito',
+        text: '<?= addslashes($flashSuccess) ?>',
+        confirmButtonColor: '#3085d6',
+    });
+    </script>
+    <?php endif; ?>
+    <?php if ($flashError): ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '<?= addslashes($flashError) ?>',
+        confirmButtonColor: '#d33'
+    });
+    </script>
+    <?php endif; ?>
 </body>
 </html>
-<?php if ($flashSuccess): ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-Swal.fire({
-    icon: 'success',
-    title: 'Éxito',
-    text: '<?= addslashes($flashSuccess) ?>',
-    confirmButtonColor: '#3085d6',
-});
-</script>
-<?php endif; ?>
-<?php if ($flashError): ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-Swal.fire({
-    icon: 'error',
-    title: 'Error',
-    text: '<?= addslashes($flashError) ?>',
-    confirmButtonColor: '#d33'
-});
-</script>
-<?php endif; ?>
 

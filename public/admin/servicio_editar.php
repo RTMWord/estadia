@@ -15,7 +15,7 @@ if ($id <= 0) {
 // Diagnóstico directo: comprobar que la fila existe en la BD y qué devuelve el controlador
 try {
     if (!empty($pdo)) {
-        $stmtD = $pdo->prepare('SELECT idServicio, Nombre, Descripcion, Imagen, Activo FROM servicio WHERE idServicio = ? LIMIT 1');
+    $stmtD = $pdo->prepare('SELECT idServicio, Nombre, Descripcion, Activo FROM servicio WHERE idServicio = ? LIMIT 1');
         $stmtD->execute([$id]);
         $direct = $stmtD->fetch(PDO::FETCH_ASSOC);
         echo "<!-- DIAGNOSTICO: consulta directa a BD -->\n";
@@ -61,7 +61,7 @@ $formVals['descripcion'] = $_POST['descripcion'] ?? ($servicio['descripcion'] ??
 $formVals['precio'] = $_POST['precio'] ?? ($servicio['precio'] ?? '');
 $formVals['agencia_id'] = $_POST['agencia'] ?? ($servicio['agencia_id'] ?? '');
 $formVals['status'] = isset($_POST['status']) ? 1 : (isset($servicio['status']) ? (int)$servicio['status'] : 0);
-$formVals['imagen'] = $_POST['imagen'] ?? ($servicio['imagen'] ?? '');
+
 ?>
 <!doctype html>
 <html lang="es">
@@ -115,22 +115,7 @@ $formVals['imagen'] = $_POST['imagen'] ?? ($servicio['imagen'] ?? '');
             </select>
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Imagen actual</label>
-            <div>
-                <?php if (!empty($formVals['imagen'])): ?>
-                    <img src="../assets/img/servicios/<?= htmlspecialchars($formVals['imagen']) ?>" alt="Imagen servicio" style="max-width:220px; display:block; margin-bottom:10px; border-radius:6px;">
-                <?php else: ?>
-                    <div class="text-muted">No hay imagen establecida.</div>
-                <?php endif; ?>
-            </div>
-            <div class="form-text mb-2">Sube una nueva imagen para reemplazar la existente, o marca eliminar.</div>
-            <input type="file" name="imagen" accept="image/*" class="form-control mb-2">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image" value="1">
-                <label class="form-check-label" for="remove_image">Eliminar imagen actual</label>
-            </div>
-        </div>
+        <!-- imagen eliminada del formulario y de la base de datos -->
 
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" name="status" id="status" <?php echo ($formVals['status'] == 1) ? 'checked' : ''; ?>>
