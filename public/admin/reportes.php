@@ -186,12 +186,12 @@ $total_resultados = $is_analitico ? array_sum(array_map('count', array_filter($a
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'servicios' ? 'active' : '' ?>" href="?reporte=servicios">Servicios (CRUD)</a></li>
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'productos' ? 'active' : '' ?>" href="?reporte=productos">Productos (CRUD)</a></li>
             
-            <!--
+            
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'capacidad_operativa' ? 'active' : '' ?> text-success" href="?reporte=capacidad_operativa">Capacidad Operativa</a></li>
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'inventario_rendimiento' ? 'active' : '' ?> text-success" href="?reporte=inventario_rendimiento">Rendimiento Inventario</a></li>
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'usuario_riesgo' ? 'active' : '' ?> text-info" href="?reporte=usuario_riesgo">Perfil de Riesgo</a></li>
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'temas_criticos' ? 'active' : '' ?> text-info" href="?reporte=temas_criticos">Temas Críticos</a></li>
-            -->
+            
             <li class="nav-item"><a class="nav-link <?= $reporteActual == 'diagnosticos' ? 'active' : '' ?> text-warning" href="?reporte=diagnosticos">Diagnósticos</a></li>
         </ul>
 

@@ -1,11 +1,18 @@
 <?php
 // public/php/register.php
+header('Content-Type: application/json; charset=utf-8');
+
 require_once __DIR__ . '/../../app/config/db.php';
 require_once __DIR__ . '/../../app/models/Usuario.php';
+require_once __DIR__ . '/../../app/config/email.php';
+
+$response = ['success' => false, 'message' => ''];
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('Location: ../signup.php'); exit;
+        $response['message'] = 'Método no permitido';
+        echo json_encode($response);
+        exit;
     }
 
     $nombre = trim($_POST['nombres'] ?? '');
@@ -16,19 +23,30 @@ try {
     $password = $_POST['password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
 
+    // Validaciones
     if ($nombre === '' || $email === '' || $password === '') {
-        header('Location: ../signup.php?error=' . urlencode('Faltan campos obligatorios'));
+        $response['message'] = 'Faltan campos obligatorios';
+        echo json_encode($response);
         exit;
     }
+    
     if ($password !== $confirm) {
-        header('Location: ../signup.php?error=' . urlencode('Las contraseñas no coinciden'));
+        $response['message'] = 'Las contraseñas no coinciden';
+        echo json_encode($response);
+        exit;
+    }
+    
+    if (strlen($password) < 6) {
+        $response['message'] = 'La contraseña debe tener mínimo 6 caracteres';
+        echo json_encode($response);
         exit;
     }
 
     // Verificar email existente
     $existing = Usuario::findByEmail($pdo, $email);
     if ($existing) {
-        header('Location: ../signup.php?error=' . urlencode('Ya existe una cuenta con ese correo'));
+        $response['message'] = 'Ya existe una cuenta con ese correo';
+        echo json_encode($response);
         exit;
     }
 
@@ -42,7 +60,7 @@ try {
         $rolId = $pdo->lastInsertId();
     }
 
-    // Crear usuario: Usuario::crear espera 'rol' en $data
+    // Crear usuario
     $data = [
         'nombre' => $nombre,
         'apellidop' => $apellidop,
@@ -50,16 +68,24 @@ try {
         'email' => $email,
         'password' => $password,
         'telefono' => $telefono,
-        'activo' => 1,
+        'activo' => 1,  // La cuenta se activa inmediatamente
         'tipo' => 'Usuario',
         'rol' => $rolId
     ];
     Usuario::crear($pdo, $data);
-
-    header('Location: ../signup.php?registered=1');
+    
+    // Enviar email de bienvenida
+    $nombreCompleto = $nombre . ' ' . $apellidop . ' ' . $apellidom;
+    $emailSent = sendWelcomeEmail($email, $nombreCompleto);
+    
+    $response['success'] = true;
+    $response['message'] = 'Tu cuenta ha sido creada exitosamente. ¡Bienvenido a MetaHogar!';
+    
+    echo json_encode($response);
     exit;
 
 } catch (Exception $e) {
-    header('Location: ../signup.php?error=' . urlencode('Error registrando usuario'));
+    $response['message'] = 'Error al registrar el usuario: ' . $e->getMessage();
+    echo json_encode($response);
     exit;
 }

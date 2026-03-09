@@ -122,21 +122,21 @@ require_once __DIR__ . '/../app/helpers/auth.php';
                     [
                         'title' => 'Portal MetaHogar',
                         'desc'  => 'Información corporativa y novedades internas.',
-                        'img'   => 'assets/images/serv_1765343390_3850.jpg',
-                        'url'   => 'portal.php',
+                        'img'   => 'assets/css/images/LogoMeta.png',
+                        'url'   => 'index.php',
                         'tag'   => 'Corporativo'
                     ],
                     [
                         'title' => 'Centro de Diagnóstico',
                         'desc'  => 'Servicios especializados y soporte técnico.',
-                        'img'   => 'assets/images/serv_1765343390_3850.jpg',
+                        'img'   => 'assets/css/images/cdiagnostico.png',
                         'url'   => 'servicios.php',
                         'tag'   => 'Servicios'
                     ],
                     [
                         'title' => 'Comunidad MetaHogar',
                         'desc'  => 'Foros, eventos y colaboración con aliados.',
-                        'img'   => 'https://placehold.co/500x300/17466e/ffffff?text=Comunidad',
+                        'img'   => 'assets/css/images/comunidad.png',
                         'url'   => 'comunidad.php',
                         'tag'   => 'Comunidad'
                     ],
