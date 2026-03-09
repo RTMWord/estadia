@@ -155,6 +155,7 @@ if (!empty($contact_email) && filter_var($contact_email, FILTER_VALIDATE_EMAIL))
         $bodyUser = '<p>Hola ' . htmlspecialchars($contact_nombre) . ',</p>';
         $bodyUser .= '<p>Hemos recibido tu solicitud de diagnóstico. Pronto nos pondremos en contacto contigo para compartir los resultados y recomendaciones.</p>';
         $bodyUser .= '<p>Si quieres contactarnos directamente, responde a este correo.</p>';
+        $bodyUser .= '<p>Te Invitamos a que hagas tu registro en el sitio.</p>';
         $bodyUser .= '<p>Saludos,<br>Equipo MetaHogar</p>';
 
         $mail2->Body = $bodyUser;

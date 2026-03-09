@@ -244,5 +244,337 @@
             "ciudad": "Jiutepec"
         },
         "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69662af5234b08.23086544",
+        "created_at": "2026-01-13T12:22:29+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "otro_familiar",
+        "edad": "age_76_plus",
+        "tipo_vivienda": "departamento",
+        "dificultades": [
+            "preventivo"
+        ],
+        "intereses": [
+            "mejorar_independencia"
+        ],
+        "espacios": [
+            "esp_toda"
+        ],
+        "tec_nivel": "tec_alta",
+        "tranquilidad": "tranq_familia_informada",
+        "plazo": "plazo_explorando",
+        "contact": {
+            "nombre": "Ernesto Juarez Vargas",
+            "email": "alexis.re.ye.es.14@gmail.com",
+            "whatsapp": "7772319257",
+            "ciudad": "Cuernavaca"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69662bba24a6e7.60976760",
+        "created_at": "2026-01-13T12:25:46+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "otro_familiar",
+        "edad": "age_76_plus",
+        "tipo_vivienda": "departamento",
+        "dificultades": [
+            "preventivo"
+        ],
+        "intereses": [
+            "mejorar_independencia"
+        ],
+        "espacios": [
+            "esp_toda"
+        ],
+        "tec_nivel": "tec_alta",
+        "tranquilidad": "tranq_familia_informada",
+        "plazo": "plazo_explorando",
+        "contact": {
+            "nombre": "Alexis Reyes Ocampo",
+            "email": "alex_iss11@outlook.com",
+            "whatsapp": "7772319257",
+            "ciudad": "Chilpancingo de los Bravo"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69662bba24ea71.65136095",
+        "created_at": "2026-01-13T12:25:46+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "otro_familiar",
+        "edad": "age_76_plus",
+        "tipo_vivienda": "departamento",
+        "dificultades": [
+            "preventivo"
+        ],
+        "intereses": [
+            "mejorar_independencia"
+        ],
+        "espacios": [
+            "esp_toda"
+        ],
+        "tec_nivel": "tec_alta",
+        "tranquilidad": "tranq_familia_informada",
+        "plazo": "plazo_explorando",
+        "contact": {
+            "nombre": "Alexis Reyes Ocampo",
+            "email": "alex_iss11@outlook.com",
+            "whatsapp": "7772319257",
+            "ciudad": "Chilpancingo de los Bravo"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69662de4b8b575.32315538",
+        "created_at": "2026-01-13T12:35:00+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "hijo_a",
+        "edad": "age_60_65",
+        "tipo_vivienda": "casa_2_mas",
+        "dificultades": [
+            "caidas",
+            "vista"
+        ],
+        "intereses": [
+            "mejorar_independencia"
+        ],
+        "espacios": [
+            "esp_toda"
+        ],
+        "tec_nivel": "tec_alta",
+        "tranquilidad": "tranq_seguridad",
+        "plazo": "plazo_inmediato",
+        "contact": {
+            "nombre": "Alexis Reyes Ocampo",
+            "email": "alexis.re.ye.es.14@gmail.com",
+            "whatsapp": "7772319257",
+            "ciudad": "Acapulco"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69662de4b92b99.63651399",
+        "created_at": "2026-01-13T12:35:00+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "hijo_a",
+        "edad": "age_60_65",
+        "tipo_vivienda": "casa_2_mas",
+        "dificultades": [
+            "caidas",
+            "vista"
+        ],
+        "intereses": [
+            "mejorar_independencia"
+        ],
+        "espacios": [
+            "esp_toda"
+        ],
+        "tec_nivel": "tec_alta",
+        "tranquilidad": "tranq_seguridad",
+        "plazo": "plazo_inmediato",
+        "contact": {
+            "nombre": "Alexis Reyes Ocampo",
+            "email": "alexis.re.ye.es.14@gmail.com",
+            "whatsapp": "7772319257",
+            "ciudad": "Acapulco"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69662e3c0b9729.66676783",
+        "created_at": "2026-01-13T12:36:28+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "adulto_mayor",
+        "edad": "age_55_60",
+        "tipo_vivienda": "casa_2_mas",
+        "dificultades": [
+            "vista"
+        ],
+        "intereses": [
+            "mejorar_independencia"
+        ],
+        "espacios": [
+            "esp_toda"
+        ],
+        "tec_nivel": "tec_baja",
+        "tranquilidad": "tranq_independencia",
+        "plazo": "plazo_explorando",
+        "contact": {
+            "nombre": "Alexis Reyes Ocampo",
+            "email": "alexis.re.ye.es.14@gmail.com",
+            "whatsapp": "7772319257",
+            "ciudad": "CDMX"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69662e3c0cc9b3.34296079",
+        "created_at": "2026-01-13T12:36:28+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "adulto_mayor",
+        "edad": "age_55_60",
+        "tipo_vivienda": "casa_2_mas",
+        "dificultades": [
+            "vista"
+        ],
+        "intereses": [
+            "mejorar_independencia"
+        ],
+        "espacios": [
+            "esp_toda"
+        ],
+        "tec_nivel": "tec_baja",
+        "tranquilidad": "tranq_independencia",
+        "plazo": "plazo_explorando",
+        "contact": {
+            "nombre": "Alexis Reyes Ocampo",
+            "email": "alexis.re.ye.es.14@gmail.com",
+            "whatsapp": "7772319257",
+            "ciudad": "CDMX"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_696665736a5780.04311908",
+        "created_at": "2026-01-13T16:32:03+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "adulto_mayor",
+        "edad": "age_66_75",
+        "tipo_vivienda": "departamento",
+        "dificultades": [
+            "movilidad",
+            "caidas",
+            "vista"
+        ],
+        "intereses": [
+            "mejorar_caidas"
+        ],
+        "espacios": [
+            "esp_bano"
+        ],
+        "tec_nivel": "tec_baja",
+        "tranquilidad": "tranq_seguridad",
+        "plazo": "plazo_inmediato",
+        "contact": {
+            "nombre": "hector Reyes Ocampo",
+            "email": "alexis.re.ye.es.14@gmail.com",
+            "whatsapp": "7772319257",
+            "ciudad": "Jiutepec"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_6966687c1a46e1.39676461",
+        "created_at": "2026-01-13T16:45:00+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/143.0.0.0 Safari\/537.36",
+        "perfil": "hijo_a",
+        "edad": "age_60_65",
+        "tipo_vivienda": "casa_2_mas",
+        "dificultades": [
+            "movilidad",
+            "caidas",
+            "vista"
+        ],
+        "intereses": [
+            "mejorar_caidas"
+        ],
+        "espacios": [
+            "esp_recamara"
+        ],
+        "tec_nivel": "tec_baja",
+        "tranquilidad": "tranq_seguridad",
+        "plazo": "plazo_3_meses",
+        "contact": {
+            "nombre": "Daniel Reyes Ocampo",
+            "email": "reysalexis3@gmail.com",
+            "whatsapp": "7772319257",
+            "ciudad": "Acapulco"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69a7051fee9767.06064383",
+        "created_at": "2026-03-03T16:58:23+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/145.0.0.0 Safari\/537.36",
+        "perfil": "hijo_a",
+        "edad": "age_55_60",
+        "tipo_vivienda": "casa_2_mas",
+        "dificultades": [
+            "movilidad",
+            "caidas",
+            "vista",
+            "audicion",
+            "preventivo"
+        ],
+        "intereses": [
+            "mejorar_caidas",
+            "mejorar_confort",
+            "mejorar_monitoreo"
+        ],
+        "espacios": [
+            "esp_bano",
+            "esp_recamara",
+            "esp_cocina",
+            "esp_escaleras"
+        ],
+        "tec_nivel": "tec_alta",
+        "tranquilidad": "tranq_seguridad",
+        "plazo": "plazo_inmediato",
+        "contact": {
+            "nombre": "Sebastian Hernandez Velazquez",
+            "email": "hectorhdzvelz@gmail.com",
+            "whatsapp": "7774528561",
+            "ciudad": "Cuernavaca"
+        },
+        "acepto": "si_acepto"
+    },
+    {
+        "id": "diag_69a7051feeb6e5.49297319",
+        "created_at": "2026-03-03T16:58:23+01:00",
+        "ip": "::1",
+        "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/145.0.0.0 Safari\/537.36",
+        "perfil": "hijo_a",
+        "edad": "age_55_60",
+        "tipo_vivienda": "casa_2_mas",
+        "dificultades": [
+            "movilidad",
+            "caidas",
+            "vista",
+            "audicion",
+            "preventivo"
+        ],
+        "intereses": [
+            "mejorar_caidas",
+            "mejorar_confort",
+            "mejorar_monitoreo"
+        ],
+        "espacios": [
+            "esp_bano",
+            "esp_recamara",
+            "esp_cocina",
+            "esp_escaleras"
+        ],
+        "tec_nivel": "tec_alta",
+        "tranquilidad": "tranq_seguridad",
+        "plazo": "plazo_inmediato",
+        "contact": {
+            "nombre": "Sebastian Hernandez Velazquez",
+            "email": "hectorhdzvelz@gmail.com",
+            "whatsapp": "7774528561",
+            "ciudad": "Cuernavaca"
+        },
+        "acepto": "si_acepto"
     }
 ]

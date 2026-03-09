@@ -225,7 +225,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
         <div class="row align-items-center mb-5">
             <div class="col-lg-6 mb-4">
                 <div class="image-section">
-                    <img src="assets/images/serv_1765343390_3850.jpg" alt="MetaHogar Visión" class="img-fluid">
+                    <img src="assets/css/images/vision.png" alt="MetaHogar Visión" class="img-fluid">
                 </div>
             </div>
             <div class="col-lg-6 mb-4">
@@ -349,7 +349,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
             </div>
             <div class="col-lg-6 mb-4">
                 <div class="image-section">
-                    <img src="assets/images/serv_1764193090_8603.png" alt="MetaHogar Futuro" class="img-fluid">
+                    <img src="assets/css/images/futuro.jpg" alt="MetaHogar Futuro" class="img-fluid">
                 </div>
             </div>
         </div>

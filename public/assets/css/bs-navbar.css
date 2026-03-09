@@ -32,6 +32,22 @@ body {
   transition: box-shadow .18s ease;
 }
 
+/* Evita el hueco entre el botón y el dropdown causado por reglas globales */
+.meta-navbar-root .nav-item.dropdown {
+  position: relative;
+}
+
+.meta-navbar-root .dropdown-menu {
+  margin-top: 0;
+}
+
+/* Hover estable en escritorio para poder seleccionar opciones sin que desaparezcan */
+@media (min-width: 992px) {
+  .meta-navbar-root .dropdown:hover > .dropdown-menu {
+    display: block;
+  }
+}
+
 /* Reducir logo o altura en pantallas pequeñas si necesitas (opcional) */
 @media (max-width: 768px) {
   .navbar-brand span { font-size: 1rem; }

@@ -24,6 +24,9 @@ $filtros = [
     'existencia_op' => $_REQUEST['existencia_op'] ?? '>=',
     'fecha_inicio' => $_REQUEST['fecha_inicio'] ?? '',
     'fecha_fin' => $_REQUEST['fecha_fin'] ?? '',
+    'ciudad' => $_REQUEST['ciudad'] ?? '',
+    'perfil' => $_REQUEST['perfil'] ?? '',
+    'dificultad' => $_REQUEST['dificultad'] ?? '',
 ];
 
 $tituloReporte = "Reporte Desconocido";
@@ -162,7 +165,7 @@ if ($is_analitico) {
             continue;
         }
 
-        if (array_key_exists(0, $datos_seccion) && is_array($datos_seccion[0])) {
+        if (is_array($datos_seccion) && array_key_exists(0, $datos_seccion) && is_array($datos_seccion[0])) {
             // Es un array de arrays (tabla)
             $total_registros += count($datos_seccion);
             $keys = array_keys($datos_seccion[0]);
@@ -182,12 +185,17 @@ if ($is_analitico) {
             }
             $htmlTabla .= '</tbody></table>';
 
-        } else {
+        } elseif (is_array($datos_seccion)) {
             // Es un array asociativo simple (resumen de métricas)
             $htmlTabla .= '<table class="metric-table"><tbody>';
             foreach ($datos_seccion as $key => $val) {
                 $htmlTabla .= '<tr><td style="font-weight:bold;">' . htmlspecialchars($key) . '</td><td>' . htmlspecialchars($val) . '</td></tr>';
             }
+            $htmlTabla .= '</tbody></table>';
+        } else {
+            // Es un valor simple
+            $htmlTabla .= '<table class="metric-table"><tbody>';
+            $htmlTabla .= '<tr><td style="font-weight:bold;">Valor</td><td>' . htmlspecialchars((string)$datos_seccion) . '</td></tr>';
             $htmlTabla .= '</tbody></table>';
         }
     }
