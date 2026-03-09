@@ -308,7 +308,7 @@ require_once __DIR__ . '/../app/helpers/auth.php';
         <div class="row align-items-center mt-5 mb-5">
             <div class="col-lg-6 mb-4">
                 <div class="image-section">
-                    <img src="assets/images/serv_1764193090_8603.png" alt="MetaHogar Servicios" class="img-fluid">
+                    <img src="assets/css/images/quienes_somos.png" alt="MetaHogar Servicios" class="img-fluid">
                 </div>
             </div>
             <div class="col-lg-6 mb-4">

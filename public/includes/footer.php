@@ -56,7 +56,7 @@ if (!defined('ESTADIA_INIT')) {
             </div>
 
             <div class="footer-col footer-hero-icon" style="display:flex; align-items:center; justify-content:center;">
-                <img src="assets/css/images/hero-ico-footer.png" alt="icono" />
+                <img src="assets/css/images/logo_ayuda2.png" alt="ico-no" />
             </div>
         </div>
 

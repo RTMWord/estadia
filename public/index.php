@@ -121,8 +121,8 @@ if (!defined('ESTADIA_INIT')) {
                     Tecnología que transforma tu hogar, seguridad que transforma tu vida.
                 </p>
                 <div class="d-flex justify-content-center justify-content-lg-start mt-4 gap-3">
-                    <a href="#diagnostico" id="cta-diagnostico" class="btn btn-lg btn-primary" aria-label="Quiero evaluar mi hogar - iniciar diagnóstico del hogar">
-                        Quiero evaluar mi hogar
+                    <a href="#diagnostico" id="cta-diagnostico" class="btn btn-lg btn-primary" aria-label="Solicitar un diagnóstico personalizado - iniciar diagnóstico del hogar">
+                        Solicitar un diagnóstico personalizado
                     </a>
                     <a href="#contacto" class="btn btn-lg btn-custom-outline">
                         Contáctanos
@@ -234,7 +234,7 @@ if (!defined('ESTADIA_INIT')) {
                     } else {
                         await Swal.fire({
                             title: 'Gracias',
-                            text: 'Tu diagnóstico ha sido recibido. Te contactaremos pronto.',
+                            text: 'Tu diagnóstico ha sido recibido. Te contactaremos pronto. Te invitamos a registrarte en el sitio para más beneficios.',
                             icon: 'success',
                             confirmButtonText: 'Cerrar'
                         });
@@ -739,7 +739,7 @@ if (!defined('ESTADIA_INIT')) {
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fs-5">¿La persona presenta alguna dificultad? (marca las que apliquen)</label>
+                            <label class="form-label fs-5">¿La persona presenta alguna dificultad o limitación cuando se encuentra en casa? (marca las que apliquen)</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_movilidad" value="movilidad">
                                 <label class="form-check-label fs-5" for="dif_movilidad">Movilidad</label>
@@ -750,11 +750,14 @@ if (!defined('ESTADIA_INIT')) {
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_vista" value="vista">
-                                <label class="form-check-label fs-5" for="dif_vista">Vista</label>
+                                <label class="form-check-label fs-5" for="dif_vista">Visual</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_audicion" value="audicion">
-                                <label class="form-check-label fs-5" for="dif_audicion">Audición</label>
+                                <label class="form-check-label fs-5" for="dif_audicion">Auditiva</label>
+
+                                <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_cogn" value="cognitiva">
+                                <label class="form-check-label fs-5" for="dif_cogn">Cognitiva</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="dificultades[]" id="dif_prev" value="preventivo">
@@ -772,7 +775,7 @@ if (!defined('ESTADIA_INIT')) {
                             <label class="form-label fs-5">¿Qué te gustaría mejorar? (marca las que apliquen)</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="intereses[]" id="int_caidas" value="mejorar_caidas">
-                                <label class="form-check-label fs-5" for="int_caidas">Caídas</label>
+                                <label class="form-check-label fs-5" for="int_caidas">Prevención de caídas</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="intereses[]" id="int_mov" value="mejorar_movilidad">
@@ -793,7 +796,11 @@ if (!defined('ESTADIA_INIT')) {
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fs-5">¿En qué espacios te interesa empezar? (marca los que apliquen)</label>
+                            <label class="form-label fs-5">¿En qué espacios te interesa comenzar la mejora? (marca los que apliquen)</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="espacios[]" id="esp_accesos" value="esp_accesos">
+                                <label class="form-check-label fs-5" for="esp_accesos">Accesos</label>
+                            </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="espacios[]" id="esp_bano" value="esp_bano">
                                 <label class="form-check-label fs-5" for="esp_bano">Baño</label>
@@ -823,7 +830,7 @@ if (!defined('ESTADIA_INIT')) {
                     <legend class="h6">Tecnología</legend>
                     <div class="row">
                         <div class="col-md-6">
-                            <label class="form-label fs-5">Nivel de apertura tecnológica</label>
+                            <label class="form-label fs-5">Nivel de conocimiento tecnológico</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="tec_nivel" id="tec_baja" value="tec_baja" required>
                                 <label class="form-check-label fs-5" for="tec_baja">No estoy familiarizado(a)</label>
@@ -834,7 +841,7 @@ if (!defined('ESTADIA_INIT')) {
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="tec_nivel" id="tec_alta" value="tec_alta">
-                                <label class="form-check-label fs-5" for="tec_alta">Cómodo(a) con tecnología</label>
+                                <label class="form-check-label fs-5" for="tec_alta">Muy familiarziado con la tecnología</label>
                             </div>
                         </div>
 
@@ -842,15 +849,23 @@ if (!defined('ESTADIA_INIT')) {
                             <label class="form-label fs-5">¿Qué te daría más tranquilidad? (elige una)</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="tranquilidad" id="tranq_seg" value="tranq_seguridad" required>
-                                <label class="form-check-label fs-5" for="tranq_seg">Seguridad</label>
+                                <label class="form-check-label fs-5" for="tranq_seg">Seguridad dentro del hogar</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="tranquilidad" id="tranq_ind" value="tranq_independencia">
                                 <label class="form-check-label fs-5" for="tranq_ind">Independencia</label>
                             </div>
                             <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tranquilidad" id="tranq_monitoreo" value="tranq_monitoreo">
+                                <label class="form-check-label fs-5" for="tranq_monitoreo">Monitoreo en tiempo</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tranquilidad" id="tranq_alertas" value="tranq_alertas">
+                                <label class="form-check-label fs-5" for="tranq_alertas">Alertas</label>
+                            </div>
+                            <div class="form-check">
                                 <input class="form-check-input" type="radio" name="tranquilidad" id="tranq_fam" value="tranq_familia_informada">
-                                <label class="form-check-label fs-5" for="tranq_fam">Familia informada</label>
+                                <label class="form-check-label fs-5" for="tranq_fam">Comunicación</label>
                             </div>
                         </div>
                     </div>
@@ -858,7 +873,7 @@ if (!defined('ESTADIA_INIT')) {
 
                 <!-- Plazo -->
                 <fieldset class="col-12">
-                    <legend class="h6">Plazo</legend>
+                    <legend class="h6">¿Cuando quiere iniciar?</legend>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="plazo" id="plazo_inmediato" value="plazo_inmediato" required>
                         <label class="form-check-label fs-5" for="plazo_inmediato">Inmediato</label>
@@ -905,15 +920,15 @@ if (!defined('ESTADIA_INIT')) {
 
                 <!-- Submit -->
                 <div class="col-12 text-end">
-                    <button type="submit" class="btn btn-lg btn-primary" aria-label="Quiero evaluar mi hogar">Quiero evaluar mi hogar</button>
+                    <button type="submit" class="btn btn-lg btn-primary" aria-label="Solicitar un diagnóstico personalizado">Solicitar un diagnóstico personalizado</button>
                 </div>
 
                 <!-- Microcopy de confianza (iconos/bullets) -->
                 <div class="col-12 mt-3">
                     <div class="d-flex flex-column align-items-start">
-                        <small class="text-muted d-block">🔒 Tu información es confidencial</small>
-                        <small class="text-muted d-block">✅ Diagnóstico sin compromiso</small>
-                        <small class="text-muted d-block">🏠 Soluciones pensadas para adultos mayores y sus familias</small>
+                        <small class="text-muted d-block">✅ Tu información es confidencial</small>
+                        <small class="text-muted d-block">✅ solicitud sin compromiso</small>
+                        <small class="text-muted d-block">✅ Soluciones pensadas para adultos mayores y sus familias</small>
                     </div>
                 </div>
             </form>
@@ -982,6 +997,122 @@ if (!defined('ESTADIA_INIT')) {
       }, 30000);
     })();
     </script>
+
+    <script>
+    // SweetAlert de bienvenida para suscripción al boletín
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mostrar el popup después de 2 segundos para no interrumpir inmediatamente
+        setTimeout(function() {
+            Swal.fire({
+                title: '🏠 ¡Bienvenido a MetaHogar!',
+                html: `
+                    <div style="text-align: left; padding: 10px 20px;">
+                        <h4 style="color: #17466e; margin-bottom: 15px;">Únete a nuestra comunidad</h4>
+                        <p style="line-height: 1.6; color: #555; margin-bottom: 15px;">
+                            Suscríbete a nuestro <strong>boletín informativo</strong> y recibe contenido exclusivo sobre:
+                        </p>
+                        <ul style="text-align: left; color: #666; line-height: 1.8; margin-bottom: 20px;">
+                            <li> Tecnologías para el hogar inteligente</li>
+                            <li> Consejos de longevidad segura y saludable</li>
+                            <li> Innovaciones en domótica y accesibilidad</li>
+                            <li> Promociones y ofertas exclusivas</li>
+                            <li> Noticias del sector</li>
+                        </ul>
+                        <p style="color: #888; font-size: 13px; margin-top: 15px;">
+                            <i class="fas fa-shield-alt"></i> Tu privacidad es importante. No compartimos tu información.
+                        </p>
+                    </div>
+                `,
+                input: 'email',
+                inputPlaceholder: 'Ingresa tu correo electrónico',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocomplete: 'email'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Suscribirme',
+                cancelButtonText: 'Ahora no',
+                confirmButtonColor: '#17466e',
+                cancelButtonColor: '#6c757d',
+                customClass: {
+                    popup: 'swal-wide',
+                    confirmButton: 'btn-lg',
+                    cancelButton: 'btn-lg'
+                },
+                showLoaderOnConfirm: true,
+                preConfirm: async (email) => {
+                    // Validar email
+                    if (!email) {
+                        Swal.showValidationMessage('Por favor ingresa tu correo electrónico');
+                        return false;
+                    }
+                    
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailPattern.test(email)) {
+                        Swal.showValidationMessage('Por favor ingresa un correo electrónico válido');
+                        return false;
+                    }
+                    
+                    // Enviar solicitud de suscripción
+                    try {
+                        const formData = new FormData();
+                        formData.append('email', email);
+                        
+                        const response = await fetch('php/newsletter_subscribe.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (!data.success) {
+                            throw new Error(data.message || 'Error al suscribirse');
+                        }
+                        
+                        return data;
+                    } catch (error) {
+                        Swal.showValidationMessage(`Error: ${error.message}`);
+                        return false;
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    // Mostrar mensaje de éxito
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Gracias por suscribirte!',
+                        html: `
+                            <p>Te has suscrito exitosamente a nuestro boletín informativo.</p>
+                            <p><strong>Revisa tu correo</strong> para confirmar tu suscripción.</p>
+                            <p style="color: #666; font-size: 14px; margin-top: 15px;">
+                                Pronto comenzarás a recibir contenido exclusivo sobre longevidad segura y hogares inteligentes.
+                            </p>
+                        `,
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#17466e'
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Usuario canceló, mostrar un mensaje suave
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Sin problema',
+                        text: 'Puedes suscribirte en cualquier momento desde el pie de página.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }, 2000); // Esperar 2 segundos después de cargar la página
+    });
+    </script>
+
+    <style>
+    .swal-wide {
+        width: 600px !important;
+        max-width: 90% !important;
+    }
+    </style>
 
     <script>
     // Handle cita form submission via fetch
