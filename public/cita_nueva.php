@@ -72,7 +72,7 @@ $servicios = $pdo->query('SELECT idServicio, Nombre FROM servicio WHERE Activo=1
                 <button class="btn btn-outline-light mt-4" data-bs-toggle="modal" data-bs-target="#misCitasModal"><i class="fa fa-calendar"></i> Ver Mis Citas</button>
             </div>
             <div class="form-section col-md-8">
-                <form method="POST" action="../app/controllers/CitaController.php?redir=1" novalidate>
+                <form id="citaForm" method="POST" action="../app/controllers/CitaController.php" novalidate>
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="form-label">Servicio</label>
@@ -162,35 +162,107 @@ $servicios = $pdo->query('SELECT idServicio, Nombre FROM servicio WHERE Activo=1
 
     <?php require_once __DIR__ . '/includes/footer.php'; ?>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
     (function(){
-        function pad(n){return n<10? '0'+n : n}
+        function pad(n){ return n < 10 ? '0' + n : n; }
         function toLocalInputValue(d){
             return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
         }
+
         document.addEventListener('DOMContentLoaded', function(){
             var dt = document.querySelector('input[name="fechahora"]');
-            if(!dt) return;
+            var form = document.getElementById('citaForm');
+            var dateError = document.getElementById('dateError');
+            if(!dt || !form || !dateError) return;
+
             var now = new Date();
             now.setSeconds(0,0);
-            var min = now; // evitar seleccionar una fecha/hora anterior al momento actual
-            try{
-                dt.min = toLocalInputValue(min);
-                if(!dt.value) dt.value = toLocalInputValue(new Date(min.getTime() + 15*60000));
-            }catch(e){ /* algunos navegadores antiguos pueden fallar */ }
+            try {
+                dt.min = toLocalInputValue(now);
+                if (!dt.value) {
+                    dt.value = toLocalInputValue(new Date(now.getTime() + 15 * 60000));
+                }
+            } catch (e) {}
 
-            var form = dt.closest('form');
-            var dateError = document.getElementById('dateError');
             form.addEventListener('submit', function(ev){
+                ev.preventDefault();
+                dateError.classList.add('d-none');
+                dateError.textContent = '';
+
                 var selected = new Date(dt.value);
                 var nowCheck = new Date();
-                if(isNaN(selected.getTime()) || selected < nowCheck){
-                    ev.preventDefault();
+                if (isNaN(selected.getTime()) || selected < nowCheck) {
                     dateError.classList.remove('d-none');
                     dateError.textContent = 'No puedes seleccionar una fecha/hora anterior al momento actual.';
-                    dateError.scrollIntoView({behavior:'smooth', block:'center'});
+                    dateError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     dt.focus();
+                    return;
                 }
+
+                var servicioSelect = form.querySelector('select[name="servicio"]');
+                var servicioText = servicioSelect ? servicioSelect.options[servicioSelect.selectedIndex].text : '';
+                var notas = (form.querySelector('input[name="notas"]') || { value: '' }).value;
+                var fechaTexto = dt.value ? dt.value.replace('T', ' ') : '';
+
+                Swal.fire({
+                    title: 'Confirmar cita',
+                    html: `
+                        <div style="text-align:left; padding:10px 20px;">
+                            <p><strong>Servicio:</strong> ${servicioText}</p>
+                            <p><strong>Fecha y hora:</strong> ${fechaTexto}</p>
+                            <p><strong>Notas:</strong> ${notas ? notas : '<em>Ninguna</em>'}</p>
+                            <p style="color:#666; font-size:13px; margin-top:8px;">Al confirmar, tu cita será registrada y procesada. Te notificaremos por correo.</p>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirmar cita',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#17466e',
+                    showLoaderOnConfirm: true,
+                    allowOutsideClick: function(){ return !Swal.isLoading(); },
+                    preConfirm: function(){
+                        var fd = new FormData(form);
+                        if (!fd.has('crear')) fd.append('crear', '1');
+
+                        return fetch(form.action, {
+                            method: 'POST',
+                            body: fd,
+                            credentials: 'same-origin',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        })
+                        .then(function(res){
+                            var contentType = res.headers.get('content-type') || '';
+                            if (contentType.indexOf('application/json') !== -1) {
+                                return res.json();
+                            }
+                            return res.text().then(function(text){
+                                throw new Error(text && text.trim() ? 'El servidor no devolvio JSON valido.' : 'Respuesta invalida del servidor.');
+                            });
+                        })
+                        .then(function(data){
+                            if (!data || !data.ok) {
+                                throw new Error(data && data.message ? data.message : 'Error al crear la cita.');
+                            }
+                            return data;
+                        })
+                        .catch(function(err){
+                            Swal.showValidationMessage('Error: ' + err.message);
+                            return false;
+                        });
+                    }
+                }).then(function(result){
+                    if (result.isConfirmed && result.value) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cita agendada',
+                            html: '<p>' + (result.value.message || 'Tu cita fue registrada correctamente.') + '</p>',
+                            confirmButtonText: 'Aceptar',
+                            confirmButtonColor: '#17466e'
+                        });
+                        form.reset();
+                    }
+                });
             });
         });
     })();

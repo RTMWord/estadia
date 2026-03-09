@@ -16,39 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'El nombre es obligatorio';
     }
 
-    // Procesar imagen
-    $imagenNombre = null;
-    if (!empty($_FILES['Imagen']) && !empty($_FILES['Imagen']['name'])) {
-        $f = $_FILES['Imagen'];
-        if ($f['error'] === UPLOAD_ERR_OK) {
-            $ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));
-            $allowed = ['jpg','jpeg','png','gif','webp'];
-            if (!in_array($ext, $allowed)) {
-                $errors[] = 'Formato de imagen no permitido. Usa jpg, jpeg, png, gif o webp.';
-            } else {
-                $imagenNombre = uniqid('srv_') . '.' . $ext;
-                $destDir = __DIR__ . '/../assets/img/servicios/';
-                if (!is_dir($destDir)) mkdir($destDir, 0755, true);
-                $destPath = $destDir . $imagenNombre;
-                if (!move_uploaded_file($f['tmp_name'], $destPath)) {
-                    $errors[] = 'No se pudo mover la imagen al directorio destino.';
-                    $imagenNombre = null;
-                }
-            }
-        } else {
-            $errors[] = 'Error al subir la imagen (código ' . $f['error'] . ')';
-        }
-    }
+    // No manejamos imágenes (columna Imagen será eliminada)
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('INSERT INTO Servicio (Nombre, Descripcion, Costo, Agencia_idAgencia, Imagen, Activo) VALUES (:nombre, :descripcion, :costo, :agencia, :imagen, :activo)');
+            $stmt = $pdo->prepare('INSERT INTO Servicio (Nombre, Descripcion, Costo, Agencia_idAgencia, Activo) VALUES (:nombre, :descripcion, :costo, :agencia, :activo)');
             $stmt->execute([
                 ':nombre' => $nombre,
                 ':descripcion' => $descripcion,
                 ':costo' => $costo,
                 ':agencia' => $agencia,
-                ':imagen' => $imagenNombre,
                 ':activo' => $activo
             ]);
             $_SESSION['flash_success'] = 'Servicio registrado exitosamente';
@@ -56,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } catch (Exception $e) {
             $errors[] = 'Error al guardar en la base de datos: ' . $e->getMessage();
-            if ($imagenNombre) @unlink(__DIR__ . '/../assets/img/servicios/' . $imagenNombre);
         }
     }
 }
@@ -120,10 +96,7 @@ try {
             </div>
             <div class="col-md-4 mb-3"></div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Imagen</label>
-            <input class="form-control" name="Imagen" type="file" accept="image/*">
-        </div>
+        <!-- Imagen: eliminado del formulario (columna Imagen removida) -->
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" name="Activo" id="status" <?= isset($_POST['Activo']) || !isset($_POST['Activo']) ? 'checked' : '' ?>>
             <label class="form-check-label" for="status">Activo</label>

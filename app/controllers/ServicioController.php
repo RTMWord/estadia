@@ -91,7 +91,7 @@ class ServicioController {
             echo "<!-- detalle(): attempting PDO fallback -->\n";
             global $pdo;
             if (!empty($pdo)) {
-                $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Categoria AS categoria, Ubicacion AS ubicacion, Contacto AS contacto, Imagen AS imagen, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status FROM servicio WHERE idServicio = ? LIMIT 1";
+                $sql = "SELECT idServicio AS id, Nombre AS titulo, Descripcion AS descripcion, Categoria AS categoria, Ubicacion AS ubicacion, Contacto AS contacto, Costo AS precio, Agencia_idAgencia AS agencia_id, Activo AS status FROM servicio WHERE idServicio = ? LIMIT 1";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([(int)$id]);
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -127,19 +127,6 @@ class ServicioController {
         $precio = isset($post['precio']) ? floatval($post['precio']) : 0;
         $status = isset($post['status']) ? 1 : 0;
 
-        $imagen_ruta = null;
-        if (!empty($files['imagen']['name'])) {
-            $upload_dir = __DIR__ . '/../../public/assets/img/servicios';
-            if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-            $ext = pathinfo($files['imagen']['name'], PATHINFO_EXTENSION);
-            $new = 'serv_' . time() . '_' . rand(1000,9999) . '.' . $ext;
-            $dest = $upload_dir . '/' . $new;
-            if (move_uploaded_file($files['imagen']['tmp_name'], $dest)) {
-                // Guardamos solo el nombre de archivo para compatibilidad con admin UI
-                $imagen_ruta = $new;
-            }
-        }
-
         $data = [
             'titulo' => $titulo,
             'descripcion' => $descripcion,
@@ -147,7 +134,6 @@ class ServicioController {
             'ubicacion' => $ubicacion,
             'contacto' => $contacto,
             'agencia' => $agencia,
-            'imagen' => $imagen_ruta,
             'precio' => $precio,
             'status' => $status
         ];
@@ -176,48 +162,7 @@ class ServicioController {
             'status' => isset($post['status']) ? 1 : 0
         ];
 
-        // Obtener imagen existente (si el modelo la devuelve)
-        $oldImage = null;
-        if ($this->model && method_exists($this->model, 'obtenerPorId')) {
-            $existing = $this->model->obtenerPorId((int)$id);
-            $oldImage = !empty($existing['imagen']) ? $existing['imagen'] : null;
-        }
-
-        // Eliminar imagen existente si el admin lo solicitó
-        if (!empty($post['remove_image'])) {
-            $data['imagen'] = '';
-            if ($oldImage) {
-                // soportar rutas previas como 'assets/images/...' o nombres en 'assets/img/servicios/'
-                if (strpos($oldImage, 'assets/images/') === 0) {
-                    $filePath = __DIR__ . '/../../public/' . $oldImage;
-                } else {
-                    $filePath = __DIR__ . '/../../public/assets/img/servicios/' . $oldImage;
-                }
-                if (is_file($filePath)) @unlink($filePath);
-            }
-        }
-
-        // Subir nueva imagen si se proporcionó
-        if (!empty($files['imagen']['name'])) {
-            $upload_dir = __DIR__ . '/../../public/assets/img/servicios';
-            if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-            $ext = pathinfo($files['imagen']['name'], PATHINFO_EXTENSION);
-            $new = 'serv_' . time() . '_' . rand(1000,9999) . '.' . $ext;
-            $dest = $upload_dir . '/' . $new;
-            if (move_uploaded_file($files['imagen']['tmp_name'], $dest)) {
-                // Guardar solo el nombre de archivo
-                $data['imagen'] = $new;
-                // borrar imagen anterior si existe
-                if ($oldImage) {
-                    if (strpos($oldImage, 'assets/images/') === 0) {
-                        $oldPath = __DIR__ . '/../../public/' . $oldImage;
-                    } else {
-                        $oldPath = __DIR__ . '/../../public/assets/img/servicios/' . $oldImage;
-                    }
-                    if (is_file($oldPath)) @unlink($oldPath);
-                }
-            }
-        }
+        // No manejamos imágenes: la columna será eliminada de la tabla
 
         if ($this->model && method_exists($this->model, 'editar')) {
             return $this->model->editar((int)$id, $data);
