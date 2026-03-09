@@ -495,3 +495,32 @@ body { margin: 0; font-family: var(--font-sans); background: #fff; }
         right: 0;
     }
 }
+
+/* =====================
+   Estilos para panel de proveedor
+   ===================== */
+.provider-panel {
+    background: #f6f8fb;
+}
+.provider-panel .card {
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(23,70,110,0.08);
+}
+.provider-panel .card .card-title {
+    color: #0f4c81;
+    font-weight: 700;
+}
+.provider-panel .table thead th {
+    background: #ffffff;
+    border-bottom: 2px solid #e9ecef;
+}
+.provider-panel .badge.bg-secondary {
+    background: #6c757d !important;
+}
+.provider-panel .btn-primary {
+    background: linear-gradient(180deg,#17466e 0%,#4b96c3 100%);
+    border: none;
+}
+.provider-panel .btn-outline-secondary {
+    border-color: #ced4da;
+}

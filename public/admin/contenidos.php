@@ -28,7 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$items = array_filter(Contenido::getAll($pdo), fn($r) => (int)$r['Activo'] === 1);
+$allItems = Contenido::getAll($pdo);
+$pendientes = array_filter($allItems, fn($r) => (int)$r['Activo'] === 0);
+$aprobados = array_filter($allItems, fn($r) => (int)$r['Activo'] === 1);
 ?>
 <!doctype html>
 <html lang="es">
@@ -56,34 +58,76 @@ $items = array_filter(Contenido::getAll($pdo), fn($r) => (int)$r['Activo'] === 1
         <h1>Contenidos</h1>
         <a href="contenido_nuevo.php" class="btn btn-primary">Nuevo contenido</a>
     </div>
-    <table class="table table-striped">
-        <thead><tr><th>#</th><th>Tipo</th><th>Título</th><th>Fecha</th><th>Activo</th><th>Acciones</th></tr></thead>
-        <tbody>
-            <?php foreach($items as $r): ?>
-            <tr>
-                <td><?= $r['idContenido'] ?></td>
-                <td><?= htmlspecialchars($r['Tipo']) ?></td>
-                <td><?= htmlspecialchars($r['Titulo']) ?></td>
-                <td><?= htmlspecialchars($r['FechaPublicacion']) ?></td>
-                <td>
-                    <form method="post" class="d-inline">
-                        <input type="hidden" name="id" value="<?= $r['idContenido'] ?>">
-                        <input type="hidden" name="activo" value="0">
-                        <input type="checkbox" name="activo" value="1" <?= $r['Activo'] ? 'checked' : '' ?> onchange="this.form.submit()" aria-label="Activo">
-                        <input type="hidden" name="toggle_active" value="1">
-                    </form>
-                </td>
-                <td>
-                    <a class="btn btn-sm btn-secondary" href="contenido_editar.php?id=<?= $r['idContenido'] ?>">Editar</a>
-                    <form method="post" class="d-inline" onsubmit="return confirm('Eliminar contenido?')">
-                        <input type="hidden" name="eliminar" value="<?= $r['idContenido'] ?>">
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+    <ul class="nav nav-tabs mb-3" id="contenidoTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="aprobados-tab" data-bs-toggle="tab" data-bs-target="#aprobados" type="button" role="tab">Aprobados (<?= count($aprobados) ?>)</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pendientes-tab" data-bs-toggle="tab" data-bs-target="#pendientes" type="button" role="tab">Pendientes (<?= count($pendientes) ?>)</button>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="aprobados" role="tabpanel">
+            <table class="table table-striped">
+                <thead><tr><th>#</th><th>Tipo</th><th>Título</th><th>Fecha</th><th>Activo</th><th>Acciones</th></tr></thead>
+                <tbody>
+                    <?php foreach($aprobados as $r): ?>
+                    <tr>
+                        <td><?= $r['idContenido'] ?></td>
+                        <td><?= htmlspecialchars($r['Tipo']) ?></td>
+                        <td><?= htmlspecialchars($r['Titulo']) ?></td>
+                        <td><?= htmlspecialchars($r['FechaPublicacion']) ?></td>
+                        <td>
+                            <form method="post" class="d-inline">
+                                <input type="hidden" name="id" value="<?= $r['idContenido'] ?>">
+                                <input type="hidden" name="activo" value="0">
+                                <input type="checkbox" name="activo" value="1" <?= $r['Activo'] ? 'checked' : '' ?> onchange="this.form.submit()" aria-label="Activo">
+                                <input type="hidden" name="toggle_active" value="1">
+                            </form>
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-secondary" href="contenido_editar.php?id=<?= $r['idContenido'] ?>">Editar</a>
+                            <form method="post" class="d-inline" onsubmit="return confirm('Eliminar contenido?')">
+                                <input type="hidden" name="eliminar" value="<?= $r['idContenido'] ?>">
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="pendientes" role="tabpanel">
+            <table class="table table-striped">
+                <thead><tr><th>#</th><th>Tipo</th><th>Título</th><th>Fecha</th><th>Activo</th><th>Acciones</th></tr></thead>
+                <tbody>
+                    <?php foreach($pendientes as $r): ?>
+                    <tr>
+                        <td><?= $r['idContenido'] ?></td>
+                        <td><?= htmlspecialchars($r['Tipo']) ?></td>
+                        <td><?= htmlspecialchars($r['Titulo']) ?></td>
+                        <td><?= htmlspecialchars($r['FechaPublicacion']) ?></td>
+                        <td>
+                            <form method="post" class="d-inline">
+                                <input type="hidden" name="id" value="<?= $r['idContenido'] ?>">
+                                <input type="hidden" name="activo" value="0">
+                                <input type="checkbox" name="activo" value="1" <?= $r['Activo'] ? 'checked' : '' ?> onchange="this.form.submit()" aria-label="Activo">
+                                <input type="hidden" name="toggle_active" value="1">
+                            </form>
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-secondary" href="contenido_editar.php?id=<?= $r['idContenido'] ?>">Editar</a>
+                            <form method="post" class="d-inline" onsubmit="return confirm('Eliminar contenido?')">
+                                <input type="hidden" name="eliminar" value="<?= $r['idContenido'] ?>">
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
     <a href="index.php" class="btn btn-secondary">Volver</a>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -30,11 +30,17 @@ if (isset($_POST['login'])) {
                 $rol = $stmt->fetchColumn();
                 $_SESSION['user_id'] = $usuario['idUsuario'];
                 $_SESSION['role'] = $rol;
-                // Redirección segura al origen si se proporcionó
+                // Redirección según rol (segura)
                 $next = $_POST['next'] ?? '';
                 if ($next && strpos($next, '/') === 0) {
-                    // prevenir redirecciones abiertas hacia otros hosts
                     header('Location: ' . $next);
+                    exit;
+                }
+                // Redirigir a panel según rol
+                if ($rol === 'administrador') {
+                    header('Location: ../../public/admin/index.php');
+                } elseif ($rol === 'proveedor') {
+                    header('Location: ../../public/proveedor/index.php');
                 } else {
                     header('Location: ../../public/index.php');
                 }

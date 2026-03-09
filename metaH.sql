@@ -31,6 +31,12 @@ CREATE TABLE IF NOT EXISTS `Rol` (
   PRIMARY KEY(`idRol`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Insertar roles base (si no existen)
+INSERT IGNORE INTO `Rol` (`Nombre`, `Descripcion`) VALUES
+('administrador', 'Acceso completo al sistema'),
+('publico', 'Usuario registrado estándar'),
+('prestador', 'Prestador de servicios (agencia)'),
+('proveedor', 'Representante de agencia que propone contenido y servicios');
 CREATE TABLE IF NOT EXISTS `Usuario` (
   `idUsuario` INT NOT NULL AUTO_INCREMENT,
   `Nombre` VARCHAR(60) NOT NULL,
@@ -70,6 +76,10 @@ CREATE TABLE IF NOT EXISTS `Servicio` (
   `idServicio` INT NOT NULL AUTO_INCREMENT,
   `Nombre` VARCHAR(120) NOT NULL, -- e.g. enfermería a domicilio
   `Descripcion` TEXT,
+  `Categoria` VARCHAR(100) DEFAULT NULL,
+  `Ubicacion` VARCHAR(120) DEFAULT NULL,
+  `Contacto` VARCHAR(120) DEFAULT NULL,
+  `Imagen` VARCHAR(255) DEFAULT NULL,
   `Costo` DECIMAL(10,2) DEFAULT 0.00,
   `Agencia_idAgencia` INT DEFAULT NULL,
   `Activo` TINYINT(1) DEFAULT 1,
