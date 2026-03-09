@@ -3,11 +3,13 @@ require_once __DIR__ . '/../app/config/db.php';
 require_once __DIR__ . '/../app/helpers/auth.php';
 
 $isAdmin = false;
+$isProveedor = false;
 if (isLogged()) {
     $stmtRole = $pdo->prepare('SELECT r.Nombre FROM UsuarioRol ur JOIN Rol r ON ur.Rol_idRol = r.idRol WHERE ur.Usuario_idUsuario = ? LIMIT 1');
     $stmtRole->execute([getUserId()]);
     $roleName = $stmtRole->fetchColumn();
-    $isAdmin = ($roleName === 'administrador');
+    $isAdmin = (strtolower($roleName) === 'administrador');
+    $isProveedor = (strtolower($roleName) === 'proveedor');
 }
 
 // Helper: obtener preview de un URL usando meta OG, con cache de archivos (TTL 1 día)
@@ -237,9 +239,14 @@ $estadisticas = $pdo->query("SELECT
             <h1 class="display-5 fw-bold mb-2">Comunidad Digital</h1>
             <p class="lead mb-4">Comparte, pregunta, anuncia y colabora con la comunidad</p>
             <?php if (isLogged()): ?>
-                <button type="button" class="btn-ask" data-bs-toggle="modal" data-bs-target="#modalNuevaIncidencia">
-                    <i class="fas fa-plus"></i> Crear Publicación
-                </button>
+                <div class="d-flex justify-content-center align-items-center" style="gap:12px">
+                    <button type="button" class="btn-ask" data-bs-toggle="modal" data-bs-target="#modalNuevaIncidencia">
+                        <i class="fas fa-plus"></i> Crear Publicación
+                    </button>
+                    <?php if (!empty($isProveedor)): ?>
+                        <a href="proveedor/index.php" class="btn btn-outline-light ms-2">Panel de Proveedor</a>
+                    <?php endif; ?>
+                </div>
             <?php else: ?>
                 <p><a href="login.php" style="color: white; text-decoration: underline; font-weight: 600;">Inicia sesión</a> para participar</p>
             <?php endif; ?>

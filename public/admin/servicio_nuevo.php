@@ -8,6 +8,9 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['Nombre'] ?? '');
     $descripcion = trim($_POST['Descripcion'] ?? '');
+    $categoria = trim($_POST['categoria'] ?? '');
+    $ubicacion = trim($_POST['ubicacion'] ?? '');
+    $contacto = trim($_POST['contacto'] ?? '');
     $costo = isset($_POST['Costo']) && $_POST['Costo'] !== '' ? (float)$_POST['Costo'] : 0.0;
     $agencia = !empty($_POST['Agencia_idAgencia']) ? (int)$_POST['Agencia_idAgencia'] : null;
     $activo = isset($_POST['Activo']) ? 1 : 0;
@@ -42,10 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare('INSERT INTO Servicio (Nombre, Descripcion, Costo, Agencia_idAgencia, Imagen, Activo) VALUES (:nombre, :descripcion, :costo, :agencia, :imagen, :activo)');
+            $stmt = $pdo->prepare('INSERT INTO Servicio (Nombre, Descripcion, Categoria, Ubicacion, Contacto, Costo, Agencia_idAgencia, Imagen, Activo) VALUES (:nombre, :descripcion, :categoria, :ubicacion, :contacto, :costo, :agencia, :imagen, :activo)');
             $stmt->execute([
                 ':nombre' => $nombre,
                 ':descripcion' => $descripcion,
+                ':categoria' => $categoria,
+                ':ubicacion' => $ubicacion,
+                ':contacto' => $contacto,
                 ':costo' => $costo,
                 ':agencia' => $agencia,
                 ':imagen' => $imagenNombre,
@@ -102,6 +108,20 @@ try {
         <div class="mb-3">
             <label class="form-label">Descripción</label>
             <textarea class="form-control" name="Descripcion" rows="6"><?php echo htmlspecialchars($_POST['Descripcion'] ?? ''); ?></textarea>
+        </div>
+        <div class="row g-2">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Categoría</label>
+                <input class="form-control" name="categoria" value="<?= htmlspecialchars($_POST['categoria'] ?? '') ?>">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Ubicación</label>
+                <input class="form-control" name="ubicacion" value="<?= htmlspecialchars($_POST['ubicacion'] ?? '') ?>">
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">Contacto</label>
+                <input class="form-control" name="contacto" value="<?= htmlspecialchars($_POST['contacto'] ?? '') ?>">
+            </div>
         </div>
         <div class="row g-2">
             <div class="col-md-4 mb-3">
