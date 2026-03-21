@@ -1,5 +1,5 @@
 <?php
-require_once 'app/config/db.php';
+require_once __DIR__ . '/../app/config/db.php';
 $id = $_GET['id'] ?? null;
 if (!$id) { header('Location: servicios.php'); exit; }
 $stmt = $pdo->prepare('SELECT s.*, a.Nombre AS Agencia FROM Servicio s LEFT JOIN Agencia a ON s.Agencia_idAgencia = a.idAgencia WHERE s.idServicio = ? LIMIT 1');
