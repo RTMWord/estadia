@@ -71,6 +71,14 @@ if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
 </head>
 <body>
     <?php
+    $productosModal = array_map(function($item) {
+        return [
+            'id' => (int)($item['idProducto'] ?? 0),
+            'nombre' => (string)($item['Nombre'] ?? '')
+        ];
+    }, $productos);
+    ?>
+    <?php
     // Forzar la navbar a azul sólido
     $navbarSolid = true;
     include __DIR__ . '/partials/bs-navbar.php';
@@ -140,7 +148,12 @@ if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
                                 <p class="product-desc"><?= nl2br(htmlspecialchars($p['Descripcion'])) ?></p>
                                 <p class="mb-1 text-muted small">Existencia: <?= (int)$p['Existencia'] ?></p>
                                 <div class="mt-auto d-flex justify-content-between align-items-center">
-                                    <a href="admin/producto_ver.php?id=<?= (int)$p['idProducto'] ?>" class="btn btn-sm btn-primary">Ver</a>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-primary js-producto-info-btn"
+                                        data-producto-id="<?= (int)$p['idProducto'] ?>"
+                                        data-producto-nombre="<?= htmlspecialchars($p['Nombre'], ENT_QUOTES) ?>"
+                                    >Solictar más información</button>
                                     <div class="product-meta text-muted small"><i class="fa fa-star text-warning"></i> 4.6</div>
                                 </div>
                             </div>
@@ -152,6 +165,142 @@ if (!defined('ESTADIA_INIT')) define('ESTADIA_INIT', true);
     </div>
 
     <?php require_once __DIR__ . '/includes/footer.php'; ?>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    (function () {
+        var productos = <?= json_encode($productosModal, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+
+        function escapeHtml(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function buildProductOptions(selectedId) {
+            return productos.map(function (p) {
+                var isSelected = Number(selectedId) === Number(p.id) ? ' selected' : '';
+                return '<option value="' + Number(p.id) + '"' + isSelected + '>' + escapeHtml(p.nombre) + '</option>';
+            }).join('');
+        }
+
+        async function openInfoModal(productoId, productoNombre) {
+            var result = await Swal.fire({
+                title: 'Solicitar información',
+                html: '' +
+                    '<div style="text-align:left;">' +
+                        '<label for="swal-nombre" style="display:block;margin-bottom:6px;font-weight:600;">Nombre completo</label>' +
+                        '<input id="swal-nombre" class="swal2-input" placeholder="Tu nombre completo" style="margin:0 0 12px 0;">' +
+                        '<label for="swal-correo" style="display:block;margin-bottom:6px;font-weight:600;">Correo electrónico</label>' +
+                        '<input id="swal-correo" type="email" class="swal2-input" placeholder="tucorreo@ejemplo.com" style="margin:0 0 12px 0;">' +
+                        '<label for="swal-producto" style="display:block;margin-bottom:6px;font-weight:600;">Producto de interés</label>' +
+                        '<select id="swal-producto" class="swal2-select" style="margin:0;">' +
+                            buildProductOptions(productoId) +
+                        '</select>' +
+                    '</div>',
+                confirmButtonText: 'Enviar solicitud',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#17466e',
+                focusConfirm: false,
+                didOpen: function () {
+                    var nombreInput = document.getElementById('swal-nombre');
+                    if (nombreInput) {
+                        nombreInput.focus();
+                    }
+                },
+                preConfirm: function () {
+                    var nombre = (document.getElementById('swal-nombre') || {}).value || '';
+                    var correo = (document.getElementById('swal-correo') || {}).value || '';
+                    var productoSeleccionado = (document.getElementById('swal-producto') || {}).value || '';
+
+                    nombre = nombre.trim();
+                    correo = correo.trim();
+
+                    if (!nombre || nombre.length < 5) {
+                        Swal.showValidationMessage('Ingresa tu nombre completo.');
+                        return false;
+                    }
+
+                    var correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!correoRegex.test(correo)) {
+                        Swal.showValidationMessage('Ingresa un correo electrónico válido.');
+                        return false;
+                    }
+
+                    if (!productoSeleccionado) {
+                        Swal.showValidationMessage('Selecciona un producto de interés.');
+                        return false;
+                    }
+
+                    return {
+                        nombre_completo: nombre,
+                        correo_electronico: correo,
+                        id_producto: productoSeleccionado,
+                        producto_referencia: productoNombre || ''
+                    };
+                }
+            });
+
+            if (!result.isConfirmed || !result.value) {
+                return;
+            }
+
+            Swal.fire({
+                title: 'Enviando...',
+                text: 'Estamos procesando tu solicitud.',
+                allowOutsideClick: false,
+                didOpen: function () {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                var response = await fetch('php/producto_info_request.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(result.value)
+                });
+
+                var data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'No se pudo enviar la solicitud.');
+                }
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Solicitud enviada',
+                    text: data.message || 'Revisa tu correo para más detalles.',
+                    confirmButtonColor: '#17466e'
+                });
+            } catch (error) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error al enviar',
+                    text: error && error.message ? error.message : 'Ocurrió un error inesperado.',
+                    confirmButtonColor: '#17466e'
+                });
+            }
+        }
+
+        document.addEventListener('click', function (event) {
+            var btn = event.target.closest('.js-producto-info-btn');
+            if (!btn) return;
+
+            var productoId = btn.getAttribute('data-producto-id') || '';
+            var productoNombre = btn.getAttribute('data-producto-nombre') || '';
+            openInfoModal(productoId, productoNombre);
+        });
+    })();
+    </script>
 
 </body>
 </html>
