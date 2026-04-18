@@ -43,13 +43,157 @@ require_once __DIR__ . '/_security_check.php';
             transform: translateY(-50%) !important;
             z-index: 9999 !important;
         }
+        body {
+            background: #eeeeee;
+            color: #2f3d4a;
+        }
+        .admin-dashboard {
+            max-width: 1140px;
+        }
+        .admin-title {
+            font-size: 2rem;
+            letter-spacing: .5px;
+            margin-bottom: .2rem;
+            text-transform: uppercase;
+        }
+        .admin-subtitle {
+            font-size: 1.1rem;
+            color: #4f5d6b;
+            margin-bottom: 2rem;
+        }
+        .dashboard-tile {
+            border: 1px solid #d8d8d8;
+            background: #ffffff;
+            border-radius: 4px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, .03);
+            height: 100%;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .dashboard-tile:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
+        }
+        .dashboard-tile .card-header {
+            border-bottom: 1px solid #dfdfdf;
+            background: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #2f6374;
+            text-align: center;
+            font-size: 1.05rem;
+            letter-spacing: .4px;
+        }
+        .dashboard-tile .card-body {
+            text-align: center;
+            padding: 1.2rem .75rem 1rem;
+        }
+        .tile-icon {
+            font-size: 5rem;
+            color: #3f6570;
+            line-height: 1;
+            margin-bottom: .8rem;
+        }
+        .tile-counter {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.1;
+            color: #2f3d4a;
+        }
+        .tile-label {
+            color: #315d67;
+            font-size: 1.05rem;
+            margin-top: .2rem;
+            font-weight: 600;
+        }
+        .dashboard-tile .card-footer {
+            text-align: center;
+            background: #fafafa;
+            border-top: 1px solid #e3e3e3;
+        }
+        .dashboard-tile .card-footer a {
+            color: #1e70d2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .quick-panel {
+            border: 1px solid #dadada;
+            background: #fff;
+            border-radius: 6px;
+        }
+        .quick-panel .card-title {
+            font-weight: 700;
+            color: #2f3d4a;
+        }
     </style>
 </head>
 <body>
 <?php include __DIR__ . '/partials/admin_nav.php'; ?>
-<div class="container py-5">
+<?php
+$dashboardTiles = [
+    [
+        'title' => 'Usuarios',
+        'count' => $counts['usuarios'],
+        'icon' => 'fa-solid fa-user',
+        'href' => 'usuarios.php',
+        'cta' => 'Gestionar usuarios',
+        'suffix' => 'Registrados'
+    ],
+    [
+        'title' => 'Agencias',
+        'count' => $counts['agencias'],
+        'icon' => 'fa-solid fa-truck',
+        'href' => 'agencias.php',
+        'cta' => 'Validar agencias',
+        'suffix' => 'Registradas'
+    ],
+    [
+        'title' => 'Servicios',
+        'count' => $counts['servicios'],
+        'icon' => 'fa-solid fa-gears',
+        'href' => 'servicios.php',
+        'cta' => 'Gestionar servicios',
+        'suffix' => 'Registrados'
+    ],
+    [
+        'title' => 'Productos',
+        'count' => $counts['productos'],
+        'icon' => 'fa-solid fa-box-open',
+        'href' => 'productos.php',
+        'cta' => 'Gestionar productos',
+        'suffix' => 'Registrados'
+    ],
+    [
+        'title' => 'Contenidos',
+        'count' => $counts['contenidos'],
+        'icon' => 'fa-solid fa-tags',
+        'href' => 'contenidos.php',
+        'cta' => 'Gestionar contenidos',
+        'suffix' => 'Registrados'
+    ],
+    [
+        'title' => 'Testimonios',
+        'count' => $counts['testimonios'],
+        'icon' => 'fa-solid fa-comments',
+        'href' => 'testimonios.php',
+        'cta' => 'Gestionar testimonios',
+        'suffix' => 'Registrados'
+    ],
+    [
+        'title' => 'Citas',
+        'count' => $counts['citas'],
+        'icon' => 'fa-solid fa-calendar-check',
+        'href' => 'citas.php',
+        'cta' => 'Ver citas',
+        'suffix' => 'Registradas'
+    ],
+];
+?>
+<div class="container admin-dashboard py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Panel de Administración</h1>
+        <div>
+            <h1 class="admin-title"><i class="fa-solid fa-gauge-high me-2"></i>Dashboard</h1>
+            <p class="admin-subtitle mb-0">¡Bienvenido <strong>Administrador Principal</strong>! Este es el panel principal del sistema.</p>
+        </div>
         <div>
             <a href="../index.php" class="btn btn-outline-secondary">Ir al sitio</a>
             <a href="../logout.php" class="btn btn-outline-danger">Cerrar sesión</a>
@@ -57,87 +201,25 @@ require_once __DIR__ . '/_security_check.php';
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Usuarios</h5>
-                    <p class="display-6 mb-0"><?= $counts['usuarios'] ?></p>
-                </div>
-                <div class="card-footer">
-                    <a href="usuarios.php" class="stretched-link">Gestionar usuarios</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Agencias</h5>
-                    <p class="display-6 mb-0"><?= $counts['agencias'] ?></p>
-                </div>
-                <div class="card-footer">
-                    <a href="agencias.php" class="stretched-link">Validar agencias</a>
+        <?php foreach ($dashboardTiles as $tile): ?>
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="card dashboard-tile">
+                    <div class="card-header"><?= htmlspecialchars($tile['title']) ?></div>
+                    <div class="card-body">
+                        <div class="tile-icon"><i class="<?= htmlspecialchars($tile['icon']) ?>" aria-hidden="true"></i></div>
+                        <div class="tile-counter"><?= (int)$tile['count'] ?></div>
+                        <div class="tile-label"><?= htmlspecialchars($tile['suffix']) ?></div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="<?= htmlspecialchars($tile['href']) ?>" class="stretched-link"><?= htmlspecialchars($tile['cta']) ?></a>
+                    </div>
                 </div>
             </div>
-        </div>
+        <?php endforeach; ?>
         <div class="col-6 col-md-3">
-            <div class="card text-center">
+            <div class="card dashboard-tile">
+                <div class="card-header">Solicitudes Diagnóstico</div>
                 <div class="card-body">
-                    <h5 class="card-title">Servicios</h5>
-                    <p class="display-6 mb-0"><?= $counts['servicios'] ?></p>
-                </div>
-                <div class="card-footer">
-                    <a href="servicios.php" class="stretched-link">Gestionar servicios</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Productos</h5>
-                    <p class="display-6 mb-0"><?= $counts['productos'] ?></p>
-                </div>
-                <div class="card-footer">
-                    <a href="productos.php" class="stretched-link">Gestionar productos</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Contenidos</h5>
-                    <p class="display-6 mb-0"><?= $counts['contenidos'] ?></p>
-                </div>
-                <div class="card-footer">
-                    <a href="contenidos.php" class="stretched-link">Gestionar contenidos</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Testimonios</h5>
-                    <p class="display-6 mb-0"><?= $counts['testimonios'] ?></p>
-                </div>
-                <div class="card-footer">
-                    <a href="testimonios.php" class="stretched-link">Gestionar testimonios</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Citas</h5>
-                    <p class="display-6 mb-0"><?= $counts['citas'] ?></p>
-                </div>
-                <div class="card-footer">
-                    <a href="citas.php" class="stretched-link">Ver citas</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Solicitudes para Diagnósticos</h5>
                     <?php
                     $diagFile = __DIR__ . '/../../data/diagnosticos.json';
                     $diagCount = 0;
@@ -147,7 +229,9 @@ require_once __DIR__ . '/_security_check.php';
                         if (is_array($arr)) $diagCount = count($arr);
                     }
                     ?>
-                    <p class="display-6 mb-0"><?= $diagCount ?></p>
+                    <div class="tile-icon"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i></div>
+                    <div class="tile-counter"><?= $diagCount ?></div>
+                    <div class="tile-label">Pendientes</div>
                 </div>
                 <div class="card-footer">
                     <a href="solicitudes_diagnostico.php" class="stretched-link">Ver solicitudes</a>
@@ -155,10 +239,12 @@ require_once __DIR__ . '/_security_check.php';
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card text-center">
+            <div class="card dashboard-tile">
+                <div class="card-header">Comunidad</div>
                 <div class="card-body">
-                    <h5 class="card-title">Comunidad</h5>
-                    <p class="display-6 mb-0"><?= $counts['incidencias'] ?></p>
+                    <div class="tile-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
+                    <div class="tile-counter"><?= $counts['incidencias'] ?></div>
+                    <div class="tile-label">Registrados</div>
                 </div>
                 <div class="card-footer">
                     <a href="comunidad.php" class="stretched-link">Gestionar comunidad</a>
@@ -169,7 +255,7 @@ require_once __DIR__ . '/_security_check.php';
 
     <div class="row">
         <div class="col-md-6 mb-3">
-            <div class="card">
+            <div class="card quick-panel">
                 <div class="card-body">
                     <h5 class="card-title">Buzón de sugerencias</h5>
                     <p class="mb-0">Sugerencias pendientes: <strong><?= $counts['sugerencias'] ?></strong></p>
@@ -178,7 +264,7 @@ require_once __DIR__ . '/_security_check.php';
             </div>
         </div>
         <div class="col-md-6 mb-3">
-            <div class="card">
+            <div class="card quick-panel">
                 <div class="card-body">
                     <h5 class="card-title">Acciones rápidas</h5>
                     <a href="usuario_nuevo.php" class="btn btn-primary me-2">Crear usuario</a>
